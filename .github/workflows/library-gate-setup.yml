@@ -1,7 +1,9 @@
 # הגדרה חד-פעמית: שער הכניסה של אתר הספרייה עם אותו שם משתמש וסיסמה כמו מתה״פ
 # (החלטת הבעלים 10.11.2026, 20:08 - אפשרות ב').
-# מעתיק בצד השרת את AUTH_USER_OWNER / AUTH_SALT_OWNER / AUTH_HASH_OWNER ואת חיבור D1
-# מפרויקט pension-planner לפרויקט mataf-library, ומייצר AUTH_SECRET חדש.
+# ערכי הסיסמה במתה״פ הם סודות שאינם קריאים, ולכן: הבעלים שומר את סיסמת מתה״פ כסוד GitHub
+# בשם LIBRARY_PASSWORD (Claude לא רואה אותה). התהליך מחשב salt ו-hash חדשים באותה שיטה של השער
+# (sha256(salt:password)), שם משתמש זהה למתה״פ, AUTH_SECRET חדש, ומעתיק את חיבור D1.
+# אחרי הצלחה אפשר (ומומלץ) למחוק את הסוד LIBRARY_PASSWORD מ-GitHub.
 # שום ערך לא מודפס ליומן (המאגר ציבורי) - רק שמות משתנים וסוגים.
 # mode=inspect: רק בודק מה ניתן להעתיק. mode=apply: מעתיק.
 
@@ -16,6 +18,10 @@ on:
         default: inspect
         type: choice
         options: [inspect, apply]
+      username:
+        description: 'שם משתמש (זהה למתה״פ)'
+        required: true
+        default: sharon
 
 permissions:
   contents: read
@@ -29,6 +35,8 @@ jobs:
           CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           MODE: ${{ inputs.mode }}
+          LIB_USER: ${{ inputs.username }}
+          LIB_PW: ${{ secrets.LIBRARY_PASSWORD }}
         shell: python
         run: |
           import json, os, secrets, urllib.request
@@ -60,10 +68,18 @@ jobs:
           print("credentials copyable:", readable)
           if os.environ["MODE"] != "apply":
               raise SystemExit(0)
-          if not readable:
-              raise SystemExit("הערכים מוגדרים כסודות ואינם קריאים - נדרשת חלופה")
-          new_vars = {k: {"type": "secret_text", "value": prod["vars"][k]["value"]} for k in need if k in prod["vars"]}
-          new_vars["AUTH_SECRET"] = {"type": "secret_text", "value": secrets.token_hex(32)}
+          import hashlib
+          pw = os.environ.get("LIB_PW", "")
+          print("LIBRARY_PASSWORD secret present:", bool(pw))
+          if not pw:
+              raise SystemExit("חסר הסוד LIBRARY_PASSWORD ב-GitHub")
+          salt = secrets.token_hex(16)
+          new_vars = {
+              "AUTH_USER_OWNER": {"type": "plain_text", "value": os.environ["LIB_USER"].strip().lower()},
+              "AUTH_SALT_OWNER": {"type": "secret_text", "value": salt},
+              "AUTH_HASH_OWNER": {"type": "secret_text", "value": hashlib.sha256((salt + ":" + pw).encode()).hexdigest()},
+              "AUTH_SECRET": {"type": "secret_text", "value": secrets.token_hex(32)},
+          }
           body = {"deployment_configs": {e: {"env_vars": new_vars, "d1_databases": prod["d1"]} for e in ("production", "preview")}}
           res = call("PATCH", "mataf-library", body)
           print("update success:", res.get("success"), res.get("errors"))
