@@ -202,7 +202,7 @@ export async function extractDoc(buf, profileKey) {
     const pdfjsLib = globalThis.pdfjsLib;
     if (!pdfjsLib) return { candidates: [], error: 'ספריית קריאת ה-PDF לא נטענה. בדקו חיבור ורעננו את העמוד, או הזינו ידנית.' };
     try {
-        const doc = await pdfjsLib.getDocument({ data: new Uint8Array(buf.slice(0)) }).promise;
+        const doc = await pdfjsLib.getDocument({ data: new Uint8Array(buf.slice(0)), isEvalSupported: false }).promise;
         const items = [];
         for (let p = 1; p <= doc.numPages; p++) {
             const page = await doc.getPage(p);

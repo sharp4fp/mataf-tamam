@@ -1,0 +1,31 @@
+{
+  "note": "ספריות צד שלישי שמועתקות ישירות לקוד מתה״פ (אין קובץ package.json). כל עדכון של קובץ ספרייה מחייב לעדכן כאן את הגרסה. נבדק שבועית מול OSV ב-.github/workflows/vendored-libs.yml.",
+  "libraries": [
+    {
+      "name": "pdfjs-dist",
+      "ecosystem": "npm",
+      "version": "3.11.174",
+      "files": ["pdf.min.js", "pdf.worker.min.js"],
+      "used_for": "קריאת טופס 161 ומסמכי PDF שהמשתמש מעלה, בדפדפן בלבד",
+      "accepted_risks": {
+        "GHSA-wgrm-67xf-hhpq": "CVE-2024-4367 (הרצת JavaScript דרך גופן ב-PDF זדוני). מנוטרל בשתי שכבות: isEvalSupported:false בכל קריאה ל-getDocument, ו-CSP בלי unsafe-eval. שדרוג ל-4.2.67 ומעלה מתוכנן."
+      }
+    },
+    {
+      "name": "jspdf",
+      "ecosystem": "npm",
+      "version": "2.5.1",
+      "files": ["jspdf.umd.min.js"],
+      "used_for": "יצירת דוח PDF ללקוח מנתונים שהמערכת עצמה מחשבת",
+      "accepted_risks": {}
+    },
+    {
+      "name": "html2canvas",
+      "ecosystem": "npm",
+      "version": "1.4.1",
+      "files": ["html2canvas.min.js"],
+      "used_for": "צילום תצוגת הדוח לתמונה לצורך PDF",
+      "accepted_risks": {}
+    }
+  ]
+}

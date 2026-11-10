@@ -1,0 +1,31 @@
+# ספריות מועתקות של מתה״פ - בדיקה מול מאגר הפגיעויות OSV
+# Dependabot לא רואה ספריות שהועתקו ישירות לקוד, ולכן הבדיקה הזו משלימה אותו.
+# רשימת הספריות והגרסאות: mataf/site/js/VENDORED.json
+
+name: ספריות מועתקות - בדיקת פגיעויות
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mataf/site/js/**'
+      - '.github/scripts/check-vendored.mjs'
+      - '.github/workflows/vendored-libs.yml'
+  schedule:
+    - cron: '23 3 * * 0'   # כל יום ראשון בבוקר
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  osv:
+    name: בדיקה מול OSV
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: כל ספרייה מול OSV
+        run: node .github/scripts/check-vendored.mjs mataf/site/js/VENDORED.json

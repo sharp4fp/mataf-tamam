@@ -1,0 +1,31 @@
+# Dependabot - עדכוני תלויות אוטומטיים
+# תמ״מ: חבילות npm (React, Vite, TypeScript, Playwright).
+# GitHub Actions: גרסאות הפעולות שבתהליכי העבודה.
+# מתה״פ אין לה קובץ חבילות - הספריות שלה מועתקות ישירות לקוד, ולכן הן נבדקות
+# בתהליך נפרד מול מאגר הפגיעויות OSV (.github/workflows/vendored-libs.yml).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /tamam
+    schedule:
+      interval: weekly
+      day: sunday
+      time: "06:00"
+      timezone: Asia/Jerusalem
+    open-pull-requests-limit: 5
+    groups:
+      tamam-minor-patch:
+        update-types: [minor, patch]
+    labels: [dependencies, tamam]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: sunday
+      time: "06:00"
+      timezone: Asia/Jerusalem
+    groups:
+      actions:
+        patterns: ["*"]
+    labels: [dependencies, ci]

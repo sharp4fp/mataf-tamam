@@ -228,7 +228,7 @@ export async function extract161(buf) {
     const empty = () => ({ fields: { ...EMPTY_161, grants: [] }, found: {}, foundCount: 0, totalFields: 0 });
     if (!pdfjsLib) return { ...empty(), error: 'ספריית קריאת ה-PDF לא נטענה. בדקו חיבור ורעננו את העמוד, או מלאו ידנית.' };
     try {
-        const doc = await pdfjsLib.getDocument({ data: new Uint8Array(buf.slice(0)) }).promise;
+        const doc = await pdfjsLib.getDocument({ data: new Uint8Array(buf.slice(0)), isEvalSupported: false }).promise;
         const items = [];
         for (let p = 1; p <= doc.numPages; p++) {
             const page = await doc.getPage(p);

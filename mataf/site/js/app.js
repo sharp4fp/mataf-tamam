@@ -2271,7 +2271,7 @@ async function onMaslaka(files) {
 async function renderPdfPages(buf, maxPages = 12) {
     const lib = globalThis.pdfjsLib;
     if (!lib) return [];
-    const doc = await lib.getDocument({ data: new Uint8Array(buf) }).promise;
+    const doc = await lib.getDocument({ data: new Uint8Array(buf), isEvalSupported: false }).promise;
     const out = [];
     const n = Math.min(doc.numPages, maxPages);
     for (let i = 1; i <= n; i++) {
