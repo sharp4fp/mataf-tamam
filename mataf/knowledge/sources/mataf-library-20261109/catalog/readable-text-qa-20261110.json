@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-10",
+  "scope": "Readable page text added for 7 PDF-only official documents; 10 provider regulations (takanonim) added to the search catalog. Extraction quality smoke check only - no legal, currentness or table certification.",
+  "method": "pdftotext -layout (poppler); pages separated by form feed, same format as existing library texts. Hebrew bidi control marks kept, as in existing texts.",
+  "ocr_cross_check": {
+    "method": "Pages rendered at 200dpi, OCR with tesseract (heb); share of OCR Hebrew words (3+ letters) also found in the extracted page text. OCR itself is imperfect, so 100% is not expected.",
+    "results": {
+      "provident-fund-approval-regs-btl": {"p1": 1.00, "p17": 0.95, "p33": 1.00},
+      "severance-pay-law-btl": {"p1": 0.95, "p3": 0.92, "p6": 0.97},
+      "form161-official-currentlink20261109": {"p1": 0.95, "p3": 0.96, "p6": 0.99},
+      "moh-health-surgery-report-2026": {"p1": 0.49, "p13": 0.80, "p25": 0.81, "note": "p1 is a graphic cover page; pages 1-2 also have a checked transcript in prepared-increments/health-sources-first-20261110/health-surgery-readable-pages-1-2.txt"},
+      "ito-amendment275-2024": {"p1": 1.00, "p2": 0.91},
+      "ito-consolidation-btl-retained20261109": {"p1": 0.94, "p83": 0.94, "p165": 0.89},
+      "life-discounts-2026-1-4": {"p1": 0.88, "p2": 0.87, "p4": 0.86}
+    }
+  },
+  "search_after_rebuild": {"catalog_sources": 19, "indexed_pages": 1495, "verify": "OK: 27 file hashes match"},
+  "limits": [
+    "Text is an auxiliary reading copy. The original PDF is binding; numbers, parentheses, section numbers and tables may be garbled.",
+    "Provider regulation texts include table pages that the live library site hides (attribution of table values unverified). Check tables against the PDF.",
+    "Takanon PDFs are inside ../2026-11-08-official-pdf-corpus/takanon-sources.tar.gz, not extracted beside the text.",
+    "Form 161c (tax-161c, published on the live site) is not in this repository yet."
+  ]
+}
