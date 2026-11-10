@@ -1,0 +1,26 @@
+{
+  "id": "moh-health-surgery-report-2026",
+  "title": "מבט עומק: ביטוח ניתוחים בישראל - השוואת רשימות המנתחים בשבן ובביטוחים המסחריים",
+  "issuer": "משרד הבריאות, אגף בכיר רגולציה כלכלית",
+  "collection_family_id": "S072",
+  "domain_ids": [
+    "P29"
+  ],
+  "source_type": "official_research_report_not_binding_law",
+  "source_url": "https://www.gov.il/BlobFolder/reports/insurances-surgeons-2025/he/files_publications_digital_health_insurances-surgeons-2025.pdf",
+  "document_edition": "ינואר2026לפי שער",
+  "retrieved_on": "2026-11-10",
+  "pdf_pages": 25,
+  "pdf_metadata_creation": "2026-04-30",
+  "visually_reviewed_pages": [
+    1,
+    2
+  ],
+  "readable_text_pages": [
+    1,
+    2
+  ],
+  "text_status": "extractedauxiliarytextonlyforvisuallyreviewedprosepages1-2;pages3-25PDFonly",
+  "currentness_note": "מחקררשמי,לאפוליסה/רשימתהסדרחיה/המלצהאישית/חקיקה",
+  "sha256": "d21ce5b55ea16d4fdc48c77e4b286dd385a1ac4eaed2513b8764a35b0d1a7912"
+}

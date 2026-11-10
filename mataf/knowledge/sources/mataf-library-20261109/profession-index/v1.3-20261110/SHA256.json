@@ -1,0 +1,12 @@
+{
+ "version": "1.3",
+ "generated": "2026-11-10",
+ "files": {
+  "profession-index.json": "df20b072421ebe9a98ea07b75ee7077c315f1895368f7995a68904c5b470e3c7",
+  "profession-index.csv": "8699a5142849413746fd4faf1fa48f0501d142302abff067e0d34b53f9ebeb84",
+  "profession-index-he.md": "1aab12bcb1fa6eae66be6ea920ab915d2976eb2778ae36d7c0239cd692bbde8f",
+  "collection-manifest.json": "43960a79c8c011072334d39b8572633c66abc9c6fcdd13c92e2bf3920b339864",
+  "collection-manifest.csv": "2ccf31966cb5c1ac9ebfc0ea400efb127baa0d85ef389dd451bbed3ffd88daa9",
+  "README.md": "1dfba97d0f3f2de5d45a69add8c2f95820058de666bb783538540db804755a8d"
+ }
+}
