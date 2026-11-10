@@ -1,0 +1,120 @@
+/* ספריית המקורות - ערכת "אמרלד ושמפניה" (זהה למתה"פ, אושרה 10/11/2026) */
+:root {
+    --em-900: #0b2e27; --em-800: #0f3b32; --em-700: #164c41; --em-600: #1f5e50; --em-100: #e4eee9;
+    --champ: #c6a564; --champ-d: #a88a4c; --champ-l: #e7dcc2;
+    --ivory: #f7f4ec; --ivory-2: #efe9db; --line: #e6dfcf; --line-2: #d9d0bc;
+    --ink: #2b3632; --muted: #6b7b74; --warn: #8a5a12; --warn-bg: #fbf3e2;
+    --serif: 'Frank Ruhl Libre', 'David', 'Times New Roman', serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--ivory); color: var(--ink); }
+body { font-family: 'Heebo', 'Segoe UI', Arial, sans-serif; line-height: 1.6; font-size: 15.5px; }
+a { color: var(--em-700); }
+.wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+
+.hero { background: linear-gradient(160deg, var(--em-900) 0%, var(--em-800) 55%, var(--em-700) 100%); color: #f7f1e3; border-bottom: 3px solid var(--champ); }
+.hero-inner { max-width: 980px; margin: 0 auto; padding: 26px 16px 0; }
+.brand { color: var(--champ); font-size: 0.85rem; letter-spacing: 0.04em; font-weight: 500; }
+.hero h1 { font-family: var(--serif); font-weight: 700; font-size: 2.1rem; margin: 2px 0 4px; color: #f7f1e3; }
+.hero-sub { margin: 0 0 18px; color: #d6e2dc; font-size: 0.95rem; max-width: 640px; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tabs a { color: var(--champ-l); text-decoration: none; padding: 9px 16px; border-radius: 10px 10px 0 0; font-weight: 500; font-size: 0.95rem; }
+.tabs a:hover { background: rgba(198,165,100,0.14); }
+.tabs a.on { background: var(--ivory); color: var(--em-800); }
+
+main.wrap { padding-top: 20px; padding-bottom: 28px; min-height: 50vh; }
+h2 { font-family: var(--serif); color: var(--em-800); font-size: 1.45rem; margin: 6px 0 12px; }
+h3 { font-family: var(--serif); color: var(--em-800); font-size: 1.15rem; margin: 18px 0 8px; }
+.muted { color: var(--muted); }
+.small { font-size: 0.85rem; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin: 10px 0; box-shadow: 0 1px 2px rgba(43,54,50,0.05), 0 6px 18px rgba(43,54,50,0.05); }
+.note { background: #fff; border: 1px solid var(--line); border-right: 4px solid var(--champ); border-radius: 0 10px 10px 0; padding: 10px 14px; margin: 10px 0; font-size: 0.9rem; }
+.note.warn { border-right-color: var(--warn); background: var(--warn-bg); }
+
+/* חיפוש */
+.searchbar { display: flex; gap: 8px; margin-bottom: 10px; }
+.searchbar input { flex: 1; min-width: 0; font: inherit; font-size: 1.05rem; padding: 11px 14px; border: 1px solid var(--line-2); border-radius: 10px; background: #fff; color: var(--ink); }
+.searchbar input:focus { outline: 2px solid rgba(198,165,100,0.5); border-color: var(--champ-d); }
+.btn { font: inherit; font-weight: 500; border-radius: 10px; padding: 10px 18px; cursor: pointer; border: 1px solid var(--em-800); background: var(--em-800); color: #f7f1e3; text-decoration: none; display: inline-block; }
+.btn:hover { background: var(--em-700); }
+.btn.ghost { background: #fff; color: var(--em-800); border-color: var(--em-700); }
+.btn.ghost:hover { background: var(--em-100); }
+.btn.sm { padding: 5px 12px; font-size: 0.85rem; border-radius: 8px; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 12px; }
+.chip { font: inherit; font-size: 0.82rem; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line-2); background: #fff; color: var(--ink); cursor: pointer; }
+.chip.on { background: var(--em-800); border-color: var(--em-800); color: #f7f1e3; }
+.hit { padding: 12px 0; border-top: 1px solid var(--line); }
+.hit:first-child { border-top: 0; }
+.hit-t { font-weight: 500; color: var(--em-800); text-decoration: none; }
+.hit-t:hover { text-decoration: underline; }
+.hit-s { margin: 4px 0 6px; font-size: 0.92rem; }
+mark { background: #f1e3bf; color: inherit; border-radius: 3px; padding: 0 1px; }
+.examples { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+
+/* תגיות סיווג */
+.badges { display: inline-flex; gap: 6px; flex-wrap: wrap; vertical-align: middle; }
+.badge { font-size: 0.74rem; padding: 2px 9px; border-radius: 999px; font-weight: 500; white-space: nowrap; }
+.b-official { background: var(--em-100); color: var(--em-800); }
+.b-provider { background: #ece6f3; color: #4a3b66; }
+.b-checked { background: #f1e8d2; color: #6f5626; }
+.b-auto { background: #eef0f1; color: #4f5b60; }
+.b-open { background: var(--warn-bg); color: var(--warn); }
+
+/* רשימת מקורות */
+.src { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 6px 14px; align-items: start; }
+.src-t { font-family: var(--serif); font-size: 1.08rem; font-weight: 700; color: var(--em-800); text-decoration: none; }
+.src-meta { font-size: 0.85rem; color: var(--muted); }
+.src-acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.group-h { margin-top: 22px; }
+
+/* צופה בעמוד */
+.viewer-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center; }
+.pager { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.pager input { width: 74px; font: inherit; padding: 5px 8px; border: 1px solid var(--line-2); border-radius: 8px; text-align: center; }
+.pagetext { white-space: pre-wrap; font-family: 'Heebo', Arial, sans-serif; font-size: 0.9rem; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px; overflow-x: auto; direction: rtl; min-height: 240px; }
+.pagetext.empty { color: var(--muted); font-style: italic; }
+dl.meta { display: grid; grid-template-columns: max-content minmax(0,1fr); gap: 4px 14px; font-size: 0.88rem; margin: 8px 0; }
+dl.meta dt { color: var(--muted); }
+dl.meta dd { margin: 0; overflow-wrap: anywhere; }
+
+/* מפת המקצוע */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 10px 0 16px; }
+.kpi { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.kpi-v { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; color: var(--em-800); font-variant-numeric: tabular-nums; }
+.kpi-l { font-size: 0.82rem; color: var(--muted); }
+details.dom { background: #fff; border: 1px solid var(--line); border-radius: 10px; margin: 8px 0; }
+details.dom > summary { cursor: pointer; padding: 11px 14px; font-weight: 500; display: flex; gap: 10px; align-items: center; list-style: none; }
+details.dom > summary::-webkit-details-marker { display: none; }
+details.dom > summary::before { content: '◂'; color: var(--champ-d); }
+details.dom[open] > summary::before { content: '▾'; }
+details.dom[open] > summary { border-bottom: 1px solid var(--line); }
+.dom-id { font-family: var(--serif); color: var(--champ-d); font-weight: 700; min-width: 34px; }
+.dom-n { margin-inline-start: auto; font-size: 0.8rem; color: var(--muted); }
+.topic { padding: 10px 14px; border-top: 1px solid var(--line); }
+.topic:first-of-type { border-top: 0; }
+.topic-t { font-weight: 500; }
+.topic ul { margin: 4px 0; padding-inline-start: 20px; font-size: 0.88rem; color: var(--muted); }
+.fam { font-size: 0.82rem; margin: 2px 0; }
+.prio li { margin-bottom: 6px; }
+
+/* מפת הספרייה */
+.mapdoc h2 { font-size: 1.5rem; }
+.mapdoc h3 { font-size: 1.2rem; }
+.mapdoc h4 { font-family: var(--serif); color: var(--em-700); margin: 14px 0 6px; }
+.tblwrap { overflow-x: auto; }
+.mapdoc table, table.t { width: 100%; border-collapse: collapse; background: #fff; font-size: 0.86rem; margin: 8px 0; }
+.mapdoc th, table.t th { background: var(--ivory-2); color: var(--em-800); text-align: right; padding: 7px 10px; font-weight: 500; border: 1px solid var(--line); }
+.mapdoc td, table.t td { padding: 7px 10px; border: 1px solid var(--line); vertical-align: top; overflow-wrap: anywhere; }
+code { font-size: 0.85em; background: var(--ivory-2); border-radius: 4px; padding: 1px 5px; direction: ltr; unicode-bidi: embed; }
+
+.foot { color: var(--muted); font-size: 0.8rem; padding: 18px 16px 30px; border-top: 1px solid var(--line); }
+.loading { color: var(--muted); padding: 20px 0; }
+
+@media (max-width: 600px) {
+    body { font-size: 15px; }
+    .hero h1 { font-size: 1.7rem; }
+    .tabs a { padding: 8px 11px; font-size: 0.9rem; }
+    .src { grid-template-columns: 1fr; }
+    .src-acts { justify-content: flex-start; }
+    .searchbar { flex-direction: column; }
+}

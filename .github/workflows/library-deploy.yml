@@ -1,0 +1,122 @@
+# ספריית המקורות - בנייה מהמאגר, בדיקות ופריסה (Cloudflare Pages, פרויקט mataf-library)
+#
+# בבקשת עדכון (pull request): בנייה ובדיקות בלבד.
+# בכל שמירה שנוגעת בספרייה: בנייה ← בדיקות נתונים ← בדיקת דפדפן (מחשב וטלפון) ←
+#   פריסה לתצוגה (ענף preview: https://preview.mataf-library.pages.dev) ← בדיקת עשן.
+# האתר הקבוע (production): רק בהפעלה ידנית (Run workflow), אחרי אישור הבעלים.
+# כשל בבדיקת העשן בייצור ← חזרה אוטומטית לפריסה הקודמת.
+# שער הכניסה: אותו שער של מתה"פ; פרטי הכניסה מוגדרים ב-Cloudflare (library-gate-setup.yml).
+
+name: ספרייה - בנייה, בדיקות ופריסה
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mataf/knowledge/**'
+      - 'mataf/library-site/**'
+      - 'mataf/site/gate/**'
+      - 'mataf/site/fonts/**'
+      - 'mataf/site/css/heebo.css'
+      - '.github/workflows/library-deploy.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'mataf/knowledge/**'
+      - 'mataf/library-site/**'
+      - '.github/workflows/library-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'לאן לפרוס'
+        required: true
+        default: preview
+        type: choice
+        options: [preview, production]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: library-deploy-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+  cancel-in-progress: false
+
+jobs:
+  build-test:
+    name: בנייה ובדיקות
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: בנייה מהמאגר
+        run: node mataf/library-site/build.mjs dist
+      - name: בדיקות נתונים ושער
+        run: node mataf/library-site/test.mjs dist
+      - name: דפדפן לבדיקות
+        run: |
+          mkdir -p "$RUNNER_TEMP/pw" && cd "$RUNNER_TEMP/pw"
+          npm init -y >/dev/null && npm install --no-audit --no-fund playwright@1.65.0
+          npx playwright install --with-deps chromium
+      - name: בדיקת דפדפן (מחשב וטלפון)
+        run: |
+          (cd dist && python3 -m http.server 4620 >/dev/null 2>&1 &)
+          sleep 2
+          cp mataf/library-site/browser-test.mjs "$RUNNER_TEMP/pw/"
+          node "$RUNNER_TEMP/pw/browser-test.mjs" http://localhost:4620
+      - uses: actions/upload-artifact@v4
+        with:
+          name: library-dist
+          path: dist
+          retention-days: 7
+
+  deploy:
+    name: פריסה
+    needs: build-test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: .github/scripts
+      - uses: actions/download-artifact@v4
+        with:
+          name: library-dist
+          path: dist
+      - name: בחירת יעד
+        id: target
+        run: |
+          T="${{ github.event_name == 'push' && 'preview' || inputs.target }}"
+          if [ "$T" = production ]; then echo "branch=main" >> "$GITHUB_OUTPUT"; else echo "branch=preview" >> "$GITHUB_OUTPUT"; fi
+          echo "name=$T" >> "$GITHUB_OUTPUT"
+      - name: העלאה ל-Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=mataf-library --branch=${{ steps.target.outputs.branch }} --commit-dirty=true
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: בדיקת עשן - השער עונה ונועל
+        env:
+          URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: |
+          echo "נפרס אל: $URL"
+          sleep 10
+          root=$(curl -s -o /tmp/root -w '%{http_code}' "$URL/")
+          data=$(curl -s -o /dev/null -w '%{http_code}' "$URL/data/sources.json")
+          pdf=$(curl -s -o /dev/null -w '%{http_code}' "$URL/pdf/tax-161d-2026.pdf")
+          echo "דף הבית: $root | נתונים בלי כניסה: $data | PDF בלי כניסה: $pdf"
+          [ "$root" = "401" ] && grep -q 'ספריית המקורות' /tmp/root || { echo "השער לא מוצג כמצופה"; exit 1; }
+          [ "$data" != "200" ] && [ "$pdf" != "200" ] || { echo "תוכן נגיש בלי כניסה"; exit 1; }
+          echo "תקין"
+      - name: חזרה אוטומטית לפריסה הקודמת (ייצור בלבד)
+        if: failure() && steps.deploy.outcome == 'success' && steps.target.outputs.name == 'production'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bash .github/scripts/cf-rollback.sh mataf-library

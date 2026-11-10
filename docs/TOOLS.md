@@ -13,6 +13,8 @@
 | `tamam-deploy.yml` | push/PR לתמ"מ; ידני | בנייה (tsc+vite), 20 בדיקות רגרסיה ← פריסה ← עשן ← חזרה לאחור בכשל |
 | `codeql.yml` | push, PR, שבועי | אבטחה ואיכות קוד: JS/TS, Python, Actions |
 | `vendored-libs.yml` | שינוי ב-`mataf/site/js`, שבועי | הספריות המועתקות מול OSV |
+| `library-deploy.yml` | push/PR לספרייה; ידני | בנייה מהמאגר, בדיקות נתונים ודפדפן ← תצוגה (preview) ← עשן; ייצור ידני ← חזרה לאחור בכשל |
+| `library-gate-setup.yml` | ידני | הגדרת שער הספרייה מסוד `LIBRARY_PASSWORD` (inspect/apply); לא מדפיס ערכים |
 | `monitor.yml` | כל 3 שעות; ידני | בדיקת האתרים החיים; issue בכשל |
 | `cloudflare-status.yml` | ידני | רשימת פרויקטים ופריסות + סביבה (Production/Preview) - קריאה בלבד |
 | Dependabot (`.github/dependabot.yml`) | שבועי, יום ראשון | בקשות עדכון ל-npm של תמ"מ ול-Actions |
@@ -24,7 +26,7 @@
 | `pension-planner-preview` | pension-planner-preview.pages.dev | `preview-20261110` | כמו למעלה |
 | `pension-planner-demo` | pension-planner-demo.pages.dev | `main` | `mataf/site/demo-site` |
 | `tamam-waybill` | tamam-waybill.pages.dev | `main` | `tamam/dist` |
-| `mataf-library` | mataf-library.pages.dev | - | **לא במאגר** (נתונים מוצפנים) - לא ב-CI |
+| `mataf-library` | mataf-library.pages.dev | `main` (תצוגה: `preview`) | נבנה מ-`mataf/library-site/build.mjs`; שער כמו מתה"פ |
 
 כל הפרויקטים "העלאה ישירה" (Direct Upload): אי אפשר לחבר אותם ל-Git; פורסים עם
 `cloudflare/wrangler-action`. סודות ב-GitHub: `CLOUDFLARE_API_TOKEN` (Pages: Edit
@@ -94,6 +96,9 @@
 | L15 | 10.11 | `fetch(url,{method:'HEAD'})` ל-gov.il החזיר 404 על קבצים קיימים | הורדה מ-gov.il: `fetch(url)` רגיל (GET) מתוך דף gov.il פתוח בדפדפן המובנה |
 | L16 | 10.11 | - (נוהל) | הורדת קובץ רשמי: אישור הבעלים לכל קובץ ← הורדה בדפדפן המובנה עם SHA-256 ← `device_request_folder_access` לתיקיית ההורדות ← `device_stage_files` רק לקבצים שאושרו ← השוואת SHA-256 |
 | L17 | 10.11 | הבעלים שלח סיסמה בצ'אט | לא משתמשים בסיסמאות שנשלחות בצ'אט; ממליצים להחליף ופותחים פריט בבקלוג |
+| L18 | 10.11 | ניסיון להעתיק ערכי סיסמה בין פרויקטי Cloudflare (secret_text לא קריא ב-API) | הבעלים שומר סיסמה כסוד GitHub; Actions מחשב hash ומגדיר דרך ה-API, בלי להדפיס |
+| L19 | 10.11 | `curl` ל-raw.githubusercontent.com נחסם (403) | `git clone --depth 1 --filter=blob:none --sparse` ו-`git sparse-checkout set <dir>` |
+| L20 | 10.11 | `element.replaceChildren(array)` הדפיס "[object ...]" | לפזר מערכים (`...arr`); בדיקת דפדפן מחפשת "[object" בכל מסך |
 
 ## 4. איך מוסיפים לקח
 
