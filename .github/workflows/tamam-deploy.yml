@@ -82,5 +82,9 @@ jobs:
           URL: ${{ steps.deploy.outputs.deployment-url }}
         run: |
           echo "נפרס אל: $URL"
-          sleep 10
-          curl -sf "$URL/" | grep -q 'שטר מטען' && echo "הדף עולה" || { echo "הדף לא עולה"; exit 1; }
+          # פרויקט חדש ב-pages.dev יכול לקחת כמה דקות עד שהכתובת עונה
+          for i in $(seq 1 18); do
+            if curl -sf "$URL/" | grep -q 'שטר מטען'; then echo "הדף עולה"; exit 0; fi
+            echo "ממתין לכתובת... ($i)"; sleep 10
+          done
+          echo "הדף לא עולה"; exit 1
