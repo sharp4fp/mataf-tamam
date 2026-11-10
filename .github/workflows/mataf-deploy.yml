@@ -1,9 +1,11 @@
 # מתה״פ - בדיקות ופריסה (Cloudflare Pages)
 #
+# בבקשת עדכון (pull request, כולל Dependabot): בדיקות בלבד, בלי פריסה.
 # בכל שמירה (push) שנוגעת במתה״פ:
 #   1. כל הבדיקות: 41 חבילות היחידה, מבנה הכרטסות, ושתי בדיקות הדפדפן.
 #   2. אם הכול עבר - פריסה אוטומטית לסביבת הבדיקה (pension-planner-preview).
 #   3. בדיקת עשן מול הכתובת שנפרסה: שער הכניסה עונה ונועל את הקבצים.
+#      כשל ← חזרה אוטומטית לפריסה הקודמת (.github/scripts/cf-rollback.sh).
 # פריסה לאתר החי (pension-planner) ולדמו: רק בהפעלה ידנית (Run workflow),
 # ורק אחרי שכל הבדיקות עברו (כלל 10 - הבעלים מאשר גרסה לפני עלייה).
 #
@@ -13,6 +15,12 @@ name: מתה״פ - בדיקות ופריסה
 
 on:
   push:
+    branches: [main]
+    paths:
+      - 'mataf/site/**'
+      - 'mataf/tests/**'
+      - '.github/workflows/mataf-deploy.yml'
+  pull_request:
     branches: [main]
     paths:
       - 'mataf/site/**'
@@ -34,7 +42,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: mataf-deploy
+  group: mataf-deploy-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
   cancel-in-progress: false
 
 jobs:
@@ -126,3 +134,10 @@ jobs:
             echo "קובץ קוד נגיש בלי כניסה - השער לא נועל"; exit 1
           fi
           echo "תקין"
+
+      - name: חזרה אוטומטית לפריסה הקודמת (בדיקת העשן נכשלה)
+        if: failure() && steps.deploy.outcome == 'success'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bash .github/scripts/cf-rollback.sh "${{ steps.target.outputs.project }}"

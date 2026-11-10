@@ -1,0 +1,89 @@
+# ניטור האתרים החיים - כל 3 שעות.
+# בודק שכל אתר עונה ושהשערים נועלים. בכשל: פותח issue בגיטהאב (אחד לכל אתר, בלי כפילויות),
+# שנכנס לבקלוג בעבודה הבאה. כשהאתר חוזר לתקינות - ה-issue נסגר אוטומטית.
+# אין כאן נתוני לקוחות: נבדקים רק קודי תשובה ותוכן ציבורי.
+
+name: ניטור אתרים
+
+on:
+  schedule:
+    - cron: '7 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: מתה״פ (אתר חי)
+            url: https://pension-planner-2br.pages.dev
+            kind: gate
+          - name: מתה״פ (סביבת בדיקה)
+            url: https://pension-planner-preview.pages.dev
+            kind: gate
+          - name: מתה״פ (דמו)
+            url: https://pension-planner-demo.pages.dev
+            kind: gate
+          - name: ספריית המקורות
+            url: https://mataf-library.pages.dev
+            kind: up
+          - name: תמ״מ (שטר מטען)
+            url: https://tamam-waybill.pages.dev
+            kind: tamam
+    name: ${{ matrix.name }}
+    steps:
+      - name: בדיקה
+        id: probe
+        env:
+          URL: ${{ matrix.url }}
+          KIND: ${{ matrix.kind }}
+        run: |
+          ok=1; detail=""
+          for attempt in 1 2 3; do
+            root=$(curl -s -o /tmp/body -w '%{http_code}' --max-time 20 "$URL/")
+            case "$KIND" in
+              gate)
+                js=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL/js/app.js")
+                detail="דף הבית $root, קובץ קוד בלי כניסה $js"
+                if [[ "$root" =~ ^(200|302|303|401)$ ]] && [ "$js" != "200" ]; then ok=0; fi ;;
+              up)
+                detail="דף הבית $root"
+                if [ "$root" = "200" ]; then ok=0; fi ;;
+              tamam)
+                detail="דף הבית $root"
+                if [ "$root" = "200" ] && grep -q 'שטר מטען' /tmp/body; then ok=0; fi ;;
+            esac
+            [ $ok -eq 0 ] && break
+            sleep 20
+          done
+          echo "detail=$detail" >> "$GITHUB_OUTPUT"
+          echo "$URL: $detail"
+          exit $ok
+
+      - name: פתיחת issue בכשל
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: "ניטור: ${{ matrix.name }} לא תקין"
+          URL: ${{ matrix.url }}
+          DETAIL: ${{ steps.probe.outputs.detail }}
+        run: |
+          existing=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --search "\"$TITLE\" in:title" --json number -q '.[0].number')
+          body="$URL - $DETAIL - $(date -u +%Y-%m-%dT%H:%MZ). ריצה: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          if [ -n "$existing" ]; then gh issue comment "$existing" -R "$GITHUB_REPOSITORY" --body "עדיין לא תקין: $body"
+          else gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body "$body" --label monitor || gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body "$body"; fi
+
+      - name: סגירת issue כשהאתר חזר
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: "ניטור: ${{ matrix.name }} לא תקין"
+        run: |
+          existing=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --search "\"$TITLE\" in:title" --json number -q '.[0].number')
+          if [ -n "$existing" ]; then gh issue close "$existing" -R "$GITHUB_REPOSITORY" --comment "האתר חזר לתקינות"; fi
