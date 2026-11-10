@@ -46,9 +46,11 @@ def search(query, limit):
         lines = text.splitlines()
         found = [i for i,line in enumerate(lines) if any(t in line for t in terms)]
         excerpt = '\n'.join('\n'.join(lines[max(0,i-1):i+2]) for i in found[:2]) or text[:400]
-        print('\n'+s['title']+' | PDF page '+str(page)+' | '+s['verification'])
+        print('\n'+s['title']+' | PDF page '+str(page))
+        print('סוג: '+s.get('source_class_he','לא סווג')+' | הטקסט: '+s.get('text_class_he','לא סווג'))
+        print('אימות: '+s['verification'])
         print(s['url'])
-        print('Local PDF:', s['pdf_path'])
+        print('Local PDF:', s['pdf_path'] or (s.get('pdf_archive','')+' :: '+s.get('pdf_archive_member','')))
         print(excerpt)
     db.close()
 
