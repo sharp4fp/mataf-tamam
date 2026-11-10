@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>הדמיה: תכנון פרישה ב-7 שלבים</title>
+<!-- הדמיה סטטית בלבד (הצעה 11.11.2026, ממתינה לאישור הבעלים). אינה קוד האתר ואין בה נתוני לקוח. -->
+<link rel="stylesheet" href="../../../mataf/site/css/heebo.css">
+<style>
+:root {
+  --em-900:#0b2e27; --em-800:#0f3b32; --em-700:#164c41; --em-600:#1f5e50; --em-100:#e4eee9;
+  --champ:#c6a564; --champ-d:#a88a4c; --champ-l:#e7dcc2;
+  --ivory:#f7f4ec; --ivory-2:#efe9db; --line:#e6dfcf; --line-2:#d9d0bc;
+  --ink:#2b3632; --muted:#6b7b74; --red:#a8392b; --red-bg:#fbf6f4;
+  --serif:'Frank Ruhl Libre','David','Times New Roman',serif;
+}
+* { box-sizing:border-box; }
+html,body { margin:0; background:var(--ivory); color:var(--ink); font-family:'Heebo','Segoe UI',Arial,sans-serif; line-height:1.55; }
+.hero { background:linear-gradient(160deg,var(--em-900) 0%,var(--em-800) 55%,var(--em-700) 100%); color:#f7f1e3; border-bottom:3px solid var(--champ); padding:22px 16px 18px; }
+.hero-in { max-width:940px; margin:0 auto; }
+.hero h1 { font-family:var(--serif); font-size:1.9rem; margin:0 0 4px; }
+.hero .fact { color:var(--champ); font-size:.85rem; }
+.hero p { color:#d6e2dc; margin:8px 0 12px; font-size:.95rem; }
+.modes { display:flex; flex-wrap:wrap; gap:8px; }
+.modes span { border:1px solid rgba(198,165,100,.55); color:var(--champ-l); border-radius:999px; padding:6px 16px; font-weight:600; font-size:.9rem; }
+.modes span.on { background:var(--champ); color:var(--em-900); border-color:var(--champ); }
+.wrap { max-width:940px; margin:0 auto; padding:16px; }
+.demo-tag { background:#fff8e6; border:1px dashed var(--champ-d); color:#6d5320; border-radius:8px; padding:6px 10px; font-size:.82rem; margin-bottom:12px; }
+/* סרגל שלבים */
+.stepper { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin:4px 0 14px; }
+.stepper div { text-align:center; font-size:.74rem; color:var(--muted); }
+.stepper b { display:block; margin:0 auto 4px; width:28px; height:28px; border-radius:50%; line-height:28px; font-family:var(--serif); background:#fff; border:1.5px solid var(--line-2); color:var(--em-800); }
+.stepper .done b { background:var(--em-800); color:var(--champ-l); border-color:var(--em-900); }
+.stepper .cur b { background:var(--champ); color:var(--em-900); border-color:var(--champ-d); }
+.stepper .cur { color:var(--em-800); font-weight:700; }
+.limits { font-size:.85rem; color:var(--muted); margin:0 0 12px; }
+.limits u { text-decoration:none; border-bottom:1px dotted var(--muted); }
+/* אקורדיון */
+.card { background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 1px 2px rgba(43,54,50,.05),0 6px 18px rgba(43,54,50,.06); margin:10px 0; overflow:hidden; }
+.head { display:flex; align-items:center; gap:10px; padding:12px 14px; font-family:var(--serif); font-size:1.08rem; }
+.head .num { flex:none; width:30px; height:30px; border-radius:50%; background:var(--em-800); color:var(--champ-l); text-align:center; line-height:30px; }
+.head .t { flex:1; }
+.head .t small { display:block; font-family:'Heebo',sans-serif; font-size:.78rem; color:var(--muted); font-weight:400; }
+.badge { font-family:'Heebo',sans-serif; font-size:.78rem; background:var(--em-100); color:var(--em-800); border:1px solid #c9dcd3; border-radius:999px; padding:2px 10px; white-space:nowrap; }
+.badge.miss { background:#fdf3e2; color:#7a5414; border-color:#ecd6a8; }
+.badge.ok::before { content:"✓ "; }
+.caret { color:var(--champ-d); }
+.card.open .head { background:var(--ivory); border-bottom:1px solid var(--champ); }
+.card.key { border:1.5px solid var(--champ); }
+.body { padding:14px; }
+.mini-btns { display:flex; gap:6px; }
+.mini-btns span { font-family:'Heebo',sans-serif; font-size:.75rem; border:1px solid var(--line-2); border-radius:6px; padding:2px 8px; color:var(--em-700); background:#fff; }
+/* שלב 161 */
+.f161 { display:grid; grid-template-columns:150px 1fr; gap:14px; align-items:start; }
+.page { border:1px solid var(--line-2); background:#fff; border-radius:4px; aspect-ratio:1/1.414; padding:10px 8px; position:relative; }
+.page i { display:block; height:5px; background:#e9e6de; border-radius:2px; margin:6px 0; }
+.page i.s { width:60%; } .page i.m { width:80%; }
+.page em { position:absolute; bottom:6px; left:0; right:0; text-align:center; font-size:.7rem; color:var(--muted); font-style:normal; }
+.alert { background:var(--red-bg); border-right:4px solid var(--red); border-radius:8px; padding:10px 12px; margin-top:10px; font-size:.9rem; }
+.alert b { color:var(--red); }
+.kv { display:grid; grid-template-columns:repeat(3,1fr); gap:6px 12px; font-size:.86rem; }
+.kv div span { display:block; color:var(--muted); font-size:.75rem; }
+/* המלצה */
+.rec { background:linear-gradient(135deg,#fffdf7,#f8f1df); border:1.5px solid var(--champ); border-radius:10px; padding:12px 14px; }
+.rec .lbl { font-size:.78rem; color:var(--champ-d); font-weight:700; letter-spacing:.02em; }
+.rec h3 { font-family:var(--serif); font-size:1.25rem; color:var(--em-800); margin:2px 0 6px; }
+.rec p { margin:0; font-size:.92rem; }
+.save { display:flex; gap:16px; flex-wrap:wrap; margin-top:8px; font-size:.86rem; }
+.save b { font-family:var(--serif); font-size:1.15rem; color:var(--em-800); }
+table { width:100%; border-collapse:collapse; font-size:.86rem; margin-top:12px; }
+th { text-align:right; font-weight:600; color:var(--em-800); border-bottom:2px solid var(--champ); padding:6px; background:var(--ivory); }
+td { border-bottom:1px solid var(--line); padding:6px; }
+tr.best td { background:#f3f8f5; font-weight:600; }
+.chip { font-size:.72rem; border-radius:999px; padding:1px 8px; border:1px solid; white-space:nowrap; }
+.chip.v { color:#1f5e50; border-color:#9cc3b3; background:#eef6f2; }
+.chip.c { color:#7a5414; border-color:#e0c48c; background:#fdf6e7; }
+h4 { font-family:var(--serif); color:var(--em-800); margin:14px 0 6px; font-size:1rem; }
+ol.rules { margin:0; padding-right:20px; font-size:.88rem; }
+ol.rules li { margin:3px 0; }
+.missing { font-size:.88rem; background:#fdf6e7; border-right:4px solid var(--champ); border-radius:6px; padding:8px 12px; }
+.fold { border:1px solid var(--line); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:.86rem; color:var(--em-700); background:#fff; }
+.fold::before { content:"◂ "; color:var(--champ-d); }
+.moved { margin-top:16px; font-size:.85rem; color:var(--muted); border-top:1px solid var(--line); padding-top:10px; }
+.scroll { overflow-x:auto; }
+@media (max-width:600px) {
+  .hero h1 { font-size:1.45rem; }
+  .hero p { font-size:.85rem; }
+  .modes span { padding:4px 10px; font-size:.8rem; }
+  .stepper div span { display:none; }
+  .f161 { grid-template-columns:90px 1fr; }
+  .kv { grid-template-columns:1fr 1fr; }
+  .head { font-size:1rem; flex-wrap:wrap; }
+  .head .t { min-width:60%; }
+  .mini-btns { width:100%; padding-right:40px; }
+  table { font-size:.78rem; }
+  .hide-m { display:none; }
+  td:nth-child(3), td:nth-child(5) { white-space:nowrap; }
+}
+</style>
+</head>
+<body>
+<header class="hero"><div class="hero-in">
+  <h1>מערכת תומכת החלטה פנסיונית</h1>
+  <div class="fact">אב-טיפוס · נתוני ייחוס 09/2026</div>
+  <p>תכנון פרישה: מהמסלקה וטופס 161 להמלצה אחת על אופן המשיכה, עם המס הכולל לכל חלופה. הכול בדפדפן, שום קובץ לא נשלח.</p>
+  <div class="modes"><span>תיק פנסיוני</span><span>ביטוח חיים</span><span>ביטוח בריאות</span><span class="on">תכנון פרישה</span><span>מחשבונים</span></div>
+</div></header>
+
+<main class="wrap">
+  <div class="demo-tag">הדמיה להצעת פישוט (11.11.2026) - ממתינה לאישור הבעלים. תיק סינתטי. המספרים בשלב 6 הם ערכי דוגמה להמחשת המבנה, לא חישוב: מנוע ההחלטה (M-002) טרם נבנה.</div>
+
+  <nav class="stepper" aria-label="שלבי התכנון">
+    <div class="done"><b>1</b><span>מסלקה</span></div>
+    <div class="done"><b>2</b><span>טופס 161</span></div>
+    <div><b>3</b><span>נתוני קיבוע</span></div>
+    <div class="done"><b>4</b><span>שאלות</span></div>
+    <div class="done"><b>5</b><span>קצבה צפויה</span></div>
+    <div class="cur"><b>6</b><span>המלצה</span></div>
+    <div><b>7</b><span>פעולות</span></div>
+  </nav>
+
+  <p class="limits">אב-טיפוס לבחינה מקצועית, לא ייעוץ. <u>גבולות ומקורות</u> ◂</p>
+
+  <section class="card">
+    <div class="head"><span class="num">1</span><span class="t">קובץ המסלקה<small>ZIP או XML, קובץ אחד</small></span><span class="badge ok">4 חשבונות · 2,190,000 ₪</span><span class="mini-btns"><span>שמירה מוצפנת</span><span>טעינה</span></span><span class="caret">◂</span></div>
+  </section>
+
+  <section class="card open">
+    <div class="head"><span class="num">2</span><span class="t">טופס 161<small>אישור השדות מול תמונת הטופס</small></span><span class="badge ok">15/15 אושרו</span><span class="caret">▾</span></div>
+    <div class="body">
+      <div class="f161">
+        <div class="page"><i class="s"></i><i></i><i class="m"></i><i></i><i class="s"></i><i class="m"></i><i></i><i class="s"></i><i class="m"></i><i></i><em>עמוד 1 (תמונה)</em></div>
+        <div>
+          <div class="kv">
+            <div><span>מענק כולל (א13)</span>800,000 ₪</div>
+            <div><span>פטור מרבי</span>508,750 ₪</div>
+            <div><span>חייב במס</span>291,250 ₪</div>
+            <div><span>שנות עבודה</span>37</div>
+            <div><span>מרבי לרצף קצבה</span>405,900 ₪</div>
+            <div><span>מענקים (א9)</span>3 שורות</div>
+          </div>
+          <div class="fold">כל 15 השדות וכפתורי "תיקון"</div>
+        </div>
+      </div>
+      <div class="alert"><b>שימו לב לסימון בטופס:</b> בחלק ג1 סומנה חלופה א' (רצף קצבה אוטומטי). ההמלצה בשלב 6 כוללת גם פריסה של החלק החייב, ולכן נדרשת חלופה ב' ומילוי חלק ב'. לבדוק לפני הגשה.</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="head"><span class="num">3</span><span class="t">נתוני הקיבוע<small>גיל זכאות · מקום עבודה יחיד או מעסיקים קודמים · מענקים והיוון קודמים</small></span><span class="badge miss">חסר: חודש זכאות</span><span class="caret">◂</span></div>
+  </section>
+
+  <section class="card">
+    <div class="head"><span class="num">4</span><span class="t">שאלות לפני החלטה<small>עבודה אצל מעסיק חדש · הכנסות צפויות · נזילות · מטרות הלקוח</small></span><span class="badge ok">נענו</span><span class="caret">◂</span></div>
+  </section>
+
+  <section class="card">
+    <div class="head"><span class="num">5</span><span class="t">הקצבה הצפויה<small>מקדם לפי התקנון · יתרות ופיצויים לכל חשבון · תרחישי משפחה</small></span><span class="badge ok">אומדן מקדם</span><span class="caret">◂</span></div>
+  </section>
+
+  <section class="card open key">
+    <div class="head"><span class="num">6</span><span class="t">ההמלצה: אופן המשיכה<small>מנוע ההחלטה - מס כולל מינימלי</small></span><span class="badge">מותנה ב-1 כלל</span><span class="caret">▾</span></div>
+    <div class="body">
+      <div class="rec">
+        <div class="lbl">המלצה (ערכי דוגמה)</div>
+        <h3>רצף קצבה על 405,900 ₪, פריסה קדימה של היתרה החייבת, ולשמור את הפטור לקצבה</h3>
+        <p>הקצבה הצפויה גבוהה מהפטור החודשי. לכן שווה יותר לשמור את סל הפטור לקצבה מאשר למשוך מענק פטור עכשיו (כלל 3).</p>
+        <div class="save"><span>מס כולל משוער<br><b>48,000 ₪</b></span><span>חיסכון מול החלופה הבאה<br><b>31,000 ₪</b></span><span>נזילות עכשיו<br><b>240,000 ₪</b> (השתלמות)</span></div>
+      </div>
+
+      <h4>ארבע החלופות</h4>
+      <div class="scroll"><table>
+        <thead><tr><th>#</th><th>חלופה</th><th>מס כולל</th><th class="hide-m">נזילות עכשיו</th><th>קצבה לחודש</th><th>כללים</th></tr></thead>
+        <tbody>
+          <tr class="best"><td>1</td><td>רצף קצבה + פריסה קדימה</td><td>48,000 ₪</td><td class="hide-m">240,000 ₪</td><td>8,050 ₪</td><td><span class="chip c">מותנה</span></td></tr>
+          <tr><td>2</td><td>רצף קצבה על כל המותר</td><td>79,000 ₪</td><td class="hide-m">240,000 ₪</td><td>8,050 ₪</td><td><span class="chip v">מאומת</span></td></tr>
+          <tr><td>3</td><td>מענק פטור + פריסה של החייב</td><td>96,000 ₪</td><td class="hide-m">748,750 ₪</td><td>5,350 ₪</td><td><span class="chip c">מותנה</span></td></tr>
+          <tr><td>4</td><td>משיכת הכול בשנת הפרישה</td><td>142,000 ₪</td><td class="hide-m">1,040,000 ₪</td><td>5,350 ₪</td><td><span class="chip v">מאומת</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>הנימוק</h4>
+      <ol class="rules">
+        <li>כלל 3 - פטור למענק מול פטור לקצבה: הפגיעה בסל גבוהה מהמס שנחסך. <span class="chip v">מאומת · 161ד עמ' 6-7</span></li>
+        <li>כלל 5 - רצף פיצויים נשלל: הלקוח לא יעבוד אצל מעסיק חדש. <span class="chip v">מאומת · טופס 161 עמ' 3</span></li>
+        <li>כלל 7 - פריסה קדימה: 37 שנות עבודה, עד 6 שנות פריסה. <span class="chip c">מותנה · חוזר 2/2022, 4.3.3</span></li>
+      </ol>
+
+      <h4>מה עלול לשנות את ההכרעה</h4>
+      <div class="missing">חודש הגעה לגיל זכאות (שלב 3) · ציטוט קצבה רשמי מהקרן</div>
+
+      <div class="fold">פירוט: מקורות הכספים, ניתוח טופס 161, האפשרויות לכל רכיב</div>
+      <div class="fold">הערות, הנחות ומקורות</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="head"><span class="num">7</span><span class="t">סיכום ופעולות<small>מה לסמן ב-161 · 161ד · 116ג · דוח ללקוח · משוב</small></span><span class="caret">◂</span></div>
+  </section>
+
+  <p class="moved">בדיקת התיק (תיק נכסים, חלופות, עמיתים, רמת סיכון, דוח לפני/אחרי ושאלות ניוד) נמצאת בכרטסת "תיק פנסיוני". הנתונים משותפים לשתי הכרטסות.</p>
+</main>
+</body>
+</html>

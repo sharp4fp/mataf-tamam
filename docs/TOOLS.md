@@ -99,6 +99,9 @@
 | L18 | 10.11 | ניסיון להעתיק ערכי סיסמה בין פרויקטי Cloudflare (secret_text לא קריא ב-API) | הבעלים שומר סיסמה כסוד GitHub; Actions מחשב hash ומגדיר דרך ה-API, בלי להדפיס |
 | L19 | 10.11 | `curl` ל-raw.githubusercontent.com נחסם (403) | `git clone --depth 1 --filter=blob:none --sparse` ו-`git sparse-checkout set <dir>` |
 | L20 | 10.11 | `element.replaceChildren(array)` הדפיס "[object ...]" | לפזר מערכים (`...arr`); בדיקת דפדפן מחפשת "[object" בכל מסך |
+| L21 | 11.11 | `import ... from 'playwright'` בקובץ `.mjs` נכשל גם עם `NODE_PATH` (ESM מתעלם ממנו) | `import { createRequire } from 'module'; const require = createRequire('/opt/npm-tools/node_modules/'); const { chromium } = require('playwright');` |
+| L22 | 11.11 | היפוך מחרוזת עברית ידנית לפני ציור ב-Pillow הפך את הטקסט פעמיים | Pillow עם raqm מטפל בכיווניות: `d.text(..., direction='rtl')` בלי היפוך |
+| L23 | 11.11 | טופס 161 ריק או בלי ת"ז תואמת מועבר ל"ממתין" ותמונת הטופס לא מוצגת | לבדיקות ממשק: PDF סינתטי (`docs/proposals/2026-11-11-retirement-simplification/fixtures/mk161.py`), עברית נשמרת בסדר חזותי כמו בטופס הרשמי |
 
 ## 4. איך מוסיפים לקח
 
