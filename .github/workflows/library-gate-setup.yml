@@ -1,0 +1,72 @@
+# הגדרה חד-פעמית: שער הכניסה של אתר הספרייה עם אותו שם משתמש וסיסמה כמו מתה״פ
+# (החלטת הבעלים 10.11.2026, 20:08 - אפשרות ב').
+# מעתיק בצד השרת את AUTH_USER_OWNER / AUTH_SALT_OWNER / AUTH_HASH_OWNER ואת חיבור D1
+# מפרויקט pension-planner לפרויקט mataf-library, ומייצר AUTH_SECRET חדש.
+# שום ערך לא מודפס ליומן (המאגר ציבורי) - רק שמות משתנים וסוגים.
+# mode=inspect: רק בודק מה ניתן להעתיק. mode=apply: מעתיק.
+
+name: ספרייה - הגדרת שער כניסה
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'inspect / apply'
+        required: true
+        default: inspect
+        type: choice
+        options: [inspect, apply]
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: העתקת הגדרות השער
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          MODE: ${{ inputs.mode }}
+        shell: python
+        run: |
+          import json, os, secrets, urllib.request
+          base = f"https://api.cloudflare.com/client/v4/accounts/{os.environ['CF_ACCOUNT']}/pages/projects/"
+          def call(method, path, body=None):
+              req = urllib.request.Request(base + path, method=method,
+                  data=json.dumps(body).encode() if body is not None else None,
+                  headers={"Authorization": "Bearer " + os.environ["CF_TOKEN"], "Content-Type": "application/json"})
+              try:
+                  with urllib.request.urlopen(req) as r: return json.load(r)
+              except urllib.error.HTTPError as e:
+                  return json.loads(e.read() or b'{}') | {"http": e.code}
+          src = call("GET", "pension-planner")["result"]
+          dst = call("GET", "mataf-library")["result"]
+          print("mataf-library production branch:", dst.get("production_branch"))
+          need = ["AUTH_USER_OWNER", "AUTH_SALT_OWNER", "AUTH_HASH_OWNER"]
+          plan = {}
+          for env in ("production", "preview"):
+              cfg = src["deployment_configs"][env]
+              vars_ = cfg.get("env_vars") or {}
+              for k in sorted(vars_):
+                  v = vars_[k] or {}
+                  print(f"source {env}: {k} type={v.get('type')} readable={'value' in v and bool(v.get('value'))}")
+              d1 = cfg.get("d1_databases") or {}
+              print(f"source {env}: d1 bindings = {sorted(d1)}")
+              plan[env] = {"vars": vars_, "d1": d1}
+          prod = plan["production"]
+          readable = all(k in prod["vars"] and prod["vars"][k].get("value") for k in need[1:])
+          print("credentials copyable:", readable)
+          if os.environ["MODE"] != "apply":
+              raise SystemExit(0)
+          if not readable:
+              raise SystemExit("הערכים מוגדרים כסודות ואינם קריאים - נדרשת חלופה")
+          new_vars = {k: {"type": "secret_text", "value": prod["vars"][k]["value"]} for k in need if k in prod["vars"]}
+          new_vars["AUTH_SECRET"] = {"type": "secret_text", "value": secrets.token_hex(32)}
+          body = {"deployment_configs": {e: {"env_vars": new_vars, "d1_databases": prod["d1"]} for e in ("production", "preview")}}
+          res = call("PATCH", "mataf-library", body)
+          print("update success:", res.get("success"), res.get("errors"))
+          after = call("GET", "mataf-library")["result"]["deployment_configs"]
+          for e in ("production", "preview"):
+              print(e, "vars:", sorted((after[e].get("env_vars") or {})), "d1:", sorted(after[e].get("d1_databases") or {}))
