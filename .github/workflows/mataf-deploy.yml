@@ -1,13 +1,13 @@
-# מתה״פ - בדיקות אוטומטיות ופריסה לאתר החי (Cloudflare Pages)
+# מתה״פ - בדיקות ופריסה (Cloudflare Pages)
 #
-# בכל שמירה (push) שנוגעת במתה״פ: רצות כל הבדיקות. לא נפרס כלום.
-# פריסה לאתר החי: רק כשהבעלים לוחץ ידנית על "Run workflow" בלשונית Actions
-# (כלל 10 - הבעלים מאשר גרסה לפני שהיא עולה). הפריסה רצה רק אם כל הבדיקות עברו.
+# בכל שמירה (push) שנוגעת במתה״פ:
+#   1. כל הבדיקות: 41 חבילות היחידה, מבנה הכרטסות, ושתי בדיקות הדפדפן.
+#   2. אם הכול עבר - פריסה אוטומטית לסביבת הבדיקה (pension-planner-preview).
+#   3. בדיקת עשן מול הכתובת שנפרסה: שער הכניסה עונה ונועל את הקבצים.
+# פריסה לאתר החי (pension-planner) ולדמו: רק בהפעלה ידנית (Run workflow),
+# ורק אחרי שכל הבדיקות עברו (כלל 10 - הבעלים מאשר גרסה לפני עלייה).
 #
-# נדרשים שני סודות ב-GitHub (Settings > Secrets and variables > Actions):
-#   CLOUDFLARE_API_TOKEN  - טוקן עם הרשאה אחת בלבד: Account > Cloudflare Pages > Edit
-#   CLOUDFLARE_ACCOUNT_ID - מזהה החשבון ב-Cloudflare
-# הסודות לא נכנסים לקוד ולא מוצגים ביומני הריצה.
+# סודות נדרשים: CLOUDFLARE_API_TOKEN (Pages: Edit), CLOUDFLARE_ACCOUNT_ID.
 
 name: מתה״פ - בדיקות ופריסה
 
@@ -20,49 +20,108 @@ on:
       - '.github/workflows/mataf-deploy.yml'
   workflow_dispatch:
     inputs:
-      project_name:
-        description: 'שם הפרויקט ב-Cloudflare Pages'
+      target:
+        description: 'לאן לפרוס'
         required: true
-        default: 'pension-planner'
+        default: production
+        type: choice
+        options:
+          - production
+          - preview
+          - demo
 
 permissions:
   contents: read
+
+concurrency:
+  group: mataf-deploy
+  cancel-in-progress: false
 
 jobs:
   test:
     name: בדיקות
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: כל 41 חבילות הבדיקה
+
+      - name: 41 חבילות בדיקה
         working-directory: mataf
         run: node tests/tests-1032/run-all.mjs site/js
+
       - name: מבנה הכרטסות
         working-directory: mataf
         run: BUILD=site/js node tests/tests-1032/test-tabs.mjs
 
+      - name: הכנה לבדיקות דפדפן
+        run: |
+          mkdir -p "$RUNNER_TEMP/tree"
+          cp -r mataf/site/. "$RUNNER_TEMP/tree/"
+          cp -r mataf/tests/tests-1032 "$RUNNER_TEMP/tree/"
+          cd "$RUNNER_TEMP/tree" && npm init -y >/dev/null && npm install --no-audit --no-fund puppeteer-core@23
+          sudo mkdir -p /downloads && sudo chmod 777 /downloads
+          which google-chrome
+
+      - name: בדיקות דפדפן (דמי ניהול מעורבים, אישור טופס 161)
+        run: |
+          cd "$RUNNER_TEMP/tree"
+          python3 -m http.server 8099 >/dev/null 2>&1 &
+          sleep 2
+          node tests-1032/qa-maslaka-mixed.mjs
+          node tests-1032/qa-161-confirm.mjs
+
   deploy:
-    name: פריסה לאתר החי
+    name: פריסה
     needs: test
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'push' || inputs.target != ''
     runs-on: ubuntu-latest
     permissions:
       contents: read
       deployments: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+
+      - name: בחירת יעד
+        id: target
+        run: |
+          T="${{ github.event_name == 'push' && 'preview' || inputs.target }}"
+          case "$T" in
+            production) echo "project=pension-planner" >> "$GITHUB_OUTPUT"; echo "dir=deploy-out" >> "$GITHUB_OUTPUT" ;;
+            preview)    echo "project=pension-planner-preview" >> "$GITHUB_OUTPUT"; echo "dir=deploy-out" >> "$GITHUB_OUTPUT" ;;
+            demo)       echo "project=pension-planner-demo" >> "$GITHUB_OUTPUT"; echo "dir=mataf/site/demo-site" >> "$GITHUB_OUTPUT" ;;
+            *) echo "יעד לא מוכר: $T"; exit 1 ;;
+          esac
+          echo "name=$T" >> "$GITHUB_OUTPUT"
+
       - name: הכנת תיקיית הפריסה (בלי אתר הדמו ובלי קבצים ישנים)
+        if: steps.target.outputs.name != 'demo'
         run: |
           mkdir -p deploy-out
           rsync -a --exclude 'demo-site/' --exclude 'CNAME' mataf/site/ deploy-out/
-          ls -la deploy-out
+
       - name: העלאה ל-Cloudflare Pages
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy deploy-out --project-name=${{ inputs.project_name }} --branch=main --commit-dirty=true
+          workingDirectory: ${{ steps.target.outputs.dir }}
+          command: pages deploy . --project-name=${{ steps.target.outputs.project }} --branch=main --commit-dirty=true
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: בדיקת עשן - השער עונה ונועל
+        env:
+          URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: |
+          echo "נפרס אל: $URL"
+          sleep 10
+          root=$(curl -s -o /dev/null -w '%{http_code}' "$URL/")
+          js=$(curl -s -o /dev/null -w '%{http_code}' "$URL/js/app.js")
+          echo "דף הבית: $root | קובץ קוד בלי כניסה: $js"
+          case "$root" in 5*|000) echo "השער לא עונה"; exit 1 ;; esac
+          if [ "$js" = "200" ] && curl -s "$URL/js/app.js" | grep -q "function"; then
+            echo "קובץ קוד נגיש בלי כניסה - השער לא נועל"; exit 1
+          fi
+          echo "תקין"

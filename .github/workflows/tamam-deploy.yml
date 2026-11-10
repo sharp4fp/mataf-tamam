@@ -1,0 +1,86 @@
+# תמ״מ - שטר מטען דיגיטלי: בנייה, בדיקות ופריסה (Cloudflare Pages)
+#
+# בכל שמירה שנוגעת בתמ״מ: בנייה מלאה (TypeScript + Vite) ו-20 בדיקות הרגרסיה
+# בדפדפן מול הבנייה. אם הכול עבר - פריסה אוטומטית של הגרסה הפתוחה לפרויקט
+# tamam-waybill (נוצר בהרצה הראשונה). הגרסה הפתוחה מיועדת לשיתוף עם מי שאין
+# לו כלי AI (10.11, 12:44 ו-13:02); מה נכלל בה - docs/APPROVALS.md.
+
+name: תמ״מ - בדיקות ופריסה
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tamam/**'
+      - '.github/workflows/tamam-deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tamam-deploy
+  cancel-in-progress: false
+
+jobs:
+  build-test:
+    name: בנייה ובדיקות
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tamam
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: התקנה
+        run: npm install --no-audit --no-fund
+      - name: בנייה
+        run: npm run build
+      - name: דפדפן לבדיקות
+        run: npx playwright install --with-deps chromium
+      - name: 20 בדיקות רגרסיה
+        run: |
+          npx vite preview --port 4517 --strictPort >/dev/null 2>&1 &
+          sleep 3
+          npm test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tamam-dist
+          path: tamam/dist
+
+  deploy:
+    name: פריסה
+    needs: build-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: tamam-dist
+          path: dist
+      - name: יצירת הפרויקט אם אינו קיים
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create tamam-waybill --production-branch=main
+      - name: העלאה ל-Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=tamam-waybill --branch=main --commit-dirty=true
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: בדיקת עשן
+        env:
+          URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: |
+          echo "נפרס אל: $URL"
+          sleep 10
+          curl -sf "$URL/" | grep -q 'שטר מטען' && echo "הדף עולה" || { echo "הדף לא עולה"; exit 1; }
