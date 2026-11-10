@@ -1,0 +1,68 @@
+# מתה״פ - בדיקות אוטומטיות ופריסה לאתר החי (Cloudflare Pages)
+#
+# בכל שמירה (push) שנוגעת במתה״פ: רצות כל הבדיקות. לא נפרס כלום.
+# פריסה לאתר החי: רק כשהבעלים לוחץ ידנית על "Run workflow" בלשונית Actions
+# (כלל 10 - הבעלים מאשר גרסה לפני שהיא עולה). הפריסה רצה רק אם כל הבדיקות עברו.
+#
+# נדרשים שני סודות ב-GitHub (Settings > Secrets and variables > Actions):
+#   CLOUDFLARE_API_TOKEN  - טוקן עם הרשאה אחת בלבד: Account > Cloudflare Pages > Edit
+#   CLOUDFLARE_ACCOUNT_ID - מזהה החשבון ב-Cloudflare
+# הסודות לא נכנסים לקוד ולא מוצגים ביומני הריצה.
+
+name: מתה״פ - בדיקות ופריסה
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mataf/site/**'
+      - 'mataf/tests/**'
+      - '.github/workflows/mataf-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      project_name:
+        description: 'שם הפרויקט ב-Cloudflare Pages'
+        required: true
+        default: 'pension-planner'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: בדיקות
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: כל 41 חבילות הבדיקה
+        working-directory: mataf
+        run: node tests/tests-1032/run-all.mjs site/js
+      - name: מבנה הכרטסות
+        working-directory: mataf
+        run: BUILD=site/js node tests/tests-1032/test-tabs.mjs
+
+  deploy:
+    name: פריסה לאתר החי
+    needs: test
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: הכנת תיקיית הפריסה (בלי אתר הדמו ובלי קבצים ישנים)
+        run: |
+          mkdir -p deploy-out
+          rsync -a --exclude 'demo-site/' --exclude 'CNAME' mataf/site/ deploy-out/
+          ls -la deploy-out
+      - name: העלאה ל-Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy deploy-out --project-name=${{ inputs.project_name }} --branch=main --commit-dirty=true
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
