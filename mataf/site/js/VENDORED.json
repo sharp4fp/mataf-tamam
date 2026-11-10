@@ -5,7 +5,10 @@
       "name": "pdfjs-dist",
       "ecosystem": "npm",
       "version": "3.11.174",
-      "files": ["pdf.min.js", "pdf.worker.min.js"],
+      "files": [
+        "pdf.min.js",
+        "pdf.worker.min.js"
+      ],
       "used_for": "קריאת טופס 161 ומסמכי PDF שהמשתמש מעלה, בדפדפן בלבד",
       "accepted_risks": {
         "GHSA-wgrm-67xf-hhpq": "CVE-2024-4367 (הרצת JavaScript דרך גופן ב-PDF זדוני). מנוטרל בשתי שכבות: isEvalSupported:false בכל קריאה ל-getDocument, ו-CSP בלי unsafe-eval. שדרוג ל-4.2.67 ומעלה מתוכנן."
@@ -15,15 +18,33 @@
       "name": "jspdf",
       "ecosystem": "npm",
       "version": "2.5.1",
-      "files": ["jspdf.umd.min.js"],
+      "files": [
+        "jspdf.umd.min.js"
+      ],
       "used_for": "יצירת דוח PDF ללקוח מנתונים שהמערכת עצמה מחשבת",
-      "accepted_risks": {}
+      "accepted_risks": {
+        "GHSA-67pg-wm7f-q7fj": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. DoS דרך GIF - לא מועברים קובצי GIF. שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח).",
+        "GHSA-7x6v-j9x4-qf24": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. הזרקה דרך הערת FreeText - הערות (annotations) לא בשימוש. שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח).",
+        "GHSA-8mvj-3j78-4qmw": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. DoS בפענוח תמונה זדונית - התמונה היחידה היא JPEG שהמערכת יוצרת בעצמה. שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח).",
+        "GHSA-95fx-jjr5-f39c": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. DoS דרך BMP - לא מועברים קובצי BMP. שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח).",
+        "GHSA-9vjf-qc39-jprp": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. הזרקה דרך addJS - לא בשימוש. שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח).",
+        "GHSA-cjw8-79x6-5cj4": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. מצב משותף ב-addJS - לא בשימוש. שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח).",
+        "GHSA-f8cm-6447-x5h2": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. קריאת קבצים מקומיים - רק בגרסת Node.js; במתה״פ הספרייה רצה בדפדפן. שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח).",
+        "GHSA-p5xg-68wr-hm3m": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. הזרקה ב-AcroForm - טפסים (AcroForm) לא בשימוש. שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח).",
+        "GHSA-pqxr-3g65-p328": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. הזרקה ב-AcroFormChoiceField - טפסים לא בשימוש. שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח).",
+        "GHSA-vm32-vv63-w422": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. הזרקת מטא-נתוני XMP - addMetadata לא בשימוש. שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח).",
+        "GHSA-w532-jxjh-hjhj": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. ReDoS ב-addImage עם מחרוזת זדונית - המחרוזת נוצרת על ידי canvas.toDataURL, לא מהמשתמש. שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח).",
+        "GHSA-wfv2-pwc8-crg5": "השימוש היחיד (app.js:1853-1863): new jsPDF, addPage, addImage של JPEG שנוצר מ-canvas.toDataURL של הדוח שהמערכת עצמה מציירת, ו-save. אין קלט מהמשתמש לספרייה. הזרקת HTML בפתיחת חלון חדש - משתמשים ב-save בלבד, לא ב-output(...newwindow). שדרוג ל-jsPDF 4.x מתוכנן (שינוי גרסה ראשית, דורש בדיקת הדוח)."
+      },
+      "reviewed": "2026-11-10"
     },
     {
       "name": "html2canvas",
       "ecosystem": "npm",
       "version": "1.4.1",
-      "files": ["html2canvas.min.js"],
+      "files": [
+        "html2canvas.min.js"
+      ],
       "used_for": "צילום תצוגת הדוח לתמונה לצורך PDF",
       "accepted_risks": {}
     }
