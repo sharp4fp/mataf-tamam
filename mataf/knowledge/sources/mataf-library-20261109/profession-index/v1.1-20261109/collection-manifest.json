@@ -1,0 +1,956 @@
+[
+  {
+    "id": "S001",
+    "title": "חוק הפיקוח על שירותים פיננסיים (ייעוץ, שיווק ומערכת סליקה פנסיוניים), התשס״ה-2005",
+    "source_type": "law",
+    "issuer_or_owner": "רשות שוק ההון / רשומות",
+    "domain_ids": [
+      "P01",
+      "P02",
+      "P03",
+      "P25"
+    ],
+    "required_edition_scope": "נוסח מקור, נוסח משולב, תיקונים והוראות מעבר",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "לא שמור במקור רשמי מאומת",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S002",
+    "title": "חוק הפיקוח על שירותים פיננסיים (ביטוח), התשמ״א-1981: פרקי רישוי ותיווך רלוונטיים",
+    "source_type": "law",
+    "issuer_or_owner": "רשות שוק ההון / רשומות",
+    "domain_ids": [
+      "P01",
+      "P12",
+      "P25"
+    ],
+    "required_edition_scope": "סעיפי סמכות/רישוי/סוכנות ותיקונים",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור ומיפוי סעיפים",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S003",
+    "title": "תקנות, הוראות וסילבוס רשמיים לרישוי, בחינות והתמחות סוכנים/יועצים/משווקים",
+    "source_type": "regulation_family",
+    "issuer_or_owner": "רשות שוק ההון",
+    "domain_ids": [
+      "P01"
+    ],
+    "required_edition_scope": "מהדורה בתוקף וסוג רישיון; שם מסמך מדויק ייקבע באיתור",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "משפחת מקורות נדרשת, טרם אותרו מסמכי היעד",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S004",
+    "title": "חוזרים על שירות סוכנים ויועצים, בירור צרכים ומסמך הנמקה",
+    "source_type": "circular_family",
+    "issuer_or_owner": "רשות שוק ההון",
+    "domain_ids": [
+      "P02",
+      "P13",
+      "P25",
+      "P28"
+    ],
+    "required_edition_scope": "חוזר בסיס, כל תיקון, תחילה, חריגים ונספחי טפסים",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "מסמכי יעד לא אותרו בנוסח עדכני",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S005",
+    "title": "הוראות גילוי, זיקה, תגמול ושיווק/מכירה מרחוק של בעל רישיון",
+    "source_type": "circular_family",
+    "issuer_or_owner": "רשות שוק ההון",
+    "domain_ids": [
+      "P01",
+      "P02",
+      "P25"
+    ],
+    "required_edition_scope": "לפי סוג רישיון/פעולה; אין להסיק שכל הוראה חלה בכל מקרה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור מדויק",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S006",
+    "title": "מפרטי המסלקה הפנסיונית, ממשק אחיד ומבנהXML",
+    "source_type": "technical_family",
+    "issuer_or_owner": "רשות שוק ההון / מפעיל המסלקה",
+    "domain_ids": [
+      "P03",
+      "P06",
+      "P28"
+    ],
+    "required_edition_scope": "גרסת מבנה, מילון שדות, קודי שגיאה, דוגמאות והרשאות",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איסוף; מפרט טכני אינו דין בפני עצמו",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S007",
+    "title": "ייפוי כוח, הרשאות לקבלת מידע והעברת מידע בין בעלי רישיון וגופים מוסדיים",
+    "source_type": "form_circular_family",
+    "issuer_or_owner": "רשות שוק ההון",
+    "domain_ids": [
+      "P02",
+      "P03",
+      "P26"
+    ],
+    "required_edition_scope": "טופס/נספח נוכחי, היקף הרשאה וביטול",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S008",
+    "title": "חוזרי דוחות שנתיים ורבעוניים לעמיתים ומבוטחים",
+    "source_type": "circular_family",
+    "issuer_or_owner": "רשות שוק ההון",
+    "domain_ids": [
+      "P03",
+      "P08"
+    ],
+    "required_edition_scope": "דוח לדוגמה, שדות, עדכונים ותאריכי תחילה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S009",
+    "title": "חוק הפיקוח על שירותים פיננסיים (קופות גמל), התשס״ה-2005",
+    "source_type": "law",
+    "issuer_or_owner": "רשות שוק ההון / רשומות",
+    "domain_ids": [
+      "P04",
+      "P05",
+      "P09",
+      "P20"
+    ],
+    "required_edition_scope": "בפרט בחירה, העברה, משיכה/היוון; נוסח ותיקונים",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש מקור רשמי שמור",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S010",
+    "title": "תקנות מס הכנסה (כללים לאישור ולניהול קופות גמל), התשכ״ד-1964",
+    "source_type": "regulation",
+    "issuer_or_owner": "רשומות / ביטוח לאומי",
+    "domain_ids": [
+      "P04",
+      "P05",
+      "P20"
+    ],
+    "required_edition_scope": "נוסח, תיקונים, תחולה לפי סוג קופה ותקופת הפקדה",
+    "observed_url": "https://www.btl.gov.il/Laws1/02_0103_100022.pdf",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "קישור רשמי אותר; קובץ ותוכן טרם נבדקו/נשמרו",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S011",
+    "title": "תקנוני כל קרן פנסיה רלוונטית ונספחי כיסוי/מקדמים/תשלומים",
+    "source_type": "provider_family",
+    "issuer_or_owner": "החברה המנהלת",
+    "domain_ids": [
+      "P04",
+      "P09",
+      "P10",
+      "P11",
+      "P15"
+    ],
+    "required_edition_scope": "מקיפה ומשלימה בנפרד; מהדורות היסטוריות ונוכחיות; זהות חלופה וטבלה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "10מסמכים היסטוריים מ9חברות כבר פורסמו; לא כל החברות/מהדורות/טבלאות אומתו",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S012",
+    "title": "תקנוני קרנות ותיקות, הסדר אחיד ונספחי זכויות רלוונטיים",
+    "source_type": "provider_family",
+    "issuer_or_owner": "הקרן / הגורם המנהל",
+    "domain_ids": [
+      "P04",
+      "P14",
+      "P15"
+    ],
+    "required_edition_scope": "לפי קרן, תקופת זכויות, פרישה/נכות/שאירים",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איסוף, אין להחליף בתקנון קרן חדשה",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S013",
+    "title": "פוליסות ביטוח מנהלים, נספחים, מקדמים ותנאים לפי שנת הפקה",
+    "source_type": "provider_family",
+    "issuer_or_owner": "חברת הביטוח",
+    "domain_ids": [
+      "P04",
+      "P09",
+      "P15"
+    ],
+    "required_edition_scope": "תנאי מוצר כלליים מול זכויות אישיות; מידע לקוח פרטי לא באתר",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש קטלוג מסמכי מוצר מותרים לשמירה",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S014",
+    "title": "תקנוני קופות גמל/השתלמות/השקעה ומסמכי מסלולים",
+    "source_type": "provider_family",
+    "issuer_or_owner": "החברה המנהלת",
+    "domain_ids": [
+      "P04",
+      "P05",
+      "P09",
+      "P20"
+    ],
+    "required_edition_scope": "לפי סוג מוצר ומהדורה; חריגי נזילות ומעבר",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איסוף",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S015",
+    "title": "צו הרחבה לפנסיה חובה והסדרים ענפיים/קיבוציים רלוונטיים",
+    "source_type": "order_agreement_family",
+    "issuer_or_owner": "משרד העבודה / רשומות / צדדי הסכם",
+    "domain_ids": [
+      "P05",
+      "P06",
+      "P23"
+    ],
+    "required_edition_scope": "צו בסיס, תיקונים והוראות תחולה; הסכם ספציפי לפני יישום",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור לפי אוכלוסייה",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S016",
+    "title": "חוק פיצויי פיטורים, התשכ״ג-1963",
+    "source_type": "law",
+    "issuer_or_owner": "רשומות / ביטוח לאומי",
+    "domain_ids": [
+      "P06",
+      "P16"
+    ],
+    "required_edition_scope": "נוסח מאוחד, במיוחד12/14, תיקונים ותחולה",
+    "observed_url": "https://www.btl.gov.il/Laws1/00_0040_000000.pdf",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "נקרא בחלקו בעבר; לא נכלל עדיין במאגר האתר שאושר",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S017",
+    "title": "אישור כללי לפי סעיף14 וצווי הרחבה/הסכמים משלימים",
+    "source_type": "approval_order_family",
+    "issuer_or_owner": "משרד העבודה / רשומות",
+    "domain_ids": [
+      "P06",
+      "P16"
+    ],
+    "required_edition_scope": "תנאי תוקף, שיעורי הפקדה, מועד תחולה והסכמה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "לא אותר/נקרא באיסוף הנוכחי",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S018",
+    "title": "הוראות הפקדות מעסיק, דיווח ותשלום, היזון חוזר וטיפול בחוסרים",
+    "source_type": "circular_technical_family",
+    "issuer_or_owner": "רשות שוק ההון",
+    "domain_ids": [
+      "P06",
+      "P03"
+    ],
+    "required_edition_scope": "חוזר בסיס+תיקונים+מפרט נוכחי, לוחות זמנים וחריגים",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור ואיסוף",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S019",
+    "title": "חקיקת פנסיה חובה לעצמאים והוראות יישום/קנסות",
+    "source_type": "law_guidance_family",
+    "issuer_or_owner": "רשומות / רשות המסים / רשות האכיפה לפי העניין",
+    "domain_ids": [
+      "P05",
+      "P23"
+    ],
+    "required_edition_scope": "נוסח חוק, אוכלוסייה, הכנסה, הפקדה וחריגים",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור מדויק",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S020",
+    "title": "הוראות מסלולי השקעה ומודל תלוי גיל",
+    "source_type": "circular_family",
+    "issuer_or_owner": "רשות שוק ההון",
+    "domain_ids": [
+      "P07",
+      "P09"
+    ],
+    "required_edition_scope": "חוזר בסיס, שמות מסלולים, מדיניות ותחולה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S021",
+    "title": "מדיניות השקעה צפויה/תקנונית, הרכבי נכסים ודוחות החזקות של גופים",
+    "source_type": "provider_data_family",
+    "issuer_or_owner": "חברות מנהלות וחברות ביטוח",
+    "domain_ids": [
+      "P07",
+      "P08"
+    ],
+    "required_edition_scope": "רמת קרן/מסלול, תאריך מדידה, החזקה/חשיפה/מטבע ונגזרים",
+    "observed_url": "https://www.menoramivt.co.il/funds/pension-and-gemel/sum-assets-management-fee/pos-assets-list",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "נתון מנורה לקרן כוללת בלבד פורסם; נדרשים יתר הגופים/מסלולים",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S022",
+    "title": "גמל-נט, פנסיה-נט וביטוח-נט: נתונים ומילוני מדידה",
+    "source_type": "official_data_family",
+    "issuer_or_owner": "רשות שוק ההון",
+    "domain_ids": [
+      "P03",
+      "P07",
+      "P08"
+    ],
+    "required_edition_scope": "חודש, יחידות, מדדי חשיפה/תשואה וגרסת מאגר",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נתוני האפליקציה אינם אישור שכל מקור הועלה לספרייה; נדרשת ספירת כיסוי",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S023",
+    "title": "תקנות דמי ניהול והנחיות הנחות/שינוי דמי ניהול",
+    "source_type": "regulation_circular_family",
+    "issuer_or_owner": "רשומות / רשות שוק ההון",
+    "domain_ids": [
+      "P08"
+    ],
+    "required_edition_scope": "לפי מוצר; תקרות, תחילה, חריגים והבטחות אישיות",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש מקור רשמי בתוקף",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S024",
+    "title": "תקנות הוצאות ישירות וחוזרי עלות שנתית צפויה",
+    "source_type": "regulation_circular_family",
+    "issuer_or_owner": "רשומות / רשות שוק ההון",
+    "domain_ids": [
+      "P08"
+    ],
+    "required_edition_scope": "שיעורים/הגדרות, חובת גילוי, עדכונים ושיטת חישוב",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איסוף מדויק",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S025",
+    "title": "תקנות העברת כספים בין קופות והוראות ניוד",
+    "source_type": "regulation_circular_family",
+    "issuer_or_owner": "רשומות / רשות שוק ההון",
+    "domain_ids": [
+      "P09"
+    ],
+    "required_edition_scope": "סוגי מוצרים, חריגים, רצף, מועדים והיסטוריית תיקונים",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איסוף",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S026",
+    "title": "הוראות צירוף לביטוח/מוצר פנסיוני ושמירת רציפות",
+    "source_type": "circular_family",
+    "issuer_or_owner": "רשות שוק ההון",
+    "domain_ids": [
+      "P09",
+      "P10",
+      "P11",
+      "P12"
+    ],
+    "required_edition_scope": "הצעה, חיתום, הסכמה, החלפה וביטול לפי סוג מוצר",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור לפי ענף",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S027",
+    "title": "חוק חוזה הביטוח, התשמ״א-1981, וסעיפים רלוונטיים למוצר/תביעה",
+    "source_type": "law",
+    "issuer_or_owner": "רשומות",
+    "domain_ids": [
+      "P10",
+      "P11",
+      "P12",
+      "P13"
+    ],
+    "required_edition_scope": "הבחנה בין פוליסת ביטוח לתקנון קרן; תיקונים ותחולה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור ומיפוי",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S028",
+    "title": "פוליסות/נספחים ותקנוני נכות, שאירים וחיים",
+    "source_type": "provider_family",
+    "issuer_or_owner": "גוף מוסדי",
+    "domain_ids": [
+      "P10",
+      "P11"
+    ],
+    "required_edition_scope": "גרסה, הגדרה, החרגות, אכשרה, תקופת המתנה ותום ביטוח",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "תקנוני קרנות חלקיים קיימים; פוליסות ונספחים נדרשים",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S029",
+    "title": "חוזרי בירור ויישוב תביעות וטיפול בפניות ציבור",
+    "source_type": "circular_family",
+    "issuer_or_owner": "רשות שוק ההון",
+    "domain_ids": [
+      "P13",
+      "P10",
+      "P11"
+    ],
+    "required_edition_scope": "תחולה, מועדים, מסמכים, נימוק וערעור לפי סוג תביעה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש נוסח עדכני",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S030",
+    "title": "נגישות ושירות לאנשים עם מוגבלות ולאזרחים ותיקים",
+    "source_type": "law_circular_family",
+    "issuer_or_owner": "רשומות / רשות שוק ההון / נציבות שוויון",
+    "domain_ids": [
+      "P13",
+      "P25"
+    ],
+    "required_edition_scope": "הוראות רלוונטיות לסוכנות, ערוץ שירות וסוג פעולה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור תחולה, לא רשימת חובות מאומתת",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S031",
+    "title": "חוק גיל פרישה, התשס״ד-2004, תיקונים ותוספות",
+    "source_type": "law",
+    "issuer_or_owner": "רשומות",
+    "domain_ids": [
+      "P14",
+      "P21"
+    ],
+    "required_edition_scope": "טבלת לידה, פרישה מול פרישת חובה והוראות מעבר",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש עותק רשמי מלא; דף ביטוח לאומי בלבד אותר",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S032",
+    "title": "דף גיל הפרישה וטבלאות גיל לנשים של ביטוח לאומי",
+    "source_type": "official_guidance",
+    "issuer_or_owner": "המוסד לביטוח לאומי",
+    "domain_ids": [
+      "P14",
+      "P21"
+    ],
+    "required_edition_scope": "תאריך לידה, גיל מותנה הכנסה; לא כל הגדרות המס",
+    "observed_url": "https://www.btl.gov.il/benefits/old_age/Conditions_of_eligibility/gilMezake/Pages/gilPrisha.aspx",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "אותר; טרם נשמר כגרסת מקור בספרייה",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S033",
+    "title": "פקודת מס הכנסה: סעיפים1,3,8,9,9א,9ב,45א,47,121ועוד לפי שאלה",
+    "source_type": "law",
+    "issuer_or_owner": "רשומות / רשות המסים / ביטוח לאומי",
+    "domain_ids": [
+      "P05",
+      "P11",
+      "P16",
+      "P17",
+      "P18",
+      "P19",
+      "P20",
+      "P22",
+      "P23"
+    ],
+    "required_edition_scope": "נוסח משולב+תיקונים; אין לראות בכל הסעיפים רשימה ממצה",
+    "observed_url": "https://www.btl.gov.il/Laws1/00_0103_000000.pdf",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "פורסם בספרייהv4;165עמודים, קטעי19/21/27נבדקו; עדכניות אחרי8.6.2026פתוחה",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S034",
+    "title": "תיקון275לפקודת מס הכנסה, ספר החוקים3336,עמ136",
+    "source_type": "enacted_amendment",
+    "issuer_or_owner": "רשומות / הכנסת",
+    "domain_ids": [
+      "P19"
+    ],
+    "required_edition_scope": "2025-2027ומועד תחילה; יש לבדוק תיקונים מאוחרים",
+    "observed_url": "https://fs.knesset.gov.il/25/law/25_lsr_5336499.pdf",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "פורסם בספרייהv4; המקור ועמוד2נבדקו, תיקונים מאוחרים פתוחים",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S035",
+    "title": "לוחות ניכויים ותקרות מס לכל שנת מס נדרשת",
+    "source_type": "official_data_guidance",
+    "issuer_or_owner": "רשות המסים",
+    "domain_ids": [
+      "P05",
+      "P16",
+      "P17",
+      "P19",
+      "P20",
+      "P22",
+      "P23"
+    ],
+    "required_edition_scope": "2026קיים; נדרשות שנות עבר/עתיד לפי האירוע",
+    "observed_url": "https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2026.pdf",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "מהדורת2026פורסמה; לא כל השנים",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S036",
+    "title": "טופס161הנוכחי, הוראות מילוי ומדריך דיווח דיגיטלי",
+    "source_type": "official_form_guidance_family",
+    "issuer_or_owner": "רשות המסים",
+    "domain_ids": [
+      "P16",
+      "P17"
+    ],
+    "required_edition_scope": "חלקי א/ב/ג, ברירת מחדל, סמכות מעסיק ואישורי מס",
+    "observed_url": "https://www.gov.il/he/pages/retirement-from-work-online-reporting-2026",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "דף אותר; טופס מלא והוראות טרם הושלמו בספרייה",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S037",
+    "title": "מדריך פרישה מעבודה: מענקים, רצף, פריסה וטפסים",
+    "source_type": "official_guidance",
+    "issuer_or_owner": "רשות המסים",
+    "domain_ids": [
+      "P16",
+      "P17",
+      "P18"
+    ],
+    "required_edition_scope": "מהדורה1.6.2026; מקור הסבר ולא חקיקה",
+    "observed_url": "https://www.gov.il/he/pages/retirement-from-work-2023",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "סעיפים נקראו; עותק מקור קריא טרם פורסם בספרייה",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S038",
+    "title": "הוראת המנהל/הנחיות הגדלת פטור מענק ל-150%",
+    "source_type": "administrative_authority_target",
+    "issuer_or_owner": "רשות המסים",
+    "domain_ids": [
+      "P16"
+    ],
+    "required_edition_scope": "תנאי אישור/חריגים ובעלי שליטה; שם ומספר מקור טרם אותרו",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "פער בעדיפות עליונה; מדריכים אינם סוגרים את תנאי הסמכות",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S039",
+    "title": "טופס161ג והסברי חזרה מרצף",
+    "source_type": "official_form",
+    "issuer_or_owner": "רשות המסים",
+    "domain_ids": [
+      "P17"
+    ],
+    "required_edition_scope": "גרסה עם נתוני2024; לבדוק עדכונים לשנת האירוע",
+    "observed_url": "https://www.gov.il/BlobFolder/service/itc161c/he/Service_Pages_Income_tax_itc161c.pdf",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "פורסםPDFבלבד; טקסט אמין טרם הוכן",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S040",
+    "title": "חוזר מס הכנסה2/2022על פריסת הכנסה, וכל עדכוניו",
+    "source_type": "official_circular_target",
+    "issuer_or_owner": "רשות המסים",
+    "domain_ids": [
+      "P18"
+    ],
+    "required_edition_scope": "מקור רשמי, גרסה מעודכנת, גוף/נספח וסתירת בדיוק6שנים",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נקרא בעותקים פרטיים בלבד; מקור רשמי לא אותר",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S041",
+    "title": "טופס116ג לבקשת פריסת הכנסה והוראותיו",
+    "source_type": "official_form_target",
+    "issuer_or_owner": "רשות המסים",
+    "domain_ids": [
+      "P18"
+    ],
+    "required_edition_scope": "טופס הנכון, לא116/117לתיאום מס; תאריך גרסה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור רשמי, אין כתובת מאומתת",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S042",
+    "title": "טופס161ד ומדריך קיבוע זכויות",
+    "source_type": "official_form_guidance_family",
+    "issuer_or_owner": "רשות המסים",
+    "domain_ids": [
+      "P19",
+      "P20"
+    ],
+    "required_edition_scope": "מדריך2026קיים; טופס, הנחיות,90יום ותוספות",
+    "observed_url": "https://www.gov.il/BlobFolder/guide/2026-filling-out-form-161d/he/Guides_IncomeTax_filling-out-form-161d-2026.pdf",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "מדריך2026פורסם; טופס/נוסחים נוספים נדרשים",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S043",
+    "title": "הנחיות למשלמי קצבה וטפסי161ח/161י/101ג",
+    "source_type": "official_guidance_form_family",
+    "issuer_or_owner": "רשות המסים",
+    "domain_ids": [
+      "P19",
+      "P22"
+    ],
+    "required_edition_scope": "פטור נוסף, מידע למשלמים ותיאום; גרסה ושנת מס",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איסוף בנוסח סופי ועדכני, לא כותרת טיוטה בלבד",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S044",
+    "title": "כללי היוון/משיכה לפי סעיף23לקופות גמל והנחיות הקצבה המזערית",
+    "source_type": "law_regulation_guidance_target",
+    "issuer_or_owner": "רשומות / רשות שוק ההון / רשות המסים",
+    "domain_ids": [
+      "P20",
+      "P15"
+    ],
+    "required_edition_scope": "מקור מחייב, תקרה לפי שנה, קצבה מוכרת/מזכה וחריגים",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "המדריך מפנה; הבסיס המלא לא נשמר",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S045",
+    "title": "טפסי159/159אוהוראות פטור למשיכה במצבים מיוחדים",
+    "source_type": "official_form_guidance_target",
+    "issuer_or_owner": "רשות המסים",
+    "domain_ids": [
+      "P20"
+    ],
+    "required_edition_scope": "לבדוק שמות/גרסאות מדויקים, תנאים, סמכות הקופה/פקיד שומה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור ואימות; לא כל טופס חל בכל משיכה",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S046",
+    "title": "חוק הביטוח הלאומי ותקנות: אזרח ותיק, שאירים, נכות, דמי ביטוח ובריאות",
+    "source_type": "law_regulation_family",
+    "issuer_or_owner": "רשומות / ביטוח לאומי",
+    "domain_ids": [
+      "P21",
+      "P10",
+      "P11"
+    ],
+    "required_edition_scope": "פרקים וסעיפים נפרדים, תחילה, תושבות ותקופות",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש מקור לפי פרק ושאלה; לא נשמר מאגר מלא",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S047",
+    "title": "חוזרי ודפי ביטוח לאומי: גיל/הכנסות/דחייה/קצבה מוקדמת/תביעה",
+    "source_type": "official_guidance_family",
+    "issuer_or_owner": "המוסד לביטוח לאומי",
+    "domain_ids": [
+      "P21",
+      "P14"
+    ],
+    "required_edition_scope": "מבחני הכנסה, סכומים לפי שנה והבחנה בין מס הכנסה לדמי ביטוח",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איסוף גרסאות ומקורות מדויקים",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S048",
+    "title": "תיאום מס, דוח שנתי, ניכוי במקור והחזר מס: טפסים והוראות",
+    "source_type": "official_form_guidance_family",
+    "issuer_or_owner": "רשות המסים",
+    "domain_ids": [
+      "P22",
+      "P18"
+    ],
+    "required_edition_scope": "לפי שנת מס ומקור הכנסה; לא לערבב טופס פריסה בתיאום מס",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איסוף",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S049",
+    "title": "חוק לחלוקת חיסכון פנסיוני בין בני זוג שנפרדו והוראות מס/ביצוע",
+    "source_type": "law_regulation_circular_family",
+    "issuer_or_owner": "רשומות / רשות המסים / רשות שוק ההון",
+    "domain_ids": [
+      "P24",
+      "P11"
+    ],
+    "required_edition_scope": "סוג הסדר, פסק דין, רישום, זכויות שאירים ותחולה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור ומיפוי",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S050",
+    "title": "חוק הירושה, הוראות מוטבים והגנות על כספים פנסיוניים",
+    "source_type": "law_product_family",
+    "issuer_or_owner": "רשומות / גופים מוסדיים",
+    "domain_ids": [
+      "P24",
+      "P11"
+    ],
+    "required_edition_scope": "הבחנה בין מוטבים, שאירים ויורשים; מקור מוצר וצו אישי",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איסוף ממוקד; אין פרטי לקוחות באתר",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S051",
+    "title": "חוק הכשרות המשפטית והאפוטרופסות והנחיות ייפוי כוח מתמשך",
+    "source_type": "law_guidance_family",
+    "issuer_or_owner": "רשומות / משרד המשפטים",
+    "domain_ids": [
+      "P24"
+    ],
+    "required_edition_scope": "לפי סמכות נותן ההוראה וסוג פעולה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איסוף והפניה משפטית לפי צורך",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S052",
+    "title": "חוק הגנת הפרטיות, תיקון13ותקנות אבטחת מידע",
+    "source_type": "law_regulation_family",
+    "issuer_or_owner": "רשומות / הרשות להגנת הפרטיות",
+    "domain_ids": [
+      "P26",
+      "P25"
+    ],
+    "required_edition_scope": "תחולה על סוכנות/מאגר, אבטחה, מידע רפואי והעברה לחו״ל",
+    "observed_url": "https://www.gov.il/he/pages/guide_tikon13_professional",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "דפי הדרכה נקראו חלקית בעבר; חקיקה/תקנות מקוריות נדרשות",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S053",
+    "title": "הוראות סייבר, מיקור חוץ, המשכיות עסקית והרשאות לפי סוג גוף",
+    "source_type": "circular_family",
+    "issuer_or_owner": "רשות שוק ההון / הרשות להגנת הפרטיות",
+    "domain_ids": [
+      "P26",
+      "P25"
+    ],
+    "required_edition_scope": "אין להחיל חוזר לגוף מוסדי אוטומטית על סוכן; תחולה נפרדת",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש מיפוי תחולה ואיסוף",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S054",
+    "title": "איסור הלבנת הון/מימון טרור: חקיקה, צווים והנחיות החלים בפעולה",
+    "source_type": "law_order_family",
+    "issuer_or_owner": "רשומות / רשות שוק ההון / הרשות לאיסור הלבנת הון",
+    "domain_ids": [
+      "P26"
+    ],
+    "required_edition_scope": "בדיקת מי החייב, סוג מוצר/פעולה, זיהוי/דיווח ושמירה",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "תחולה לא אומתה; אין לסמן כחובה כללית לכל פעולה",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S055",
+    "title": "דין והוראות ללקוחות בעלי שליטה, תושבי חוץ, עולים והסכמים מיוחדים",
+    "source_type": "cross_domain_family",
+    "issuer_or_owner": "רשומות / רשות המסים / ביטוח לאומי / מעסיק",
+    "domain_ids": [
+      "P23",
+      "P24"
+    ],
+    "required_edition_scope": "לפי מעמד ותקופת האירוע; אמנה/הסכם פרטני אם רלוונטיים",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש מיפוי תרחישים ומקורות פרטניים",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S056",
+    "title": "הנחיות פרסום, פניות שיווקיות, הגנת צרכן ושירות מרחוק",
+    "source_type": "law_circular_family",
+    "issuer_or_owner": "רשומות / רשות שוק ההון / הרשות להגנת הצרכן",
+    "domain_ids": [
+      "P25",
+      "P02"
+    ],
+    "required_edition_scope": "תחולה לפי סוג פעולה, רישיון, מוצר וערוץ תקשורת",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "נדרש איתור; לא רשימת הוראות מחייבות מאומתת",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S057",
+    "title": "ארכיון תיקונים, חוזרים מאוחדים והודעות רגולטוריות רשמיות",
+    "source_type": "official_registry_family",
+    "issuer_or_owner": "רשות שוק ההון / רשות המסים / רשומות / ביטוח לאומי",
+    "domain_ids": [
+      "P27"
+    ],
+    "required_edition_scope": "יומן פרסום, תחילה, ביטול/החלפה ומקור רשמי",
+    "observed_url": "https://www.gov.il/he/Departments/DynamicCollectors/regulation-legislation?skip=0",
+    "url_status": "כתובת שנצפתה בעבר או בחיפוש; בדיקת המצב ברשומת המקור",
+    "acquisition_status": "מעקב קיים, לעתים חסימת גישה; אין טענה לכיסוי מלא",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  },
+  {
+    "id": "S058",
+    "title": "דוגמאות עבודה, בדיקות חישוב ונהלי בקרת איכות",
+    "source_type": "authored_check_family",
+    "issuer_or_owner": "ספריית עבודה מקצועית",
+    "domain_ids": [
+      "P28",
+      "P27"
+    ],
+    "required_edition_scope": "לא דין: נתונים סינתטיים, מקור כל כלל, גרסאות וחריגים",
+    "observed_url": null,
+    "url_status": "לא אותרה כתובת מדויקת; לא הומצא קישור",
+    "acquisition_status": "יש להכין אחרי ביסוס המקורות; לא לפרסם כראיה לחוק",
+    "collection_action": "לאתר במסלול הרשמי, לאמת כותרת/סוג/מהדורה/תחולה, לשמור מקור ומטא-נתונים; אחר כך להכין טקסט אמין אוPDFכגיבוי",
+    "ready_for_professional_use": false
+  }
+]

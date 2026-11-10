@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-09",
+  "indexed_source_pages": 45,
+  "registry_paths_and_source_hashes": "PASS",
+  "search_checks": [
+    {
+      "query": "קיבוע זכויות",
+      "exit": 0,
+      "returned_match": true
+    },
+    {
+      "query": "מענק",
+      "exit": 0,
+      "returned_match": true
+    },
+    {
+      "query": "9,430",
+      "exit": 0,
+      "returned_match": true
+    },
+    {
+      "query": "איןמילהכזאתבספריה",
+      "exit": 0,
+      "returned_match": false
+    },
+    {
+      "query": "\" OR *",
+      "exit": 0,
+      "returned_match": false
+    }
+  ],
+  "personal_data": "No client files included; two official public guidance sources only",
+  "limitations": "Exact-token Hebrew search, extraction may reorder tables, no current-law certification"
+}

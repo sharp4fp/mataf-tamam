@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="noindex" name="robots"/><title>מתה״פ - הדגמה סינתטית קבועה</title><link href="css/heebo.css" rel="stylesheet"/><link href="css/style.css" rel="stylesheet"/><style>.static-value{display:inline-block;padding:8px;border:1px solid #cad0db;background:#f5f6f8;border-radius:5px;min-width:60px}.static-control{opacity:.65;cursor:default!important}a.modebtn{text-decoration:none;display:inline-block}details{display:block}.acc-body{display:block!important}</style></head><body><div id="root"><div class="demo-banner" id="demo-only-banner">הדגמה קבועה בלבד - נתונים סינתטיים. אין העלאת קבצים, הזנה, חישוב, שמירה או טעינה.</div>
+<header class="hero">
+<div class="hero-inner">
+<h1>מערכת תומכת החלטה פנסיונית</h1>
+<div class="hero-fact">גרסה לשיתוף (אב-טיפוס) · נתוני ייחוס 09/2026</div>
+<p>סיור קבוע במתה״פ על תיק סינתטי בלבד. הדפים מציגים את בדיקת התיק ותכנון הפרישה כפי שנראו בצילום המצב. אין כאן הזנת נתונים, העלאת קבצים או מנוע חישוב פעיל. לחצו על שם התצוגה כדי לעבור בין הדפים.</p>
+<div class="herobtns">
+<div aria-label="בחירת מצב עבודה" class="modeswitch" role="group">
+<a class="modebtn active" href="index.html">בדיקת תיק לקוח</a>
+<a class="modebtn" href="retirement.html">תכנון פרישה</a>
+</div>
+</div>
+</div>
+</header>
+<main class="wrap">
+<div class="callout warn">
+<b>גבולות האב-טיפוס.</b> זהו כלי עזר ראשון לבחינה, לא מנוע המלצות. נתוני הייחוס (תשואות, שארפ, חשיפות, דמי ניהול) הם תמונת 09/2026 ואינם מתעדכנים לבד. מסלולים עם קוד רשמי מותאמים לנתוני האוצר (09/2026) לפי מזהה המסלול; מסלולים בלי קוד מותאמים לפי דמיון שמות עם ציון - יש לוודא אותם. שארפ מחושב על 36 חודשי תשואה (10/2023-09/2026), ריבית חסרת סיכון קבועה 4%. שארפ רשמי כפי שדווח בנפרד. אין נתוני 5 שנים במאגר. לדירוג נכנסים רק מסלולים עם לפחות 36 חודשי נתוני תשואה בפועל בדיווח הרשמי (תשואה נצברת תלת-שנתית קיימת); מסלול צעיר יותר אינו מדורג, גם אם הקרן עצמה ותיקה.
+    </div><div class="callout warn"><b>חשוב לדעת לפני שימוש בנתונים</b><ul class="notes">
+<li>שדות טופס 161 שחולצו אוטומטית הם מועמדים בלבד - יש לאשר אותם מול הטופס החתום לפני כל שימוש.</li>
+<li>כיסוי החשיפה: 86.3% משווי התיק. מסלולים עם מזהה רשמי מותאמים לנתוני האוצר (09/2026); מוצרים שאינם במאגר מושלמים ממקורות פומביים מתועדים (מסמך רשמי של הגוף, אתר חיצוני מסומן כלא-רשמי, או הערכת מערכת עם בסיס מצוין). מוצר שאין לו נתון ולא בסיס להערכה מסומן "לא ידוע" ואינו נכנס לממוצע כאילו חשיפתו אפס. הצעות התאמה לפי שם דורשות אישור מפורש מול קוד המסלול הרשמי.</li>
+<li>נתוני הייחוס מתומנת 09/2026 ואינם עדכניים ליום הבדיקה; לחלק מהמסלולים אין נתוני 5 שנים.</li>
+<li>משלם בטופס 161 או גוף גביה במסלקה אינו בהכרח מעסיק, ואותו מספר ח"פ אינו הוכחה לרישום בטופס או לכיסוי הפיצויים - הזהויות והקצאות מסתמכות על המסמכים בלבד.</li>
+</ul></div>
+<section class="card acc" id="acc-step1">
+<span class="acc-head">
+            1 קובץ המסלקה (ZIP או XML)
+            3 חשבונות נטענו
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-step1">
+<div class="note small">העלאת קבצים אינה זמינה בגרסת ההדגמה. הגרסה מציגה תיק סינתטי קבוע להמחשה בלבד.</div>
+
+<div class="note small"><b>מה זה "תיק הדגמה"?</b> תיק לקוח מומצא עם נתונים סינתטיים בלבד - לא לקוח אמיתי ולא נתונים של אף אחד. הוא מאפשר לראות איך המערכת נראית ומה היא מציגה (תיק נכסים, רמת סיכון, ניתוח טופס 161) בלי להעלות מסמכים אמיתיים. בגרסת ההדגמה אין אפשרות להעלות קבצים.</div>
+<div class="demo-banner">מוצג תיק הדגמה סינתטי - לא נתוני לקוח אמיתי.</div>
+<div class="report-cta">
+
+<span class="muted small">דוח "מצב טרום טיפול" מקוצר (3 עמודי A4) על בסיס קובץ המסלקה שהועלה. הקובץ מופק כאן בדפדפן ומורד ישירות למחשב.</span>
+</div>
+</div>
+</section>
+<section class="card acc" id="acc-secure">
+<span class="acc-head">
+            2 שמירת העבודה לקובץ מוצפן (אופציונלי)
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-secure"><div class="note small">שמירת וטעינת תיק מוצפן אינן זמינות בגרסת ההדגמה.</div></div>
+</section>
+<section class="card acc" id="acc-portfolio">
+<span class="acc-head">
+            3 תיק הנכסים
+            695,000 ₪ · 3 חשבונות
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-portfolio">
+<div class="group-label">תיק הנכסים</div>
+<h2>לקוח לדוגמה (סינתטי) - 695,000 ₪</h2>
+<div class="card acct">
+<div class="card-head">
+<div><b>מנורה מבטחים פנסיה</b> · מנורה מבטחים פנסיה וגמל בע"מ</div>
+<div class="muted small">קרן פנסיה · חשבון 100001 · סטטוס 1 · נכון ל-30/06/2026</div>
+</div>
+<div class="track">
+<div class="track-line"><span>מנורה מבטחים פנסיה - מסלול מניות</span><b>420,000 ₪</b></div>
+<div class="eqbar"><div class="eqbar-eq" style="width:73.6%"></div></div>
+<div class="muted small">חשיפה מנייתית 73.6% · הצעת התאמה בלבד, לפי דמיון שמות: <b>מנורה מבטחים פנסיה - מסלול מניות</b> (קרנות פנסיה מקיפה, ציון 1.00). לא מאומתת מול רשימת המסלולים הרשמית של הגוף.</div>
+<label class="confirmlab"><span class="static-value">לא</span> ההתאמה לפי שם בלבד - אישרתי מול קוד המסלול הרשמי, לכלול בממוצע הסיכון</label>
+</div>
+<div class="muted small">
+                דמי ניהול מהפקדה בחודש הדיווח: 1.5% · 
+                מהצבירה: 0.08% (שיעור באחוזים כפי שדווח עבור חודש הדיווח; אינו שיעור שנתי) · 
+                
+                
+            </div>
+</div><div class="card acct">
+<div class="card-head">
+<div><b>הפניקס השתלמות</b> · הפניקס פנסיה וגמל בע"מ</div>
+<div class="muted small">קרן השתלמות · חשבון 100002 · סטטוס 1 · נכון ל-30/06/2026</div>
+</div>
+<div class="track">
+<div class="track-line"><span>הפניקס השתלמות מניות</span><b>180,000 ₪</b></div>
+<div class="eqbar"><div class="eqbar-eq" style="width:98.9%"></div></div>
+<div class="muted small">חשיפה מנייתית 98.9% · הצעת התאמה בלבד, לפי דמיון שמות: <b>הפניקס השתלמות מניות</b> (קרנות השתלמות, ציון 1.00). לא מאומתת מול רשימת המסלולים הרשמית של הגוף.</div>
+<label class="confirmlab"><span class="static-value">לא</span> ההתאמה לפי שם בלבד - אישרתי מול קוד המסלול הרשמי, לכלול בממוצע הסיכון</label>
+</div>
+<div class="muted small">
+                דמי ניהול מהפקדה בחודש הדיווח: 0% · 
+                מהצבירה: 0.6% (שיעור באחוזים כפי שדווח עבור חודש הדיווח; אינו שיעור שנתי) · 
+                
+                
+            </div>
+</div><div class="card acct">
+<div class="card-head">
+<div><b>מגדלור</b> · מגדל חברה לבטוח בע"מ</div>
+<div class="muted small">ביטוח מנהלים (סיווג לפי קוד 1 - לא אומת) · חשבון 100003 · סטטוס 2 · נכון ל-30/06/2026</div>
+</div>
+<div class="track">
+<div class="track-line"><span>כללי</span><b>95,000 ₪</b></div>
+<div class="muted small"><span class="muted">לא נמצאה הצעת התאמה בנתוני הייחוס - החשיפה לא נכללת בממוצע</span> <span class="tag-miss">לא נכלל בממוצע הסיכון - אין נתון חשיפה ולא בסיס להערכה, והחשיפה אינה ידועה</span></div>
+</div>
+<div class="muted small">
+                דמי ניהול מהפקדה בחודש הדיווח: 0.3% · 
+                מהצבירה: 1.1% (שיעור באחוזים כפי שדווח עבור חודש הדיווח; אינו שיעור שנתי) · 
+                
+                
+            </div>
+</div>
+<div class="callout note-c"><b>כיסוי החשיפה.</b> 86.3% משווי התיק עם נתון חשיפה מתועד (רשמי / מקור לא-רשמי מסומן / הערכה עם בסיס). ללא נתון וללא בסיס להערכה: כללי (מגדלור, 95,000 ₪). חשיפתם אינה ידועה ואינה נספרת כאפס בממוצע.</div>
+</div>
+</section>
+<section class="card acc" id="acc-report">
+<span class="acc-head">
+            4 דוח מקוצר ללקוח (A4)
+            מבוסס על קובץ המסלקה שהועלה
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-report">
+<div class="muted small">דוח "מצב טרום טיפול" מקוצר (3 עמודי A4) המבוסס על קובץ המסלקה שהועלה: תמונת מצב והנתונים החשובים בתחילת הדוח, מוצרים ומסלולים, וכיסויים ביטוחיים, ללא שער ומכתב נפרדים. נתון שאין במקור מוצג בדוח כ"לא התקבל מידע" ואינו מומצא. הדוח מופק בדפדפן בלבד ואינו נשלח או נשמר מחוץ למחשב שלך.</div>
+<div class="rep-agent-form">
+<label>שם הסוכן לדוח <span class="static-value">שרון סימון</span></label>
+<label>טלפון <span class="static-value">לא הוזן</span></label>
+<label>דוא"ל <span class="static-value">לא הוזן</span></label>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+
+
+
+</div>
+<div class="muted small">בתצוגת ההדפסה ניתן לבחור "שמירה כ-PDF". מומלץ נייר A4, שוליים רגילים.</div></div>
+</section>
+<section class="card acc" id="acc-beforeafter">
+<span class="acc-head">
+            5 דוח לפני/אחרי מסכם (הדמיה)
+            מול החלופות הזכאיות המדורגות
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-beforeafter">
+<div class="muted small">דוח "לפני ואחרי" מסכם (עמוד A4 אחד, הדמיה): מצב התיק כיום מול מעבר של כל מסלול לחלופה המדורגת הראשונה שזכאות ההצטרפות אליה אומתה, באותה קטגוריית חשיפה - חשיפה משוקללת, עלות דמי ניהול מצבירה שנתית וחיסכון משוער לכל מסלול. דמי הניהול של החלופה הם הממוצע הרשמי שפורסם, לא הצעה אישית. נתון חסר מוצג כ"לא התקבל מידע". הדוח מופק בדפדפן בלבד ואינו נשלח או נשמר מחוץ למחשב שלך.</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+
+
+</div>
+<div class="muted small">בתצוגת ההדפסה ניתן לבחור "שמירה כ-PDF". מומלץ נייר A4, שוליים רגילים.</div></div>
+</section>
+<section class="card acc" id="acc-peers">
+<span class="acc-head">
+            6 השוואת עמיתים רשמית (גמל-נט / פנסיה-נט)
+            טרם הופעלה
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-peers">
+<div class="muted small">מקור: מאגרי גמל-נט ופנסיה-נט, רשות שוק ההון ביטוח וחיסכון (data.gov.il). תשואות נומינליות ברוטו לפני דמי ניהול. ההשוואה היא לתקופת הדיווח האחרונה שפורסמה במאגר, ואינה תחליף לייעוץ. קו הבסיס להשוואה הוא תמיד "ללא שינוי": שמירת הכסף במסלול הנוכחי. כל חלופה מוצגת מולו, כולל דמי הניהול המוצעים בפועל מול דמי הניהול הנוכחיים. ההשוואה מתייחסת לכסף הקיים (הצבירה). הפקדות עתידיות הן החלטה נפרדת: אפשר לנייד את הצבירה למסלול אחד ולהפנות הפקדות חדשות למסלול אחר באותה קופה או בקופה אחרת, בכפוף לכללי הקופה.</div>
+</div>
+</section>
+<section class="card acc" id="acc-risk">
+<span class="acc-head">
+            7 רמת סיכון
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-risk">
+<div class="group-label">רמת סיכון</div>
+<h2>חשיפה מנייתית משוקללת</h2>
+<div class="muted small">המדד: חשיפה מנייתית משוקללת-יתרות של המסלולים הזוהים בלבד. זה אינו מדד סיכון כולל של התיק (אינו כולל אג"ח, מט"ח, מניות חוץ ומינוף).</div>
+<div class="callout note-c"><b>אין מספיק נתונים.</b> אין עדיין מסלולים הנכללים בממוצע. מסלול שזוהה לפי קוד מסלול רשמי נכלל אוטומטית מגמל-נט, פנסיה-נט או ביטוח-נט (מאגרי הרשות, 09/2026); התאמה לפי דמיון שם בלבד נכללת רק אחרי אישור ידני; מסלול ללא נתון וללא בסיס להערכה מסומן "לא ידוע" ואינו נספר כאפס.</div>
+</div>
+</section>
+<section class="card acc" id="acc-efficiency">
+<span class="acc-head">
+            8 התייעלות מול נתוני ייחוס
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-efficiency">
+<div class="group-label">התייעלות</div>
+<h2>מסלולים עם שארפ 3 שנים גבוה יותר</h2>
+<div class="muted small">מיון לפי שארפ מחושב (36 חודשים, ריבית חסרת סיכון 4%) מתוך תמונת 09/2026, באותה קבוצת מוצר כמו החזקות הלקוח. סימון ✓ = חשיפה מנייתית ≥ 70% (סף החשיפה שהוגדר). זו רשימת בחינה, לא המלצה; דמי הניהול בפועל נקבעים מול הגוף. ברשימה רק מסלולים עם לפחות 36 חודשי נתוני תשואה בפועל בדיווח הרשמי (תשואה נצברת תלת-שנתית קיימת); מסלול צעיר יותר אינו מדורג כלל, גם אם הקרן עצמה ותיקה.</div>
+<div class="subhead">קרנות פנסיה מקיפה</div>
+<div class="muted small">הוחרגו מהדירוג בקבוצה זו 8 מסלולים עם פחות מ-36 חודשי נתוני תשואה בפועל (למשל מסלולי 'סחיר' שהושקו לאחרונה) - ייכנסו לדירוג כשיצטברו 36 חודשים.</div>
+<div class="cand">
+<div class="track-line"><span>1. מיטב פנסיה מקיפה משולב סחיר ✓</span><b>שארפ 2.24</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 98.3% · שארפ רשמי — · מניות 70.9% · חו"ל 0.8% · מט"ח 4.6% · ד"נ מצבירה ממוצע 0.11% · מהפקדה 1.25% · התאמה אקטוארית 0.02%
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>2. מור פנסיה מקיפה - מניות ✓</span><b>שארפ 2.19</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 71.2% · שארפ רשמי — · מניות 71.7% · חו"ל 49.9% · מט"ח 19.7% · ד"נ מצבירה ממוצע 0.19% · מהפקדה 1.05% · התאמה אקטוארית 0.03%
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>3. מיטב פנסיה מקיפה מניות ✓</span><b>שארפ 1.85</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 62.1% · שארפ רשמי 1.25 · מניות 71.5% · חו"ל 52% · מט"ח 28% · ד"נ מצבירה ממוצע 0.11% · מהפקדה 1.25% · התאמה אקטוארית 0.02%
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>4. מנורה מבטחים פנסיה - מסלול מניות ✓ (מוחזק היום)</span><b>שארפ 1.78</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 62.9% · שארפ רשמי 1.31 · מניות 73.6% · חו"ל 48.4% · מט"ח 22.5% · ד"נ מצבירה ממוצע 0.15% · מהפקדה 1.73% · התאמה אקטוארית -0.07%
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>5. כלל פנסיה מניות ✓</span><b>שארפ 1.77</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 63.1% · שארפ רשמי 1.26 · מניות 72.7% · חו"ל 48.9% · מט"ח 24.3% · ד"נ מצבירה ממוצע 0.14% · מהפקדה 1.52% · התאמה אקטוארית 0.03%
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>6. מגדל מקפת אישית מניות ✓</span><b>שארפ 1.74</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 62.4% · שארפ רשמי 1.24 · מניות 73.8% · חו"ל 47.5% · מט"ח 22% · ד"נ מצבירה ממוצע 0.14% · מהפקדה 1.56% · התאמה אקטוארית -0.05%
+                    </div>
+</div><div class="subhead">קרנות השתלמות</div>
+<div class="muted small">הוחרגו מהדירוג בקבוצה זו 26 מסלולים עם פחות מ-36 חודשי נתוני תשואה בפועל (למשל מסלולי 'סחיר' שהושקו לאחרונה) - ייכנסו לדירוג כשיצטברו 36 חודשים.</div>
+<div class="muted small">הוחרגו מהדירוג 14 מסלולים המוגבלים לעובדי סקטור או מפעל מסוים (לפי שדה אוכלוסיית היעד במאגר הרשמי) - הם אינם חלופה פתוחה לכל לקוח. אם הלקוח זכאי לקרן מוגבלת כזו, ניתן לבקש הצגה שלה בנפרד.</div>
+<div class="cand">
+<div class="track-line"><span>1. אינפיניטי השתלמות משולב סחיר ✓</span><b>שארפ 1.85</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 124% · שארפ רשמי 1.39 · מניות 98.9% · חו"ל 3.3% · מט"ח 0.1% · ד"נ מצבירה ממוצע 0.59% · מהפקדה —
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>2. מור קרן השתלמות לשכירים ולעצמאים - מניות ✓</span><b>שארפ 1.83</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 82.8% · שארפ רשמי 1.21 · מניות 100.3% · חו"ל 71.9% · מט"ח 26.3% · ד"נ מצבירה ממוצע 0.71% · מהפקדה —
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>3. אינפיניטי השתלמות מניות ✓</span><b>שארפ 1.77</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 84% · שארפ רשמי 1.34 · מניות 97.8% · חו"ל 69% · מט"ח 27.6% · ד"נ מצבירה ממוצע 0.59% · מהפקדה —
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>4. מיטב השתלמות מניות ✓</span><b>שארפ 1.69</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 82% · שארפ רשמי 1.08 · מניות 100.5% · חו"ל 72.7% · מט"ח 30.3% · ד"נ מצבירה ממוצע 0.55% · מהפקדה —
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>5. מנורה מבטחים השתלמות עוקב מדדי מניות ✓</span><b>שארפ 1.66</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 62.2% · שארפ רשמי — · מניות 98.1% · חו"ל 73.3% · מט"ח 52.7% · ד"נ מצבירה ממוצע 0.6% · מהפקדה —
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>6. ילין לפידות קרן השתלמות מסלול מניות ✓</span><b>שארפ 1.6</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 72.8% · שארפ רשמי 1.03 · מניות 100% · חו"ל 68.5% · מט"ח 26.6% · ד"נ מצבירה ממוצע 0.67% · מהפקדה —
+                    </div>
+</div>
+</div>
+</section>
+<section class="card acc" id="acc-step3">
+<span class="acc-head">
+            9 מטרות הלקוח
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-step3">
+<div class="fldgrid">
+<label class="fld"><span>אופק (שנים לקצבה)</span><span class="static-value">לא הוזן</span></label>
+</div>
+<div class="checks">
+<label><span class="static-value">לא</span> שמירה על הפטור החודשי על הקצבה</label>
+<label><span class="static-value">לא</span> העברה בין-דורית חלקה של הנכסים</label>
+<label><span class="static-value">לא</span> שמירה על ההון עבור הלקוח והיורשים ככל הניתן, גם על חשבון קצבה גבוהה יותר (ללא ערובה לשימור מלא של ההון)</label>
+<label><span class="static-value">לא</span> ריכוז הנכסים למסלול פנסיוני אחד</label>
+</div>
+<div class="muted small">המטרות נרשמות כאן כדי שהבדיקות הפתוחות למטה ישקפו אותן. בשלב זה אין במערכת מסקנות מוכנות לגבי ניוד או העברה בין-דורית.</div>
+</div>
+</section>
+<section class="card acc" id="acc-riskgoals">
+<span class="acc-head">
+            10 התאמת סיכון למטרות - דף עבודה פנימי
+            טרם הוזן קלט
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-riskgoals"><div class="card intake"><div class="track-line"><span><b>בחינת התאמת סיכון למטרות</b></span><span class="small muted">דף עבודה פנימי לסוכן - איכותני בלבד</span></div><div class="muted small">דף עבודה זה מפריד בין <b>נכונות לסיכון</b>, <b>יכולת לסיכון</b> ו<b>מידת מימון המטרות</b>, ומפיק שאלות איכותניות לבחינה ("כדאי לבחון") מתוך הקלט בלבד. אין כאן ציון, אין הקצאת יעד ואין המלצה אוטומטית; שדה ריק מסומן כחסר ולא כאפס. בסיס מושגי: <a href="https://www.kitces.com/blog/separating-risk-tolerance-from-risk-capacity-just-because-you-can-afford-to-take-risk-doesnt-mean-you-should/" rel="noopener" target="_blank">Kitces - הפרדת נכונות מיכולת</a> ו<a href="https://www.morningstar.com/financial-advisors/risk-capacity-is-more-than-just-time-frame" rel="noopener" target="_blank">Morningstar - יכולת סיכון היא יותר מאופק זמן</a>. היוריסטיקת יישום פנימית, לא מודל מספרי מאומת. בשלב זה אין התאמות בגין מקדמים מובטחים או בונוסים - האימות המחקרי עדיין פתוח.</div><div class="subhead">מטרות (עד 3)</div><div class="kibres"><div class="track-line"><span><b>מטרה 1</b></span></div><div class="netgrid"><label>תיאור המטרה<span class="static-value">לא הוזן</span></label><label>סכום יעד (₪)<span class="static-value">לא הוזן</span></label><label>מועד שימוש משוער<span class="static-value">לא הוזן</span></label><label>חשיבות<span class="static-value">לא הוזן</span></label><label>גמישות בסכום/מועד<span class="static-value">לא הוזן</span></label><label>הון מוקצה למטרה זו (₪, הקצאה מפורשת של הסוכן; בלי הקצאה לא תוצג בדיקת מימון למטרה)<span class="static-value">לא הוזן</span></label></div></div><div class="kibres"><div class="track-line"><span><b>מטרה 2</b></span></div><div class="netgrid"><label>תיאור המטרה<span class="static-value">לא הוזן</span></label><label>סכום יעד (₪)<span class="static-value">לא הוזן</span></label><label>מועד שימוש משוער<span class="static-value">לא הוזן</span></label><label>חשיבות<span class="static-value">לא הוזן</span></label><label>גמישות בסכום/מועד<span class="static-value">לא הוזן</span></label><label>הון מוקצה למטרה זו (₪, הקצאה מפורשת של הסוכן; בלי הקצאה לא תוצג בדיקת מימון למטרה)<span class="static-value">לא הוזן</span></label></div></div><div class="kibres"><div class="track-line"><span><b>מטרה 3</b></span></div><div class="netgrid"><label>תיאור המטרה<span class="static-value">לא הוזן</span></label><label>סכום יעד (₪)<span class="static-value">לא הוזן</span></label><label>מועד שימוש משוער<span class="static-value">לא הוזן</span></label><label>חשיבות<span class="static-value">לא הוזן</span></label><label>גמישות בסכום/מועד<span class="static-value">לא הוזן</span></label><label>הון מוקצה למטרה זו (₪, הקצאה מפורשת של הסוכן; בלי הקצאה לא תוצג בדיקת מימון למטרה)<span class="static-value">לא הוזן</span></label></div></div><div class="subhead">נכסים, חשיפה בפועל ומקורות</div><div class="netgrid"><label>יתרת התיק הכוללת (₪)<span class="static-value">לא הוזן</span></label><label>חשיפה מדווחת בפועל למניות (%)<span class="static-value">לא הוזן</span></label><label>מקור ותאריך דיווח החשיפה<span class="static-value">לא הוזן</span></label><label>הכנסה קבועה צפויה (קצבה/אחר, ₪/חודש)<span class="static-value">לא הוזן</span></label><label>משאבים נוספים יציבים<span class="static-value">לא הוזן</span></label><label>משיכות/צורכי נזילות מתוכננים (₪)<span class="static-value">לא הוזן</span></label><label>מועד המשיכות המתוכננות<span class="static-value">לא הוזן</span></label></div><div class="subhead">נכונות לסיכון (בנפרד מיכולת)</div><div class="netgrid"><label>נכונות לסיכון מוצהרת<span class="static-value">לא הוזן</span></label><label>התנהגות בירידות בעבר<span class="static-value">לא הוזן</span></label></div><div class="subhead">שאלות איכותניות לבחינה (נגזרות מהקלט בלבד; בדיקת מימון למטרה מוצגת רק מול הקצאה מפורשת שהוזנה, וההערכה המאוחדת אינה מקצה כסף למטרה מסוימת)</div><div id="rg-flags"><ul class="notes rgflags"><li class="rg-miss"><b>חסר: </b>נכונות לסיכון לא הוזנה - מסומן כחסר, לא כאפס.</li><li class="rg-miss"><b>חסר: </b>התנהגות בירידות בעבר לא הוזנה - מסומן כחסר.</li><li class="rg-miss"><b>חסר: </b>לא הוזנה אף מטרה עם סכום או מועד - מסומן כחסר.</li></ul></div></div></div>
+</section>
+<section class="card acc" id="acc-openq">
+<span class="acc-head">
+            11 שאלות פתוחות
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-openq">
+<div class="group-label">שאלות פתוחות</div>
+<h2>מסגרת החלטה - בדיקות שלא בוצעו עדיין</h2>
+<div class="muted small">לפי המטרות שנרשמו בשלב 3. לכל נכס - הבדיקות הנדרשות לפני ריכוז או ניוד. אין להניח שניתן לנייד או להפוך לקצבה כל נכס.</div>
+<div class="card">
+<div class="card-head"><b>מנורה מבטחים פנסיה</b> <span class="muted">(קרן פנסיה, 420,000 ₪)</span></div>
+<ul class="checks-open">
+<li>ניוד למסלול מרכז: טרם נבדק - תלוי בסוג המוצר ובתנאי החשבון.</li>
+<li>אירוע מס בעת ניוד או משיכה: טרם נבדק.</li>
+<li>אובדן זכויות קיימות (דמי ניהול מוסכמים, הבטחת תשואה, כיסויים ביטוחיים): טרם נבדק.</li>
+<li>משמעות ליורשים (מוטבים, שאירים, היוון): טרם נבדקה.</li>
+<li>מסלול קצבה מול שמירת הון ליורשים (לפי מטרת הלקוח): טרם נבדק; אין ערובה לשימור 100% מההון בכל מסלול.</li>
+</ul>
+</div><div class="card">
+<div class="card-head"><b>הפניקס השתלמות</b> <span class="muted">(קרן השתלמות, 180,000 ₪)</span></div>
+<ul class="checks-open">
+<li>ניוד למסלול מרכז: טרם נבדק - תלוי בסוג המוצר ובתנאי החשבון.</li>
+<li>אירוע מס בעת ניוד או משיכה: טרם נבדק.</li>
+<li>אובדן זכויות קיימות (דמי ניהול מוסכמים, הבטחת תשואה, כיסויים ביטוחיים): טרם נבדק.</li>
+<li>משמעות ליורשים (מוטבים, שאירים, היוון): טרם נבדקה.</li>
+<li>מסלול קצבה מול שמירת הון ליורשים (לפי מטרת הלקוח): טרם נבדק; אין ערובה לשימור 100% מההון בכל מסלול.</li>
+</ul>
+</div><div class="card">
+<div class="card-head"><b>מגדלור</b> <span class="muted">(ביטוח מנהלים (סיווג לפי קוד 1 - לא אומת), 95,000 ₪)</span></div>
+<ul class="checks-open">
+<li>ניוד למסלול מרכז: טרם נבדק - תלוי בסוג המוצר ובתנאי החשבון.</li>
+<li>אירוע מס בעת ניוד או משיכה: טרם נבדק.</li>
+<li>אובדן זכויות קיימות (דמי ניהול מוסכמים, הבטחת תשואה, כיסויים ביטוחיים): טרם נבדק.</li>
+<li>משמעות ליורשים (מוטבים, שאירים, היוון): טרם נבדקה.</li>
+<li>מסלול קצבה מול שמירת הון ליורשים (לפי מטרת הלקוח): טרם נבדק; אין ערובה לשימור 100% מההון בכל מסלול.</li>
+</ul>
+</div>
+<div class="callout note-c"><b>מה חסר כדי לקבוע.</b> תאריך קצבה ראשונה מבוקש, סך כל הנכסים מחוץ למסלקה, היסטוריית משיכות פטורות (לקיבוע זכויות), ומצב משפחתי/מוטבים עדכני. כללי המס אינם מאומתים במלואם בגרסה זו; לפני כל החלטה יש לאמת מול רשות המסים והגוף המנהל.</div>
+</div>
+</section>
+<section class="card acc" id="acc-review">
+<span class="acc-head">
+            12 סיכום לבחינה מקצועית ומשוב
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-review">
+<div class="muted small">רשימת הבדיקות שבוצעו והפתוחות לפני כל החלטה. המערכת אינה ממליצה ואינה מבצעת פעולות - היא מסכמת מה נבדק, ממה, ומה עוד פתוח.</div>
+<div class="subhead">בוצע ואומת</div>
+<ul class="notes"><li><b>מקור טבלת המקדמים:</b> נספחי הזקנה של תקנוני כל 18 הקרנות (9 מקיפות + 9 כלליות/משלימות, מלאי פנסיה-נט 09/2026) - חולצו ואומתו מספרית ב-8.11.2026; הערות שקופות מוצגות לטבלאות משוערכות (הראל) או חלקיות (מיטב)</li><li><b>מקור נתוני העמיתים:</b> גמל-נט ופנסיה-נט של רשות שוק ההון (data.gov.il), תקופת דיווח 09/2026</li><li><b>כללי ניוד ואכשרה:</b> חוזר העברת כספים בין קופות גמל (2017), סעיפים 3-4, נקרא מול הנוסח הרשמי</li></ul>
+<div class="subhead">פתוח לפני ביצוע</div>
+<ul class="notes"><li>אישור הלקוח לכל ערך שחולץ אוטומטית מול המסמך המקורי</li><li>ציטוט קצבה מחייב מהגוף המנהל - אופציונלי כעת, נדרש לפני החלטה על מסלול קצבה</li><li>בדיקת הרכב תנאים מול דברי הסכמי עבודה קודמים</li></ul>
+<div class="subhead">משוב</div>
+<div class="muted small">יש הערה, תיקון או בקשה? כתבו אותה כאן והעתיקו - ההעתקה נשארת במכשיר שלכם בלבד, ואתם מדביקים אותה בווצאפ או בדוא"ל למי שתבחרו. שום דבר לא נשלח מהעמוד, ושום נתון לקוח אינו מצורף אוטומטית.</div>
+<span class="static-value">לא הוזן</span>
+
+<span class="muted small" id="feedback-done"></span></div>
+</section>
+<footer class="closing">אב-טיפוס · נתוני ייחוס 09/2026 בלבד · כללים: ספריית כללים ראשונית 08/11/2026 (כיסוי חלקי; כללי פריסה מעתק מראה בלבד) · נתוני לקוח לא נשלחים, לא נשמרים ולא מוזנים לאף מערכת מהעמוד הזה; פרטי הסוכן לדוח בלבד נשמרים מקומית בדפדפן שלך.
+        <details class="srcbox"><summary>מקורות החישוב ותאריכי עדכון</summary><ul class="srcbox-list">
+<li>מדרגות מס הכנסה, מס יסף (סעיף 121ב) ונקודת זיכוי (33א) ל-2026 - רשות המסים, לוח הניכויים הרשמי 2026.</li>
+<li>פטור קצבה מזכה 2026: 57.5% מתקרת הקצבה המזכה - רשות המסים, מדריך לקיבוע זכויות (טופס 161ד) 2026, gov.il.</li>
+<li>קצבת שאירים - משטר מס נפרד: פקודת מס הכנסה סעיף 9(6ו) (תיקון 190), פטור מלא עד תקרת הקצבה המזכה 2026, לפי לוח הניכויים הרשמי.</li>
+<li>מקדמי המרה לקצבה - הטבלאות הרשמיות באתרי החברות, נכון לנתוני ייחוס 09/2026.</li>
+<li>השוואת עמיתים - גמל-נט / פנסיה-נט; תקופת הדיווח מוצגת בחלק ההשוואה עצמו.</li>
+<li>תקן קובץ המסלקה - ממשק הזדהות לקוח (מסלקה פנסיונית), רשות שוק ההון.</li>
+</ul></details>
+</footer>
+</main></div></body></html>

@@ -1,0 +1,36 @@
+[
+  {
+    "id": "tax-161d-2026",
+    "title": "מדריך רשות המסים לקיבוע זכויות 161ד, 2026",
+    "url": "https://www.gov.il/BlobFolder/guide/2026-filling-out-form-161d/he/Guides_IncomeTax_filling-out-form-161d-2026.pdf",
+    "publisher": "רשות המסים בישראל",
+    "edition": "2026",
+    "retained_on": "2026-11-08",
+    "library_packaged_on": "2026-11-09",
+    "last_live_revalidation": null,
+    "effective_scope": "הנחיות ונתוני 2026; אין להסיק תחולה בכל מצב אישי",
+    "verification": "עותק מקור רשמי שנשמר; לא נוסח חקיקה מאוחד ולא אישור לכל חישוב",
+    "pdf_path": "sources/tax-161d-2026.pdf",
+    "text_path": "sources/tax-161d-2026.txt",
+    "retention_scope": "Publicly accessible official guidance retained for reference; no third-party commercial database copied. No redistribution licence determination.",
+    "supersedes": null,
+    "sha256": "40eba7d3b5abded138edc9c0292ae5810fa740808afc30ea021c44f21d84d679"
+  },
+  {
+    "id": "tax-booklet-2026",
+    "title": "לוח ניכויים חודשי רשות המסים, 2026",
+    "url": "https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2026.pdf",
+    "publisher": "רשות המסים בישראל",
+    "edition": "2026",
+    "retained_on": "2026-11-08",
+    "library_packaged_on": "2026-11-09",
+    "last_live_revalidation": null,
+    "effective_scope": "הנחיות ונתוני 2026; אין להסיק תחולה בכל מצב אישי",
+    "verification": "עותק מקור רשמי שנשמר; לא נוסח חקיקה מאוחד ולא אישור לכל חישוב",
+    "pdf_path": "sources/tax-booklet-2026.pdf",
+    "text_path": "sources/tax-booklet-2026.txt",
+    "retention_scope": "Publicly accessible official guidance retained for reference; no third-party commercial database copied. No redistribution licence determination.",
+    "supersedes": null,
+    "sha256": "de6fee7208bdde4ec8b8731be95bcea2106aba449d949e5e646c2a0d5f2182a1"
+  }
+]

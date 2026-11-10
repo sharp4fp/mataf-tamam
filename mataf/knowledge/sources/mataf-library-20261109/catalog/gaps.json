@@ -1,0 +1,23 @@
+{
+  "coverage": "Two retained official guidance PDFs only. Not all Israeli pension/tax law.",
+  "priority_open": [
+    "Binding authority and approval conditions of 150% grant formula",
+    "Binding 2027/2028 pension exemption rates",
+    "Exactly-six-work-years spreading conflict",
+    "Full capitalization conditions and grant indexation",
+    "Bituach Leumi",
+    "Early withdrawals",
+    "Retirement age and annuity conversion"
+  ],
+  "external_preserved_corpus": {
+    "archive_sha256": "b1f725d6915cb629bab879e9562d62f9c7abf037ab76474f889592f1a1013017",
+    "pdfs": 10,
+    "fund_managers": 9,
+    "historical_capture_date": "2026-11-08",
+    "full_copies_inside_this_package": false,
+    "index": "catalog/fund-corpus-index.csv",
+    "fresh_url_validation": false
+  },
+  "unofficial_material": "Knowledge v4 mentions private-host circular copies. Their PDFs are not included or searchable as official sources.",
+  "current_law_check": "No automated source refresh is installed in this portable package. Revalidate live official sources before reliance on current law."
+}

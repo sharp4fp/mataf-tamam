@@ -1,0 +1,1 @@
+Presentation-only synthetic walkthrough. Two fixed views: index.html and retirement.html. No owner engine, parsers, scripts, inputs, file ingestion or save/load implementation. No real client data. Authentication is server-side Pages middleware, demo role only. This is not an interactive calculator.

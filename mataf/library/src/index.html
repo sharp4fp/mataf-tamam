@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="ספריית המקורות של מתה״פ — עותק שמור של מקורות רשמיים עם חיפוש, גישה מוגבלת לבעלים">
+<title>ספריית המקורות של מתה״פ</title>
+<link rel="stylesheet" href="style.css?v=9">
+</head>
+<body>
+
+<div id="gate" class="gate">
+  <div class="gate-card">
+    <div class="gate-badge">🔒</div>
+    <h1>ספריית המקורות של מתה״פ</h1>
+    <p class="gate-sub">ספרייה פרטית. התוכן מוצפן ונפתח רק עם סיסמת הבעלים.</p>
+    <form id="gate-form" autocomplete="off">
+      <label for="gate-pass">סיסמה</label>
+      <input id="gate-pass" name="password" type="password" inputmode="text" autocomplete="current-password" required>
+      <button type="submit" id="gate-btn">פתיחת הספרייה</button>
+      <p id="gate-error" class="gate-error" hidden></p>
+      <p id="gate-wait" class="gate-wait" hidden>פותח… (פענוח ראשון עלול לקחת כמה שניות)</p>
+    </form>
+  </div>
+  <footer class="gate-foot">מהדורה 2026-11-10-v8 · עותק היסטורי שמור · אין לראות בתוכן ייעוץ או פסיקה</footer>
+</div>
+
+<div id="app" hidden>
+  <header class="topbar">
+    <div>
+      <h1>ספריית המקורות של מתה״פ</h1>
+      <div class="muted" id="edition-line"></div>
+    </div>
+    <button id="lock-btn" class="ghost" title="נעילה">נעילה 🔒</button>
+  </header>
+
+  <div class="scope-banner" id="scope-banner"></div>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="search" class="tab active">חיפוש</button>
+    <button data-tab="sources" class="tab">מקורות</button>
+    <button data-tab="notes" class="tab">סיכום ידע (v4)</button>
+    <button data-tab="funds" class="tab">אינדקס תקנונים</button>
+    <button data-tab="profmap" class="tab">מפת המקצוע</button>
+    <button data-tab="datasets" class="tab">נתוני גופים מנהלים</button>
+    <button data-tab="downloads" class="tab">הורדות וניידות</button>
+    <button data-tab="about" class="tab">מגבלות</button>
+  </nav>
+
+  <main>
+    <section id="tab-search" class="panel active">
+      <div class="search-row">
+        <input id="q" type="search" placeholder='חיפוש במקורות, למשל: קיבוע זכויות, מענק, 9,430' autocomplete="off">
+      </div>
+      <div class="muted small">חיפוש מילים מדויקות בלבד (אין הטיות/נרדפות). העדר תוצאה אינו העדר דין. מספור העמודים הוא מספור עמודי קובץ ה-PDF — פתחו את עמוד המקור ואל תסתמכו על קטע בלבד.</div>
+      <label for="source-filter">סינון מקורות</label><select id="source-filter"></select>
+      <div id="search-stats" class="muted"></div>
+      <div id="results"></div>
+    </section>
+
+    <section id="tab-sources" class="panel">
+      <div id="sources-list"></div>
+    </section>
+
+    <section id="tab-notes" class="panel">
+      <div class="note-warn">סיכום ידע משני — אינו מקור ראשוני ואינו כלל חישוב מאושר. נשמר בנפרד מהמקורות.</div>
+      <div id="notes-body" class="notes"></div>
+      <button class="ghost" id="dl-notes">הורדת הסיכום (Markdown)</button>
+    </section>
+
+    <section id="tab-funds" class="panel">
+      <div class="note-warn" id="fund-status"></div>
+      <div class="table-wrap"><table id="fund-table"></table></div>
+    </section>
+
+    <section id="tab-profmap" class="panel">
+      <div class="note-warn" id="profmap-intro"></div>
+      <div class="card" id="profmap-legend"></div>
+      <div class="card" id="profmap-priority"></div>
+      <div class="search-row"><input id="profmap-q" type="search" placeholder="חיפוש במפת המקצוע, למשל: קיבוע, רישוי, ביטוח לאומי" autocomplete="off"></div>
+      <label class="small"><input type="checkbox" id="profmap-nosrc"> הצג רק נושאים שעדיין אין להם מקור קשור שמור</label>
+      <div id="profmap-stats" class="muted small"></div>
+      <div id="profmap-body"></div>
+      <div class="card" id="profmap-families"></div>
+      <div class="card">
+        <h2>הורדת מפת המקצוע</h2>
+        <p class="muted small">הקבצים נפתחים אחרי פתיחת הספרייה ואינם נשלחים לשום מקום.</p>
+        <button class="ghost" id="dl-profmap-json">הורדת JSON</button>
+        <button class="ghost" id="dl-profmap-csv">הורדת CSV</button>
+        <button class="ghost" id="dl-profmap-md">הורדת Markdown</button>
+        <button class="ghost" id="dl-profmap-manifest">הורדת מניפסט איסוף (CSV)</button>
+      </div>
+    </section>
+
+    <section id="tab-datasets" class="panel">
+      <div class="note-warn">מערכי נתונים של גופים מנהלים: נתוני דיווח, לא חוק ולא תקנון. הם אינם נכללים בחיפוש הטקסט ובחבילת ה-ZIP הרגילה, ויש להוריד אותם מכאן.</div>
+      <div id="datasets-body"></div>
+    </section>
+
+    <section id="tab-downloads" class="panel">
+      <div class="card">
+        <h2>הורדת כל הספרייה (ניידת)</h2>
+        <p class="muted">קובץ ZIP חלקי: שני מדריכי PDF רשמיים, טקסט מ-10 תקנוני חברות היסטוריים (ללא קובצי ה-PDF המקוריים שלהם; הם להורדה למטה), קטלוגים, בדיקות וסיכום v4. חיפוש Python ו-SQLite מכסה את טקסט הקריאה של כל 12 המסמכים. טבלאות לא-מאומתות מוסתרות גם בהורדות; החילוץ הגולמי נשמר בנפרד לשחזור בלבד, לא להסתמכות.</p>
+        <button class="primary" id="dl-zip">הורדת mataf-library-2026-11-09-v3.zip</button>
+        <div class="muted small" id="zip-hash-line"></div>
+        <p class="note-warn">הערה: חבילת ה-ZIP הזו חלקית. היא אינה כוללת את קובצי ה-PDF המקוריים של 10 התקנונים, טופס 161ג, חוק תיקון 275 ונוסח הפקודה המאוחד. להורדתם כקובץ אחד (15 PDF, כולל שני מדריכי המס):</p>
+        <button class="primary" id="dl-allpdf">הורדת כל קובצי ה-PDF המקוריים (ZIP, כ-36MB)</button>
+        <div class="muted small">הקובץ נבנה במכשיר שלכם אחרי הפענוח, ואינו נשלח לשום מקום. נדרש זיכרון פנוי של כ-60MB.</div>
+      </div>
+      <div id="download-sources"></div>
+    </section>
+
+    <section id="tab-about" class="panel">
+      <div id="about-body"></div><h2>יומן תוספות ומקורות</h2><div id="ledger"></div>
+    </section>
+  </main>
+  <footer class="foot">הספרייה אינה כיסוי מלא של דיני הפנסיה והמס ואינה מחשבון מס. יש לבדוק מול מקור רשמי עדכני לפני כל מסקנה.</footer>
+</div>
+
+<div id="pdf-modal" class="modal" hidden>
+  <div class="modal-card pdf-card">
+    <div class="modal-head">
+      <strong id="pdf-title"></strong>
+      <span>
+        <button id="pdf-text" class="ghost">טקסט העמוד</button>
+        <button id="pdf-download" class="ghost">הורדה</button>
+        <button id="pdf-close" class="ghost">סגירה ✕</button>
+      </span>
+    </div>
+    <div class="muted small" style="padding:4px 14px">אם הדפדפן אינו מציג את ה-PDF כאן, לחצו "הורדה" ופתחו את הקובץ במציג PDF. מספר העמוד המבוקש מופיע בכותרת.</div>
+    <iframe id="pdf-frame" title="PDF"></iframe>
+  </div>
+</div>
+
+<div id="page-modal" class="modal" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <strong id="modal-title"></strong>
+      <button id="modal-close" class="ghost">סגירה ✕</button>
+    </div>
+    <div class="reader-nav"><label for="page-number">עמוד</label><input id="page-number" type="number" min="1" value="1" style="width:65px"><button id="page-go" class="ghost">מעבר</button></div><div class="reader-nav"><button id="page-openpdf" class="primary" hidden>פתיחת עמוד ה-PDF המקורי</button><button id="page-prev" class="ghost">עמוד קודם</button><button id="page-next" class="ghost">עמוד הבא</button></div><div id="modal-caveat" class="small" hidden style="padding:6px 14px;color:#8a6d00;background:#fff7e0">טקסט אוטומטי מעותק שמור. ייתכנו השמטות, לרבות מספרי סעיפים; יש לבדוק מול ה-PDF. טבלאות שלא אומתו אינן מוצגות.</div><pre id="modal-text"></pre>
+  </div>
+</div>
+
+<script src="app.js?v=20"></script>
+</body>
+</html>

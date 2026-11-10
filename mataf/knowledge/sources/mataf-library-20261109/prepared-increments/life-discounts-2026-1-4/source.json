@@ -1,0 +1,22 @@
+{
+  "id": "life-discounts-2026-1-4",
+  "title": "הנחות בביטוח חיים",
+  "issuer": "רשות שוק ההון, ביטוח וחיסכון",
+  "reference": "חוזר ביטוח2026-1-4",
+  "document_date": "2026-10-25",
+  "effective_date": "2027-02-01",
+  "source_url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation_541/he/Discounts_in_Life_Insurance_WORD.pdf",
+  "retrieved_on": "2026-11-09",
+  "pages": 4,
+  "visual_review_pages": [
+    1,
+    2
+  ],
+  "text_status": "originalPDFplusmanuallyauthoredsummary;notfulltranscript",
+  "pdf_sha256": "b09de6454c459f7e0645e4b0f688e96637d8a35e8bf3391089497c6779a42172",
+  "domain_ids": [
+    "P11"
+  ],
+  "collection_family_id": "S060",
+  "later_amendment_search_complete": false
+}

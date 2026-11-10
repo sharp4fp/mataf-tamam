@@ -1,0 +1,127 @@
+{
+  "scope": "Text extraction, provenance hashes and searchability smoke checks only; no current-edition/legal/table certification",
+  "sources": 10,
+  "pdf_pages": 1213,
+  "pages_with_text": 1209,
+  "empty_pages_unverified": 4,
+  "checks": [
+    {
+      "source_id": "menora-mekifa",
+      "page_count_matches": true,
+      "keyword_page_counts": {
+        "קצבה": 57,
+        "פרישה": 19,
+        "שאיר": 75,
+        "תקנון": 44
+      },
+      "empty_pdf_pages": [
+        119
+      ]
+    },
+    {
+      "source_id": "clal-y703-5-2026",
+      "page_count_matches": true,
+      "keyword_page_counts": {
+        "קצבה": 45,
+        "פרישה": 42,
+        "שאיר": 65,
+        "תקנון": 88
+      },
+      "empty_pdf_pages": [
+        128
+      ]
+    },
+    {
+      "source_id": "harel-6-2025",
+      "page_count_matches": true,
+      "keyword_page_counts": {
+        "קצבה": 49,
+        "פרישה": 41,
+        "שאיר": 82,
+        "תקנון": 47
+      },
+      "empty_pdf_pages": []
+    },
+    {
+      "source_id": "migdal-ishit-062025",
+      "page_count_matches": true,
+      "keyword_page_counts": {
+        "קצבה": 45,
+        "פרישה": 32,
+        "שאיר": 79,
+        "תקנון": 76
+      },
+      "empty_pdf_pages": [
+        122
+      ]
+    },
+    {
+      "source_id": "meitav-2026-booklet",
+      "page_count_matches": true,
+      "keyword_page_counts": {
+        "קצבה": 46,
+        "פרישה": 30,
+        "שאיר": 68,
+        "תקנון": 34
+      },
+      "empty_pdf_pages": []
+    },
+    {
+      "source_id": "altshuler-010625",
+      "page_count_matches": true,
+      "keyword_page_counts": {
+        "קצבה": 58,
+        "פרישה": 15,
+        "שאיר": 68,
+        "תקנון": 56
+      },
+      "empty_pdf_pages": []
+    },
+    {
+      "source_id": "more-4-2026",
+      "page_count_matches": true,
+      "keyword_page_counts": {
+        "קצבה": 56,
+        "פרישה": 10,
+        "שאיר": 55,
+        "תקנון": 53
+      },
+      "empty_pdf_pages": [
+        122
+      ]
+    },
+    {
+      "source_id": "infinity-5-2025",
+      "page_count_matches": true,
+      "keyword_page_counts": {
+        "קצבה": 50,
+        "פרישה": 15,
+        "שאיר": 64,
+        "תקנון": 40
+      },
+      "empty_pdf_pages": []
+    },
+    {
+      "source_id": "phoenix-1-7-2024",
+      "page_count_matches": true,
+      "keyword_page_counts": {
+        "קצבה": 44,
+        "פרישה": 17,
+        "שאיר": 80,
+        "תקנון": 43
+      },
+      "empty_pdf_pages": []
+    },
+    {
+      "source_id": "phoenix-changes-122025",
+      "page_count_matches": true,
+      "keyword_page_counts": {
+        "קצבה": 0,
+        "פרישה": 0,
+        "שאיר": 0,
+        "תקנון": 1
+      },
+      "empty_pdf_pages": []
+    }
+  ]
+}

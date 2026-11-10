@@ -1,0 +1,225 @@
+/* עיצוב בסיס מקומי - מחליף את מערכת העיצוב של סביבת הפיתוח המקורית. */
+
+:root {
+    --ds-page: #eef1f5;
+    --ds-ink: #1a1a1a;
+    --ds-ink-2: #5b6470;
+    --ds-hairline: #d7dce3;
+    --ds-teal: #0e7c6b;
+    --ds-warn-bg: #fdf6e5;
+    --ds-warn-border: #e3c878;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Heebo, Arial, sans-serif;
+    color: var(--ds-ink);
+    background: var(--ds-page);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.file-card {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.file-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.file-title-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.file-title {
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+}
+
+.file-fact {
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--ds-hairline);
+    color: var(--ds-ink-2);
+    white-space: nowrap;
+}
+
+.file-fact-known {
+    color: var(--ds-teal);
+    border-color: var(--ds-teal);
+}
+
+.file-intro {
+    margin: 4px 0 0;
+    color: var(--ds-ink-2);
+    font-size: 14px;
+}
+
+.file-caption {
+    margin: 0;
+    color: var(--ds-ink-2);
+    font-size: 12px;
+}
+
+.file-closing {
+    margin-top: 8px;
+    color: var(--ds-ink-2);
+    font-size: 12px;
+    text-align: center;
+}
+
+.file-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--ds-hairline);
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.file-group-head {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+}
+
+.file-group-label {
+    font-size: 11px;
+    color: var(--ds-ink-2);
+    font-weight: 600;
+}
+
+.file-group-heading {
+    margin: 0;
+    font-size: 16px;
+}
+
+.file-control {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.file-control-label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.file-input {
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--ds-hairline);
+    border-radius: 4px;
+    font: inherit;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.file-input:focus {
+    outline: 2px solid var(--ds-teal);
+    outline-offset: -1px;
+}
+
+.file-button {
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--ds-teal);
+    border-radius: 4px;
+    background: var(--ds-teal);
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.file-button-ghost {
+    background: none;
+    color: var(--ds-ink-2);
+    border-color: var(--ds-hairline);
+}
+
+.file-button-compact {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 14px;
+}
+
+.rows {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--ds-hairline);
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.row-name {
+    font-weight: 600;
+    margin: 0;
+}
+
+.row-value {
+    margin: 0;
+    text-align: left;
+    color: var(--ds-ink-2);
+}
+
+.row-value-known {
+    color: var(--ds-ink);
+}
+
+.row-detail {
+    display: block;
+    font-size: 12px;
+    color: var(--ds-ink-2);
+}
+
+.callout {
+    border: 1px solid var(--ds-hairline);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #fff;
+}
+
+.callout-warning {
+    background: var(--ds-warn-bg);
+    border-color: var(--ds-warn-border);
+}
+
+.callout-title {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.callout-body {
+    margin: 0;
+    font-size: 13px;
+}

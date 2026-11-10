@@ -1,0 +1,15 @@
+{
+  "README.md": "d86d47a777843279c2d7342c004dbca4d83df8f759c041b2440884b4bc60f396",
+  "TESTS.json": "3b2ecaf797364f2a08ce9e5e8f6c21ae1766ad77a0433e831c2fd6cd301274e3",
+  "catalog/fund-corpus-index.csv": "2aae7e428d5ccced069debb660b64cd1443f33d6404ba838776b06fe4719a543",
+  "catalog/fund-corpus-provenance.md": "c3d936c7130a13afbeff1b71adb16b4b166ece58bfee14accd7188cf080efcbd",
+  "catalog/gaps.json": "aa70089aea7908f46c512bb9d2dbb8592b5418ac32a4aa71a172a96aaba3b395",
+  "catalog/sources.json": "0781e53a69fd2daa0d59769c30ea8948993b1424ca7891770d7070b42ae2af39",
+  "knowledge/retirement-v4.md": "ab20225cd845386f71181f20f77196719ece3e4f9f0a4a2a4e8a1f82bb49fc7e",
+  "search.py": "f2251ba2a3f375058927de47ef1145a0439d8b4377c401c5b1da62cb893ee257",
+  "search.sqlite": "db25be295207cd21c9a1089c0b96372a1c0b3a687da8c5f5ec9f8be96fce1884",
+  "sources/tax-161d-2026.pdf": "40eba7d3b5abded138edc9c0292ae5810fa740808afc30ea021c44f21d84d679",
+  "sources/tax-161d-2026.txt": "79a78085a7ce93ae44634afe01be4593ca77138cc2fbfe86322f3f9ece10d2b9",
+  "sources/tax-booklet-2026.pdf": "de6fee7208bdde4ec8b8731be95bcea2106aba449d949e5e646c2a0d5f2182a1",
+  "sources/tax-booklet-2026.txt": "c18a1b424bbeb0474a0d588dd14d4ae5d4c609697221ea9eee6802bc090f42c2"
+}

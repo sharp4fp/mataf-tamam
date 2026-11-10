@@ -1,0 +1,39 @@
+{
+  "id": "menora-pension-assets-202609",
+  "title": "מנורה מבטחים פנסיה - הרכב נכסים, חודשים10/2025 עד09/2026",
+  "classification": "provider_monthly_fund_asset_composition_not_law_not_per_track_exposure",
+  "publisher": "מנורה מבטחים",
+  "source_page": "https://www.menoramivt.co.il/funds/pension-and-gemel/sum-assets-management-fee/pos-assets-list",
+  "download_url_observed_by_source_collector": "https://cdn.menoramivt.co.il/public/docs/20261020/09.26-הרכב-נכסים-מנורה-מבטחים-פנסיה.xlsx",
+  "source_page_rechecked": "2026-11-09",
+  "download_url_refetched_in_this_preparation": false,
+  "source_sha256": "a2b8c1c1b2006814b844f4f2ebba67936498611b8e07870b0fb1f7dd34cd4844",
+  "sheet_count": 1,
+  "rows": 466,
+  "columns": 17,
+  "nonempty_cells": 4621,
+  "reporting_months": [
+    "2025-10",
+    "2025-11",
+    "2025-12",
+    "2026-01",
+    "2026-02",
+    "2026-03",
+    "2026-04",
+    "2026-05",
+    "2026-06",
+    "2026-07",
+    "2026-08",
+    "2026-09"
+  ],
+  "fund_identifier": "512245812-00000000000168-0000-000",
+  "coverage": "Whole sheet, with original coordinates/types/formula strings/cached values when available; no derived ratio or inferred classification. Formatting/merged-cell layout lives in original XLSX.",
+  "limitations": [
+    "Aggregate fund, not specific investment track.",
+    "Direct shares are not total equity exposure; ETFs, mutual funds, derivatives, structured assets need separate measurement.",
+    "Israel/abroad labels may denote issuer or trading location, not look-through geography.",
+    "URL date component20261020 is not independently verified publication timestamp.",
+    "No final-readability or numerical-cell audit of every workbook cell.",
+    "values.csv is for data reuse, not direct HTML rendering without escaping."
+  ]
+}

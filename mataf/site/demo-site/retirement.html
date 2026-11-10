@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="noindex" name="robots"/><title>מתה״פ - הדגמה סינתטית קבועה</title><link href="css/heebo.css" rel="stylesheet"/><link href="css/style.css" rel="stylesheet"/><style>.static-value{display:inline-block;padding:8px;border:1px solid #cad0db;background:#f5f6f8;border-radius:5px;min-width:60px}.static-control{opacity:.65;cursor:default!important}a.modebtn{text-decoration:none;display:inline-block}details{display:block}.acc-body{display:block!important}</style></head><body><div id="root"><div class="demo-banner" id="demo-only-banner">הדגמה קבועה בלבד - נתונים סינתטיים. אין העלאת קבצים, הזנה, חישוב, שמירה או טעינה.</div>
+<header class="hero">
+<div class="hero-inner">
+<h1>מערכת תומכת החלטה פנסיונית</h1>
+<div class="hero-fact">גרסה לשיתוף (אב-טיפוס) · נתוני ייחוס 09/2026</div>
+<p>סיור קבוע במתה״פ על תיק סינתטי בלבד. הדפים מציגים את בדיקת התיק ותכנון הפרישה כפי שנראו בצילום המצב. אין כאן הזנת נתונים, העלאת קבצים או מנוע חישוב פעיל. לחצו על שם התצוגה כדי לעבור בין הדפים.</p>
+<div class="herobtns">
+<div aria-label="בחירת מצב עבודה" class="modeswitch" role="group">
+<a class="modebtn" href="index.html">בדיקת תיק לקוח</a>
+<a class="modebtn active" href="retirement.html">תכנון פרישה</a>
+</div>
+</div>
+</div>
+</header>
+<main class="wrap">
+<div class="callout warn">
+<b>גבולות האב-טיפוס.</b> זהו כלי עזר ראשון לבחינה, לא מנוע המלצות. נתוני הייחוס (תשואות, שארפ, חשיפות, דמי ניהול) הם תמונת 09/2026 ואינם מתעדכנים לבד. מסלולים עם קוד רשמי מותאמים לנתוני האוצר (09/2026) לפי מזהה המסלול; מסלולים בלי קוד מותאמים לפי דמיון שמות עם ציון - יש לוודא אותם. שארפ מחושב על 36 חודשי תשואה (10/2023-09/2026), ריבית חסרת סיכון קבועה 4%. שארפ רשמי כפי שדווח בנפרד. אין נתוני 5 שנים במאגר. לדירוג נכנסים רק מסלולים עם לפחות 36 חודשי נתוני תשואה בפועל בדיווח הרשמי (תשואה נצברת תלת-שנתית קיימת); מסלול צעיר יותר אינו מדורג, גם אם הקרן עצמה ותיקה.
+    </div><div class="callout warn"><b>חשוב לדעת לפני שימוש בנתונים</b><ul class="notes">
+<li>שדות טופס 161 שחולצו אוטומטית הם מועמדים בלבד - יש לאשר אותם מול הטופס החתום לפני כל שימוש.</li>
+<li>כיסוי החשיפה: 86.3% משווי התיק. מסלולים עם מזהה רשמי מותאמים לנתוני האוצר (09/2026); מוצרים שאינם במאגר מושלמים ממקורות פומביים מתועדים (מסמך רשמי של הגוף, אתר חיצוני מסומן כלא-רשמי, או הערכת מערכת עם בסיס מצוין). מוצר שאין לו נתון ולא בסיס להערכה מסומן "לא ידוע" ואינו נכנס לממוצע כאילו חשיפתו אפס. הצעות התאמה לפי שם דורשות אישור מפורש מול קוד המסלול הרשמי.</li>
+<li>נתוני הייחוס מתומנת 09/2026 ואינם עדכניים ליום הבדיקה; לחלק מהמסלולים אין נתוני 5 שנים.</li>
+<li>משלם בטופס 161 או גוף גביה במסלקה אינו בהכרח מעסיק, ואותו מספר ח"פ אינו הוכחה לרישום בטופס או לכיסוי הפיצויים - הזהויות והקצאות מסתמכות על המסמכים בלבד.</li>
+</ul></div>
+<section class="card acc" id="acc-step1">
+<span class="acc-head">
+            1 קובץ המסלקה (ZIP או XML)
+            3 חשבונות נטענו
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-step1">
+<div class="note small">העלאת קבצים אינה זמינה בגרסת ההדגמה. הגרסה מציגה תיק סינתטי קבוע להמחשה בלבד.</div>
+
+<div class="note small"><b>מה זה "תיק הדגמה"?</b> תיק לקוח מומצא עם נתונים סינתטיים בלבד - לא לקוח אמיתי ולא נתונים של אף אחד. הוא מאפשר לראות איך המערכת נראית ומה היא מציגה (תיק נכסים, רמת סיכון, ניתוח טופס 161) בלי להעלות מסמכים אמיתיים. בגרסת ההדגמה אין אפשרות להעלות קבצים.</div>
+<div class="demo-banner">מוצג תיק הדגמה סינתטי - לא נתוני לקוח אמיתי.</div>
+<div class="report-cta">
+
+<span class="muted small">דוח "מצב טרום טיפול" מקוצר (3 עמודי A4) על בסיס קובץ המסלקה שהועלה. הקובץ מופק כאן בדפדפן ומורד ישירות למחשב.</span>
+</div>
+</div>
+</section>
+<section class="card acc" id="acc-secure">
+<span class="acc-head">
+            2 שמירת העבודה לקובץ מוצפן (אופציונלי)
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-secure"><div class="note small">שמירת וטעינת תיק מוצפן אינן זמינות בגרסת ההדגמה.</div></div>
+</section>
+<section class="card acc" id="acc-step2">
+<span class="acc-head">
+            3 טופס 161 (PDF)
+            חולצו 15 שדות
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-step2">
+<div class="note small">העלאת קבצים אינה זמינה בגרסת ההדגמה. הגרסה מציגה תיק סינתטי קבוע להמחשה בלבד.</div>
+<div class="status-line">נטענו נתוני הדגמה סינתטיים להמחשה בלבד.</div>
+<div class="fldgrid">
+<label class="fld found"><span>שם העובד <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">לקוח לדוגמה</span></div></label>
+<label class="fld found"><span>מספר זהות <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">000000000</span></div></label>
+<label class="fld found"><span>תאריך לידה <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">01/01/1972</span></div></label>
+<label class="fld found"><span>תחילת עבודה <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">01/01/2000</span></div></label>
+<label class="fld found"><span>תאריך פרישה <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">31/12/2026</span></div></label>
+<label class="fld found"><span>שנות עבודה <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">27</span></div></label>
+<label class="fld found"><span>משכורת מלאה (א6) <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">22,000</span></div></label>
+<label class="fld found"><span>משכורת מבוטחת אחרונה <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">20,000</span></div></label>
+<label class="fld found"><span>משכורת חבות פיצויים <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">18,500</span></div></label>
+</div>
+<div class="subhead">מענקים (חלק א9)
+            <em class="tag-ok">חולצו 2 מענקים מהטופס - לאשר מול הטופס</em>
+</div>
+<div class="grantrow">
+<span class="static-value">קופת גמל לדוגמה</span>
+<span class="static-value">6</span>
+<span class="static-value">400,000</span>
+
+</div><div class="grantrow">
+<span class="static-value">מעסיק ישיר לדוגמה</span>
+<span class="static-value">1</span>
+<span class="static-value">150,000</span>
+
+</div>
+
+<div class="fldgrid" style="margin-top:10px">
+<label class="fld found"><span>סכום המענק הכולל (א13) <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">550,000</span></div></label>
+<label class="fld found"><span>מרבי לרצף קצבה <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">400,000</span></div></label>
+<label class="fld found"><span>מרבי לרצף פיצויים <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">550,000</span></div></label>
+<label class="fld found"><span>מענק פטור מרבי (9א(7)) <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">371,250</span></div></label>
+<label class="fld found"><span>מענק חייב במס <em class="tag-ok">חולץ מהטופס ✓</em></span>
+<div class="foundrow"><span class="static-value">550,000</span></div></label>
+</div>
+<div class="alerts161">
+<div class="alerts161-title">בדיקות מרוכזות - אין צורך לעבור שדה שדה</div>
+<div class="a161 a161-ok">כל שדות הטופס נקראו ומוצגים למעלה לאישור.</div>
+<div class="a161 a161-ok">לא נמצאו סתירות פנימיות בשדות שחולצו.</div>
+<div class="a161 a161-warn"><b>תרחישי סימון לבחינה בחלקים ב'/ג' (לא ממצא שהסימון הנוכחי שגוי):</b><ul><li>אם נבחר בחלק ב1 ניצול מענק פטור מיידי (עמודה ג): משיכת מענק בפטור עלולה להקטין את הפטור החודשי על הקצבה בעת קיבוע הזכויות (סעיף 9א לפקודת מס הכנסה; הערת הטופס (ג) בחלק ב1). האלטרנטיבה - ייעוד לרצף קצבה (עמודה א), ששומרת על הפטור העתידי אך נועלת את הכסף לקצבה. הבחירה תלויה בגיל, בצבירה ובתכנון המס - בבירור מול איש מקצוע.</li><li>קיים מענק חייב במס ולא זוהה סימון פריסה: אפשר לשקול בקשת פריסת המס על עד 6 שנות מס בטופס 116ג (סעיף 8(ג)(3) לפקודת מס הכנסה), שעשויה להקטין את שיעור המס. זו אפשרות לבחינה, לא חישוב ולא המלצה.</li></ul></div>
+</div>
+</div>
+</section>
+<section class="card acc" id="acc-kibua">
+<span class="acc-head">
+            4 קיבוע זכויות (טופס 161ד) - מסמכים ותכנון
+            חסרים 1 פרמטרי תכנון
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-kibua"><div class="card intake">
+<div class="track-line"><span><b>קיבוע זכויות (טופס 161ד)</b></span><span class="small muted">דף עבודה לתכנון - לא להגשה</span></div>
+<div class="muted small">קיבוע זכויות הוא בקשה לפקיד השומה למיצוי הטבות המס בסעיף 9א לפקודה: הפטור על הקצבה המזכה, מענק פרישה פטור והיוון קצבה. לפי המדריך הרשמי הוא נדרש למי שהגיע לגיל הזכאות אחרי 1.1.2012; גיל הזכאות הוא גיל הפרישה או מועד הקצבה המזכה הראשונה, המאוחר - גיל הפרישה משתנה לפי מין ותאריך לידה ונקבע לכל לקוח בנפרד. סל הפטור ל-2026: 976,005 ₪ (9,430 × 57.5% × 180). מקור: <a href="https://www.gov.il/BlobFolder/guide/2026-filling-out-form-161d/he/Guides_IncomeTax_filling-out-form-161d-2026.pdf" rel="noopener" target="_blank">מדריך קיבוע הזכויות הרשמי 161ד 2026, רשות המסים (gov.il)</a>. הטופס עצמו מוגש לרשות המסים באזור האישי - האתר אינו מגיש ואינו מייצר טופס להגשה.</div>
+<div class="subhead">מסמכים נדרשים לקיבוע (לפי המדריך הרשמי)</div>
+<ul class="notes">
+<li><b>תלוש קצבה מכל משלם קצבה</b> - חלק ב' בטופס: "יש לצרף תלוש קצבה ממשלם הקצבה, ובמידה וישנם מספר משלמים - תלוש מכל אחד מהם". שימו לב: סל הפטור אחד לכל המשלמים יחד. (באתר: אין חילוץ אוטומטי של תלושים - מצרפים לטופס הרשמי.)</li>
+<li><b>טופס 161 - הודעת מעסיק על פרישה</b> - ביחס לכל תקופת עבודה; מענקים ששולמו למעלה מ-15 שנה לפני קבלת הקצבה המזכה הראשונה (ושהתקבלו לפני 14.5.2012) לא יובאו בנוסחת הקיזוז ואין חובה לצרף עבורם. (באתר: מועלה בחלק הקודם "טופס 161 (PDF)" עם בדיקת סתירות.)</li>
+<li><b>מסמך מהמשלם על היוון קצבה פטור</b> - אם בוצע היוון בעבר: חובה לציין ולצרף מסמך הכולל סכום ההיוון, תקופת ההיוון ותאריך ההיוון. (באתר: אין חילוץ - מצרפים לטופס הרשמי.)</li>
+</ul>
+<div class="subhead">פרמטרים לתכנון הקיבוע (להשלמה מול מסמכי הלקוח)</div>
+<div class="note small">בטופס 161 שהועלה בחלק הקודם זוהו 2 מענקים/רכיבים - בדקו את הסכומים המודפסים שם והעתיקו לשדה המענקים רק סכומים פטורים בגין 32 השנים שלפני גיל הזכאות.</div>
+<div class="netgrid">
+<label>חודש הגעה לגיל זכאות (גיל פרישה או קצבה ראשונה, המאוחר)<span class="static-value">לא הוזן</span></label>
+<label>מספר משלמי קצבה צפויים (סל פטור אחד משותף לכולם)<span class="static-value">1</span></label>
+<label>מענקי פרישה פטורים ממס ב-32 השנים שלפני גיל הזכאות (₪, סכום מצטבר)<span class="static-value">לא הוזן</span></label>
+<label>האם סכום המענקים ממודד לתחילת שנת הזכאות? (המערכת אינה ממדדת - בלי הצהרה לא יחושב)<span class="static-value">לא נבחר</span></label>
+<label>שנת קבלת המענקים (לתיעוד בלבד מול פקיד השומה)<span class="static-value">לא הוזן</span></label>
+<label>היוון קצבה פטור שבוצע בעבר (₪, לפי מסמך המשלם)<span class="static-value">לא הוזן</span></label>
+<label>היוון קצבה מתוכנן להדמיה (₪ - בחירה עתידית בטופס הרשמי, לא מומלץ כאן)<span class="static-value">לא הוזן</span></label>
+<label>בסיס חישוב כשגיל הזכאות אינו ב-2026<span class="static-value">ללא - חשבו רק בקבועי שנת הזכאות (חסמו אחרת)</span></label>
+</div>
+<div id="kib-result"><div class="muted small">לא הוזנו נתונים; אין חישוב. שדה ריק אינו מתפרש כאפס ואינו הצהרה שאין מענקים או היוון. להצגת חישוב יש להשלים: חודש הגעה לגיל זכאות · מענקים פטורים (0 = לא היו) · היוון שבוצע בעבר (0 = לא בוצע) · היוון מתוכנן (0 = לא מתוכנן).</div></div>
+<div class="muted small"><b>דף עבודה של הסוכן לתכנון בלבד.</b> אין כאן בחירת אלטרנטיבות מס ואין הגשה - הבחירות מתבצעות בטופס 161ד הרשמי מול רשות המסים. החישוב משקף את נוסחת הקיזוז הרשמית (מדריך 161ד 2026, עמ' 4-8) בקירוב: מענקים פטורים מוכפלים ב-1.35 ומופחתים מסל הפטור, ויתרת הסל מחולקת ב-180 לתקרה החודשית. המידוד בפועל, חריגות התקופות והשיעור הסופי נקבעים אצל פקיד השומה בלבד.</div>
+</div></div>
+</section>
+<section class="card acc" id="acc-alloc">
+<span class="acc-head">
+            5 חלוקת הכספים ותכנון המס
+            מטרת הלקוח טרם נבחרה
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-alloc"><div class="card intake"><div class="track-line"><span><b>חלוקת הכספים ותכנון המס בפרישה</b></span><span class="small muted">דף עבודה לתכנון - לא המלצה ולא ביצוע</span></div><div class="muted small">הסעיף מרכז את הכספים שעומדים לחלוקה בפרישה ואת אפשרויות הפעולה בכל רכיב, עם ההשלכה במס לכל אפשרות - כדי שהחלוקה תיבחר ביודעין. <b>אין כאן חלוקה "אופטימלית" אוטומטית:</b> התשובה תלויה במטרת הלקוח, בנתונים שעוד לא הוזנו ובכללי מס שחלקם טרם אומתו (מסומנים בבירור, בלי מספרים). אין כאן ביצוע פעולות - כל בחירה מתבצעת בטפסים הרשמיים מול רשות המסים והגופים המנהלים. מטרת העבודה שהוגדרה: חבות מס נמוכה ככל האפשר במסגרת הכללים, תוך הצגת המחיר בנזילות ובקצבה של כל חלופה. הסעיף הוקם ב-9.11.2026 ויעודכן ככל שיושלם אימות בסיס המס (פיצויים וקיבוע, גיל פרישה והמרה לקצבה, ביטוח לאומי, מיסוי משיכות מוקדמות).</div><div class="subhead">מטרת הלקוח - הבחירה משנה את הכיוון</div><div class="muted small">שתי מטרות לגיטימיות שלא תמיד הולכות יחד. המערכת אינה בוחרת במקום הלקוח; מס נמוך עכשיו אינו בהכרח התוצאה הטובה לאורך הפרישה:</div><div class="netgrid"><label>מטרת הלקוח בתכנון המס<span class="static-value">לא נבחר - שתי המשקפיים יוצגו זו לצד זו</span></label></div><div class="note small">טרם נבחרה מטרת הלקוח - לכן לא מוצג כיוון מסכם, ושתי המשקפיים מוצגות בטבלה זו לצד זו. הבחירה של הלקוח (לא של המערכת) קובעת איזו שורה רלוונטית יותר. שימו לב: מס נמוך עכשיו אינו בהכרח המס הנמוך בקיזוז על כל שנות הפרישה.</div><div class="subhead">סיכום מקורות ונתונים (מתוך הנתונים שנטענו בפועל - לא סכום זמין להקצאה)</div><div class="alts-scroll"><table class="altstbl"><thead><tr><th>רכיב</th><th>סכום</th><th>פירוט</th></tr></thead><tbody><tr><td>מענקי פרישה מהמעסיק<div class="muted small">טופס 161 (סעיף 3)</div></td><td><b>550,000 ₪ (כמודפס)</b></td><td class="small">הערכים המודפסים הם בעלי בסיסים שונים: הפטור המרבי ומרבי הרצפים הם תקרות (לא סכומים בפועל), ואילו החייב במס ושורות המענקים הם סכומים בפועל - אין לחבר אותם זה לזה, אין לראות בהם רכיבים של הסכום הכולל, ואין להשוות תקרה מול סכום בפועל. פטור מרבי מודפס (9א(7), תקרה): 371,250 ₪ · חייב במס כמודפס (סכום בפועל): 550,000 ₪ · זכאי רצף קצבה (קוד 5/6): 400,000 ₪ · מענק מעסיק ישיר (קוד 1): 150,000 ₪ - אינו זכאי לרצף קצבה אך נכלל בסה"כ המענק</td></tr><tr><td>יתרה בקרן פנסיה<div class="muted small">קובץ המסלקה (סעיף 1)</div></td><td><b>₪420,000</b></td><td class="small">צבירה כפי שדווחה בקובץ; פיצול קצבה/פיצויים פנימי לפי המסלולים שדווחו.</td></tr><tr><td>יתרה בביטוח מנהלים (סיווג לפי קוד 1 - לא אומת)<div class="muted small">קובץ המסלקה (סעיף 1)</div></td><td><b>₪95,000</b></td><td class="small">צבירה כפי שדווחה בקובץ; פיצול קצבה/פיצויים פנימי לפי המסלולים שדווחו.</td></tr><tr><td>יתרה בקרן השתלמות<div class="muted small">קובץ המסלקה (סעיף 1)</div></td><td><b>₪180,000</b></td><td class="small">צבירה כפי שדווחה בקובץ; פיצול קצבה/פיצויים פנימי לפי המסלולים שדווחו.</td></tr></tbody></table></div><div class="note small">הטבלה מציגה מקורות מידע, לא סכום "זמין להקצאה". אין לחבר מענקי 161 עם יתרות הקופות: אם המענקים הועברו לקופה הם כבר כלולים ביתרות, וחיבור השניים הוא ספירה כפולה. הכספים הזמינים לחלוקה בפועל נקבעים רק מול הטופס החתום והמסלקה העדכנית; באי-התאמה בין השדות (אם סומנה) אין להשתמש בנתונים לתכנון עד לאימות.</div><div class="subhead">האפשרויות לכל רכיב והשלכות המס</div><div class="alts-scroll"><table class="altstbl"><thead><tr><th>אפשרות</th><th>מס בזמן הקרוב</th><th>השלכה לאורך הפרישה</th><th>מצב אימות</th></tr></thead><tbody><tr><td><b>משיכת מענק פטור (עד התקרה)</b></td><td class="small">0 מס כרגע - התקרה 2026: 13,750 ₪ לשנת עבודה (קפואה 2025-2027); הסכום בפועל כמודפס בטופס 161</td><td class="small">כל שקל פטור שנמשך מקטין את סל הקיבוע ב-1.35 ₪ (ממודד) - כלומר מוריד את הפטור החודשי על הקצבה; ההדמיה המספרית למטה</td><td class="small">מאומת (161ד 2026 + לוח ניכויים)</td></tr><tr><td><b>רצף פיצויים</b></td><td class="small">אפשרות המודפסת בטופס 161; דוחה את אירוע המס ואינו פוגע בסל הקיבוע</td><td class="small">המס ישולם במשיכה העתידית לפי הדין שיחול אז - לא ניתן לחיזוי וטרם אומת; אין מספרים כאן</td><td class="small">חלקי - פירוט המיסוי טרם אומת</td></tr><tr><td><b>רצף קצבה</b></td><td class="small">אפשרות המודפסת בטופס 161 (עד התקרה המודפסת בטופס); מכניקת הביצוע של הרצף והשלכותיה המלאות טרם אומתו מול מקור רשמי</td><td class="small">מודל מס הקצבה 2026 עצמו מאומת וניתן להדגים בפאנל הנטו; הטיפול המדויק ברצף עצמו טרם אומת - אין להסיק מספרים מעבר למודל הקצבה הכללי</td><td class="small">חלקי - מאומת מודל מס קצבה 2026 בלבד</td></tr><tr><td><b>פריסת המענק החייב</b></td><td class="small">פיזור החייב על שנות פריסה (הערכת השנים מוצגת בניתוח 161 בסעיף "פרישה")</td><td class="small">מקור כלל הפריסה בעתק מראה בלבד וטרם אומת מול טקסט רשמי - אין חישוב כאן</td><td class="small">טרם אומת - מסומן</td></tr><tr><td><b>היוון קצבה</b></td><td class="small">משיכה חד-פעמית מתוך הצבירה; תנאי ותקרות ההיוון טרם אומתו</td><td class="small">היוון פטור פוגע בסל הקיבוע ומקטין את הקצבה - ההשפעה על הסל מודגמת בסעיף 4</td><td class="small">חלקי - תקרות טרם אומתו</td></tr><tr><td><b>קרן השתלמות נזילה</b></td><td class="small">רכיב נזיל שאינו חלק מסל הקיבוע</td><td class="small">כללי המס על המשיכה (לרבות פטור רווחי הון אחרי ותק) טרם אומתו מול מקור רשמי - יושלם בעדכון</td><td class="small">טרם אומת - מסומן</td></tr></tbody></table></div><div class="subhead">הדמיה מספרית: משיכת המענק הפטור מול שמירת סל הפטור</div><div id="alloc-compare"><div class="muted small">ההדמיה המספרית תוצג לאחר השלמת פרמטרי הקיבוע בסעיף 4 (קיבוע זכויות): חודש הגעה לגיל זכאות · מענקים פטורים (0 = לא היו) · היוון שבוצע בעבר (0 = לא בוצע) · היוון מתוכנן (0 = לא מתוכנן). אין חישוב על נתונים חסרים.</div></div><div class="subhead">מה חסר לתשובה מלאה (לפי התיק שנטען)</div><div id="alloc-missing"><ul class="notes"><li>מטרת הלקוח (בחירה בסעיף זה למעלה)</li><li>חודש הגעה לגיל זכאות (סעיף 4)</li><li>מענקים פטורים והיוון עבר/מתוכנן עם הצהרת מידוד (סעיף 4)</li><li>אומדן קצבה מהמקדם (כרטיס המקדם בסעיף "מידע חסר להשלמת התמונה") - לבדיקת הפטור מול הקצבה הצפויה</li><li>ציטוט קצבה רשמי מהגוף המנהל (אינו תנאי, אך נדרש לפני החלטה סופית)</li><li>בדיקת מקרי קצה: נכות, פעולות ביטחוניות, מענקים אחרי גיל זכאות ומקרים מלפני 2012 - אינם מכוסים בנוסחה ודורשים בדיקה נפרדת</li></ul></div><div class="muted small">מקורות מאומתים: <a href="https://www.gov.il/BlobFolder/guide/2026-filling-out-form-161d/he/Guides_IncomeTax_filling-out-form-161d-2026.pdf" rel="noopener" target="_blank">מדריך קיבוע זכויות 161ד 2026, רשות המסים (gov.il)</a> · <a href="https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2026.pdf" rel="noopener" target="_blank">לוח עזר לחישוב ניכוי מהשכר 2026, רשות המסים (gov.il)</a> · <a href="https://www.btl.gov.il/Laws1/00_0040_000000.pdf" rel="noopener" target="_blank">חוק פיצויי פיטורים תשכ"ג-1963, נוסח משולב (אתר ביטוח לאומי)</a>. העלאות הפטור הצפויות במדריך (2027: 62.5%, 2028 ואילך: 67%) מוצגות בו כצפויות ולא אומתו בכתבי קליטה - אין לבסס עליהן תכנון קשיח. נוסחת הקיזוז אינה חלה על כל המקרים: ניכיון בגין נכות, פעולות ביטחוניות, מענקים אחרי גיל זכאות ומקרי קצה מלפני 2012 דורשים בדיקה נפרדת ואינם מיושמים כאן.</div></div></div>
+</section>
+<section class="card acc" id="acc-portfolio">
+<span class="acc-head">
+            6 תיק הנכסים
+            695,000 ₪ · 3 חשבונות
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-portfolio">
+<div class="group-label">תיק הנכסים</div>
+<h2>לקוח לדוגמה (סינתטי) - 695,000 ₪</h2>
+<div class="card acct">
+<div class="card-head">
+<div><b>מנורה מבטחים פנסיה</b> · מנורה מבטחים פנסיה וגמל בע"מ</div>
+<div class="muted small">קרן פנסיה · חשבון 100001 · סטטוס 1 · נכון ל-30/06/2026</div>
+</div>
+<div class="track">
+<div class="track-line"><span>מנורה מבטחים פנסיה - מסלול מניות</span><b>420,000 ₪</b></div>
+<div class="eqbar"><div class="eqbar-eq" style="width:73.6%"></div></div>
+<div class="muted small">חשיפה מנייתית 73.6% · הצעת התאמה בלבד, לפי דמיון שמות: <b>מנורה מבטחים פנסיה - מסלול מניות</b> (קרנות פנסיה מקיפה, ציון 1.00). לא מאומתת מול רשימת המסלולים הרשמית של הגוף.</div>
+<label class="confirmlab"><span class="static-value">לא</span> ההתאמה לפי שם בלבד - אישרתי מול קוד המסלול הרשמי, לכלול בממוצע הסיכון</label>
+</div>
+<div class="muted small">
+                דמי ניהול מהפקדה בחודש הדיווח: 1.5% · 
+                מהצבירה: 0.08% (שיעור באחוזים כפי שדווח עבור חודש הדיווח; אינו שיעור שנתי) · 
+                
+                
+            </div>
+</div><div class="card acct">
+<div class="card-head">
+<div><b>הפניקס השתלמות</b> · הפניקס פנסיה וגמל בע"מ</div>
+<div class="muted small">קרן השתלמות · חשבון 100002 · סטטוס 1 · נכון ל-30/06/2026</div>
+</div>
+<div class="track">
+<div class="track-line"><span>הפניקס השתלמות מניות</span><b>180,000 ₪</b></div>
+<div class="eqbar"><div class="eqbar-eq" style="width:98.9%"></div></div>
+<div class="muted small">חשיפה מנייתית 98.9% · הצעת התאמה בלבד, לפי דמיון שמות: <b>הפניקס השתלמות מניות</b> (קרנות השתלמות, ציון 1.00). לא מאומתת מול רשימת המסלולים הרשמית של הגוף.</div>
+<label class="confirmlab"><span class="static-value">לא</span> ההתאמה לפי שם בלבד - אישרתי מול קוד המסלול הרשמי, לכלול בממוצע הסיכון</label>
+</div>
+<div class="muted small">
+                דמי ניהול מהפקדה בחודש הדיווח: 0% · 
+                מהצבירה: 0.6% (שיעור באחוזים כפי שדווח עבור חודש הדיווח; אינו שיעור שנתי) · 
+                
+                
+            </div>
+</div><div class="card acct">
+<div class="card-head">
+<div><b>מגדלור</b> · מגדל חברה לבטוח בע"מ</div>
+<div class="muted small">ביטוח מנהלים (סיווג לפי קוד 1 - לא אומת) · חשבון 100003 · סטטוס 2 · נכון ל-30/06/2026</div>
+</div>
+<div class="track">
+<div class="track-line"><span>כללי</span><b>95,000 ₪</b></div>
+<div class="muted small"><span class="muted">לא נמצאה הצעת התאמה בנתוני הייחוס - החשיפה לא נכללת בממוצע</span> <span class="tag-miss">לא נכלל בממוצע הסיכון - אין נתון חשיפה ולא בסיס להערכה, והחשיפה אינה ידועה</span></div>
+</div>
+<div class="muted small">
+                דמי ניהול מהפקדה בחודש הדיווח: 0.3% · 
+                מהצבירה: 1.1% (שיעור באחוזים כפי שדווח עבור חודש הדיווח; אינו שיעור שנתי) · 
+                
+                
+            </div>
+</div>
+<div class="callout note-c"><b>כיסוי החשיפה.</b> 86.3% משווי התיק עם נתון חשיפה מתועד (רשמי / מקור לא-רשמי מסומן / הערכה עם בסיס). ללא נתון וללא בסיס להערכה: כללי (מגדלור, 95,000 ₪). חשיפתם אינה ידועה ואינה נספרת כאפס בממוצע.</div>
+</div>
+</section>
+<section class="card acc" id="acc-report">
+<span class="acc-head">
+            7 דוח מקוצר ללקוח (A4)
+            מבוסס על קובץ המסלקה שהועלה
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-report">
+<div class="muted small">דוח "מצב טרום טיפול" מקוצר (3 עמודי A4) המבוסס על קובץ המסלקה שהועלה: תמונת מצב והנתונים החשובים בתחילת הדוח, מוצרים ומסלולים, וכיסויים ביטוחיים, ללא שער ומכתב נפרדים. נתון שאין במקור מוצג בדוח כ"לא התקבל מידע" ואינו מומצא. הדוח מופק בדפדפן בלבד ואינו נשלח או נשמר מחוץ למחשב שלך.</div>
+<div class="rep-agent-form">
+<label>שם הסוכן לדוח <span class="static-value">שרון סימון</span></label>
+<label>טלפון <span class="static-value">לא הוזן</span></label>
+<label>דוא"ל <span class="static-value">לא הוזן</span></label>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+
+
+
+</div>
+<div class="muted small">בתצוגת ההדפסה ניתן לבחור "שמירה כ-PDF". מומלץ נייר A4, שוליים רגילים.</div></div>
+</section>
+<section class="card acc" id="acc-beforeafter">
+<span class="acc-head">
+            8 דוח לפני/אחרי מסכם (הדמיה)
+            מול החלופות הזכאיות המדורגות
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-beforeafter">
+<div class="muted small">דוח "לפני ואחרי" מסכם (עמוד A4 אחד, הדמיה): מצב התיק כיום מול מעבר של כל מסלול לחלופה המדורגת הראשונה שזכאות ההצטרפות אליה אומתה, באותה קטגוריית חשיפה - חשיפה משוקללת, עלות דמי ניהול מצבירה שנתית וחיסכון משוער לכל מסלול. דמי הניהול של החלופה הם הממוצע הרשמי שפורסם, לא הצעה אישית. נתון חסר מוצג כ"לא התקבל מידע". הדוח מופק בדפדפן בלבד ואינו נשלח או נשמר מחוץ למחשב שלך.</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+
+
+</div>
+<div class="muted small">בתצוגת ההדפסה ניתן לבחור "שמירה כ-PDF". מומלץ נייר A4, שוליים רגילים.</div></div>
+</section>
+<section class="card acc" id="acc-peers">
+<span class="acc-head">
+            9 השוואת עמיתים רשמית (גמל-נט / פנסיה-נט)
+            טרם הופעלה
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-peers">
+<div class="muted small">מקור: מאגרי גמל-נט ופנסיה-נט, רשות שוק ההון ביטוח וחיסכון (data.gov.il). תשואות נומינליות ברוטו לפני דמי ניהול. ההשוואה היא לתקופת הדיווח האחרונה שפורסמה במאגר, ואינה תחליף לייעוץ. קו הבסיס להשוואה הוא תמיד "ללא שינוי": שמירת הכסף במסלול הנוכחי. כל חלופה מוצגת מולו, כולל דמי הניהול המוצעים בפועל מול דמי הניהול הנוכחיים. ההשוואה מתייחסת לכסף הקיים (הצבירה). הפקדות עתידיות הן החלטה נפרדת: אפשר לנייד את הצבירה למסלול אחד ולהפנות הפקדות חדשות למסלול אחר באותה קופה או בקופה אחרת, בכפוף לכללי הקופה.</div>
+</div>
+</section>
+<section class="card acc" id="acc-risk">
+<span class="acc-head">
+            10 רמת סיכון
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-risk">
+<div class="group-label">רמת סיכון</div>
+<h2>חשיפה מנייתית משוקללת</h2>
+<div class="muted small">המדד: חשיפה מנייתית משוקללת-יתרות של המסלולים הזוהים בלבד. זה אינו מדד סיכון כולל של התיק (אינו כולל אג"ח, מט"ח, מניות חוץ ומינוף).</div>
+<div class="callout note-c"><b>אין מספיק נתונים.</b> אין עדיין מסלולים הנכללים בממוצע. מסלול שזוהה לפי קוד מסלול רשמי נכלל אוטומטית מגמל-נט, פנסיה-נט או ביטוח-נט (מאגרי הרשות, 09/2026); התאמה לפי דמיון שם בלבד נכללת רק אחרי אישור ידני; מסלול ללא נתון וללא בסיס להערכה מסומן "לא ידוע" ואינו נספר כאפס.</div>
+</div>
+</section>
+<section class="card acc" id="acc-efficiency">
+<span class="acc-head">
+            11 התייעלות מול נתוני ייחוס
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-efficiency">
+<div class="group-label">התייעלות</div>
+<h2>מסלולים עם שארפ 3 שנים גבוה יותר</h2>
+<div class="muted small">מיון לפי שארפ מחושב (36 חודשים, ריבית חסרת סיכון 4%) מתוך תמונת 09/2026, באותה קבוצת מוצר כמו החזקות הלקוח. סימון ✓ = חשיפה מנייתית ≥ 70% (סף החשיפה שהוגדר). זו רשימת בחינה, לא המלצה; דמי הניהול בפועל נקבעים מול הגוף. ברשימה רק מסלולים עם לפחות 36 חודשי נתוני תשואה בפועל בדיווח הרשמי (תשואה נצברת תלת-שנתית קיימת); מסלול צעיר יותר אינו מדורג כלל, גם אם הקרן עצמה ותיקה.</div>
+<div class="subhead">קרנות פנסיה מקיפה</div>
+<div class="muted small">הוחרגו מהדירוג בקבוצה זו 8 מסלולים עם פחות מ-36 חודשי נתוני תשואה בפועל (למשל מסלולי 'סחיר' שהושקו לאחרונה) - ייכנסו לדירוג כשיצטברו 36 חודשים.</div>
+<div class="cand">
+<div class="track-line"><span>1. מיטב פנסיה מקיפה משולב סחיר ✓</span><b>שארפ 2.24</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 98.3% · שארפ רשמי — · מניות 70.9% · חו"ל 0.8% · מט"ח 4.6% · ד"נ מצבירה ממוצע 0.11% · מהפקדה 1.25% · התאמה אקטוארית 0.02%
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>2. מור פנסיה מקיפה - מניות ✓</span><b>שארפ 2.19</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 71.2% · שארפ רשמי — · מניות 71.7% · חו"ל 49.9% · מט"ח 19.7% · ד"נ מצבירה ממוצע 0.19% · מהפקדה 1.05% · התאמה אקטוארית 0.03%
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>3. מיטב פנסיה מקיפה מניות ✓</span><b>שארפ 1.85</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 62.1% · שארפ רשמי 1.25 · מניות 71.5% · חו"ל 52% · מט"ח 28% · ד"נ מצבירה ממוצע 0.11% · מהפקדה 1.25% · התאמה אקטוארית 0.02%
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>4. מנורה מבטחים פנסיה - מסלול מניות ✓ (מוחזק היום)</span><b>שארפ 1.78</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 62.9% · שארפ רשמי 1.31 · מניות 73.6% · חו"ל 48.4% · מט"ח 22.5% · ד"נ מצבירה ממוצע 0.15% · מהפקדה 1.73% · התאמה אקטוארית -0.07%
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>5. כלל פנסיה מניות ✓</span><b>שארפ 1.77</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 63.1% · שארפ רשמי 1.26 · מניות 72.7% · חו"ל 48.9% · מט"ח 24.3% · ד"נ מצבירה ממוצע 0.14% · מהפקדה 1.52% · התאמה אקטוארית 0.03%
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>6. מגדל מקפת אישית מניות ✓</span><b>שארפ 1.74</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 62.4% · שארפ רשמי 1.24 · מניות 73.8% · חו"ל 47.5% · מט"ח 22% · ד"נ מצבירה ממוצע 0.14% · מהפקדה 1.56% · התאמה אקטוארית -0.05%
+                    </div>
+</div><div class="subhead">קרנות השתלמות</div>
+<div class="muted small">הוחרגו מהדירוג בקבוצה זו 26 מסלולים עם פחות מ-36 חודשי נתוני תשואה בפועל (למשל מסלולי 'סחיר' שהושקו לאחרונה) - ייכנסו לדירוג כשיצטברו 36 חודשים.</div>
+<div class="muted small">הוחרגו מהדירוג 14 מסלולים המוגבלים לעובדי סקטור או מפעל מסוים (לפי שדה אוכלוסיית היעד במאגר הרשמי) - הם אינם חלופה פתוחה לכל לקוח. אם הלקוח זכאי לקרן מוגבלת כזו, ניתן לבקש הצגה שלה בנפרד.</div>
+<div class="cand">
+<div class="track-line"><span>1. אינפיניטי השתלמות משולב סחיר ✓</span><b>שארפ 1.85</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 124% · שארפ רשמי 1.39 · מניות 98.9% · חו"ל 3.3% · מט"ח 0.1% · ד"נ מצבירה ממוצע 0.59% · מהפקדה —
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>2. מור קרן השתלמות לשכירים ולעצמאים - מניות ✓</span><b>שארפ 1.83</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 82.8% · שארפ רשמי 1.21 · מניות 100.3% · חו"ל 71.9% · מט"ח 26.3% · ד"נ מצבירה ממוצע 0.71% · מהפקדה —
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>3. אינפיניטי השתלמות מניות ✓</span><b>שארפ 1.77</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 84% · שארפ רשמי 1.34 · מניות 97.8% · חו"ל 69% · מט"ח 27.6% · ד"נ מצבירה ממוצע 0.59% · מהפקדה —
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>4. מיטב השתלמות מניות ✓</span><b>שארפ 1.69</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 82% · שארפ רשמי 1.08 · מניות 100.5% · חו"ל 72.7% · מט"ח 30.3% · ד"נ מצבירה ממוצע 0.55% · מהפקדה —
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>5. מנורה מבטחים השתלמות עוקב מדדי מניות ✓</span><b>שארפ 1.66</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 62.2% · שארפ רשמי — · מניות 98.1% · חו"ל 73.3% · מט"ח 52.7% · ד"נ מצבירה ממוצע 0.6% · מהפקדה —
+                    </div>
+</div><div class="cand">
+<div class="track-line"><span>6. ילין לפידות קרן השתלמות מסלול מניות ✓</span><b>שארפ 1.6</b></div>
+<div class="muted small">
+                        תשואה 3 שנים 72.8% · שארפ רשמי 1.03 · מניות 100% · חו"ל 68.5% · מט"ח 26.6% · ד"נ מצבירה ממוצע 0.67% · מהפקדה —
+                    </div>
+</div>
+</div>
+</section>
+<section class="card acc" id="acc-retirement">
+<span class="acc-head">
+            12 פרישה
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-retirement">
+<div class="group-label">פרישה</div>
+<h2>ניתוח טופס 161 ונקודות החלטה</h2>
+<div class="card">
+<div class="track-line"><span>סה"כ מענק</span><b>550,000 ₪</b></div>
+<div class="muted small">רצף קצבה מרבי 400,000 · רצף פיצויים מרבי 550,000 · פטור מרבי 371,250 · חייב 550,000</div>
+<div class="note small">
+                בדיקת שכפול: תקרת הפטור המחושבת (מינימום שכר×150% או 13,750 ₪, כפול 27 שנים) = 371,250 ₪.
+                הסכום המודפס בטופס (371,250 ₪) הוא שלמים לפי חישוב המעסיק/הקופה
+                , וההפרש עקבי עם עיגול או קיטוע לשקלים שלמים - לא הוכחת שוויון מלא. תקרת 13,750 ₪ לשנת עבודה מאומתת מול לוח הניכויים ינואר 2026 של רשות המסים (gov.il); כללי העיגול דורשים אימות
+                .
+            </div>
+<ul class="notes"><li>קיים מענק מעסיק ישיר (קוד משלם 1): אינו זכאי לרצף קצבה, וחובה למלא חלק ב׳ בטופס 161.</li><li>סכומים מקופות (קוד 5/6): 400,000 ₪ - זכאים לרצף קצבה עד התקרה.</li><li>ניצול הפטור ההוני מקטין את יתרת הפטור על הקצבה בקיבוע זכויות - הערכה גסה להמחשה בקבועי 2026 בלבד: כ-2,784 ₪ לחודש (הסכום הפטור כמודפס בטופס × 1.35 / 180). הסכום בטופס נומינלי: הנוסחה הרשמית דורשת מידוד לתחילת שנת הזכאות, וחריגות (כגון מענקים ששולמו למעלה מ-15 שנה לפני הקצבה הראשונה ולא יובאו בקיזוז) לא נבדקו כאן - לכן זו אינה הפחתת הזכויות בפועל; הקביעה מול פקיד השומה בלבד. מקור: מדריך רשות המסים לקיבוע זכויות טופס 161ד 2026 (gov.il).</li><li>פריסת מס קדימה: כ-6 שנות פריסה אפשריות לפי 27 שנות עבודה (שנה על 4 שנות עבודה, עיגון מ-0.5 כלפי מעלה; מקור החוזר בעתק מראה בלבד - לאמת).</li><li>פטור קצבה מזכה 2026: 5,422 ₪ לחודש (57.5% מתקרת 9,430 ₪), בכפוף לקיבוע זכויות. מקור רשמי: רשות המסים, מדריך לקיבוע זכויות טופס 161ד לשנת 2026 (gov.il) - לוח הפטורים: 2025 57%, 2026 57.5%, 2027 62.5%, 2028 ואילך 67%.</li></ul>
+<div class="muted small">מקור הכללים: ספריית כללים ראשונית 08/11/2026 (כיסוי חלקי; כללי פריסה מעתק מראה בלבד). אין כאן החלטה בין פטור / רצף קצבה / רצף פיצויים / פריסה - רק השלכות מכמתות לבחינה מול הלקוח ופקיד השומה.</div>
+</div>
+</div>
+</section>
+<section class="card acc" id="acc-step3">
+<span class="acc-head">
+            13 מטרות הלקוח
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-step3">
+<div class="fldgrid">
+<label class="fld"><span>אופק (שנים לקצבה)</span><span class="static-value">לא הוזן</span></label>
+</div>
+<div class="checks">
+<label><span class="static-value">לא</span> שמירה על הפטור החודשי על הקצבה</label>
+<label><span class="static-value">לא</span> העברה בין-דורית חלקה של הנכסים</label>
+<label><span class="static-value">לא</span> שמירה על ההון עבור הלקוח והיורשים ככל הניתן, גם על חשבון קצבה גבוהה יותר (ללא ערובה לשימור מלא של ההון)</label>
+<label><span class="static-value">לא</span> ריכוז הנכסים למסלול פנסיוני אחד</label>
+</div>
+<div class="muted small">המטרות נרשמות כאן כדי שהבדיקות הפתוחות למטה ישקפו אותן. בשלב זה אין במערכת מסקנות מוכנות לגבי ניוד או העברה בין-דורית.</div>
+</div>
+</section>
+<section class="card acc" id="acc-riskgoals">
+<span class="acc-head">
+            14 התאמת סיכון למטרות - דף עבודה פנימי
+            טרם הוזן קלט
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-riskgoals"><div class="card intake"><div class="track-line"><span><b>בחינת התאמת סיכון למטרות</b></span><span class="small muted">דף עבודה פנימי לסוכן - איכותני בלבד</span></div><div class="muted small">דף עבודה זה מפריד בין <b>נכונות לסיכון</b>, <b>יכולת לסיכון</b> ו<b>מידת מימון המטרות</b>, ומפיק שאלות איכותניות לבחינה ("כדאי לבחון") מתוך הקלט בלבד. אין כאן ציון, אין הקצאת יעד ואין המלצה אוטומטית; שדה ריק מסומן כחסר ולא כאפס. בסיס מושגי: <a href="https://www.kitces.com/blog/separating-risk-tolerance-from-risk-capacity-just-because-you-can-afford-to-take-risk-doesnt-mean-you-should/" rel="noopener" target="_blank">Kitces - הפרדת נכונות מיכולת</a> ו<a href="https://www.morningstar.com/financial-advisors/risk-capacity-is-more-than-just-time-frame" rel="noopener" target="_blank">Morningstar - יכולת סיכון היא יותר מאופק זמן</a>. היוריסטיקת יישום פנימית, לא מודל מספרי מאומת. בשלב זה אין התאמות בגין מקדמים מובטחים או בונוסים - האימות המחקרי עדיין פתוח.</div><div class="subhead">מטרות (עד 3)</div><div class="kibres"><div class="track-line"><span><b>מטרה 1</b></span></div><div class="netgrid"><label>תיאור המטרה<span class="static-value">לא הוזן</span></label><label>סכום יעד (₪)<span class="static-value">לא הוזן</span></label><label>מועד שימוש משוער<span class="static-value">לא הוזן</span></label><label>חשיבות<span class="static-value">לא הוזן</span></label><label>גמישות בסכום/מועד<span class="static-value">לא הוזן</span></label><label>הון מוקצה למטרה זו (₪, הקצאה מפורשת של הסוכן; בלי הקצאה לא תוצג בדיקת מימון למטרה)<span class="static-value">לא הוזן</span></label></div></div><div class="kibres"><div class="track-line"><span><b>מטרה 2</b></span></div><div class="netgrid"><label>תיאור המטרה<span class="static-value">לא הוזן</span></label><label>סכום יעד (₪)<span class="static-value">לא הוזן</span></label><label>מועד שימוש משוער<span class="static-value">לא הוזן</span></label><label>חשיבות<span class="static-value">לא הוזן</span></label><label>גמישות בסכום/מועד<span class="static-value">לא הוזן</span></label><label>הון מוקצה למטרה זו (₪, הקצאה מפורשת של הסוכן; בלי הקצאה לא תוצג בדיקת מימון למטרה)<span class="static-value">לא הוזן</span></label></div></div><div class="kibres"><div class="track-line"><span><b>מטרה 3</b></span></div><div class="netgrid"><label>תיאור המטרה<span class="static-value">לא הוזן</span></label><label>סכום יעד (₪)<span class="static-value">לא הוזן</span></label><label>מועד שימוש משוער<span class="static-value">לא הוזן</span></label><label>חשיבות<span class="static-value">לא הוזן</span></label><label>גמישות בסכום/מועד<span class="static-value">לא הוזן</span></label><label>הון מוקצה למטרה זו (₪, הקצאה מפורשת של הסוכן; בלי הקצאה לא תוצג בדיקת מימון למטרה)<span class="static-value">לא הוזן</span></label></div></div><div class="subhead">נכסים, חשיפה בפועל ומקורות</div><div class="netgrid"><label>יתרת התיק הכוללת (₪)<span class="static-value">לא הוזן</span></label><label>חשיפה מדווחת בפועל למניות (%)<span class="static-value">לא הוזן</span></label><label>מקור ותאריך דיווח החשיפה<span class="static-value">לא הוזן</span></label><label>הכנסה קבועה צפויה (קצבה/אחר, ₪/חודש)<span class="static-value">לא הוזן</span></label><label>משאבים נוספים יציבים<span class="static-value">לא הוזן</span></label><label>משיכות/צורכי נזילות מתוכננים (₪)<span class="static-value">לא הוזן</span></label><label>מועד המשיכות המתוכננות<span class="static-value">לא הוזן</span></label></div><div class="subhead">נכונות לסיכון (בנפרד מיכולת)</div><div class="netgrid"><label>נכונות לסיכון מוצהרת<span class="static-value">לא הוזן</span></label><label>התנהגות בירידות בעבר<span class="static-value">לא הוזן</span></label></div><div class="subhead">שאלות איכותניות לבחינה (נגזרות מהקלט בלבד; בדיקת מימון למטרה מוצגת רק מול הקצאה מפורשת שהוזנה, וההערכה המאוחדת אינה מקצה כסף למטרה מסוימת)</div><div id="rg-flags"><ul class="notes rgflags"><li class="rg-miss"><b>חסר: </b>נכונות לסיכון לא הוזנה - מסומן כחסר, לא כאפס.</li><li class="rg-miss"><b>חסר: </b>התנהגות בירידות בעבר לא הוזנה - מסומן כחסר.</li><li class="rg-miss"><b>חסר: </b>לא הוזנה אף מטרה עם סכום או מועד - מסומן כחסר.</li></ul></div></div></div>
+</section>
+<section class="card acc" id="acc-step4">
+<span class="acc-head">
+            15 מידע חסר להשלמת התמונה
+            נדרשות 4 השלמות בעדיפות ראשונה
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-step4">
+<div class="muted small">המערכת מבקשת רק את מה שחסר להחלטה הקרובה, לפי עדיפות. לכל פריט נרשם גם מקור הערך (מסמך, גוף, תאריך) - ערך בלי מקור מסומן כלא מאומת ולא נכנס לחישובים. תשובות מאומתות יהפכו בעתיד לכללים ובדיקות; נתוני הלקוח עצמו לא ישמשו ללקוחות אחרים.</div>
+<div class="subhead">עדיפות ראשונה: מקדם הקצבה לפי הגוף והמוצר בפועל</div>
+<div class="card intake">
+<div class="track-line"><span><b>מקדם קצבה לפי טבלאות התקנון הרשמיות - כל הגופים</b></span><span class="small muted">אומדן - לא ציטוט</span></div>
+<div class="mekgrid">
+<label>גוף מנהל<span class="static-value">מנורה מבטחים</span></label>
+<label>מסלול שאירים<span class="static-value">עם בן/בת זוג</span></label>
+<label>תקופת הבטחה<span class="static-value">ללא תקופת הבטחה</span></label>
+</div>
+<div class="muted small">הטבלאות חולצו מ<b>מנורה מבטחים - מקיפה</b>, עדכון 26/7/2026 (נספח ו', עמודים 95-104) ואומתו מספרית ב-8.11.2026 מול התקנון הרשמי (מלאי פנסיה-נט 09/2026). האומדן אינו ציטוט מחייב; לציטוט פונים לגוף המנהל. לפוליסות ותיקות עם מקדם מובטח - המקדם רשום בפוליסה עצמה.</div>
+<div class="mekgrid">
+<label>יתרה צבורה (₪)<span class="static-value">לא הוזן</span></label>
+<label>מין<span class="static-value">זכר</span></label>
+<label>שנת לידה<span class="static-value">לא הוזן</span></label>
+<label>גיל פרישה<span class="static-value">לא הוזן</span></label>
+<label>שנת לידה בן/בת זוג<span class="static-value">לא הוזן</span></label>
+</div>
+
+<div class="subhead">הזנה ידנית של מקדם (לכל גוף/מוצר)</div>
+<div class="mekgrid">
+<label>מקדם ידני<span class="static-value">לא הוזן</span></label>
+<label>יתרה לחישוב (₪)<span class="static-value">לא הוזן</span></label>
+</div>
+<div class="muted small">ערך שהוזן ידנית מסומן כך: <span class="tag-manual">הזנה ידנית - לא אומת מול טבלה רשמית</span>. רשמו את מקור המספר (ציטוט, פוליסה, תאריך) בשדה המקור של הפריט.</div>
+</div>
+<div class="card intake">
+<div class="track-line"><span><b>תרחישי משפחה: פרישה, פטירה מוקדמת, אריכות ימים</b></span><span class="small muted">נגזר מהאומדן</span></div>
+<div class="muted small">חשבו אומדן מקדם בכרטיס שלמעלה וכאן יוצגו שלושת התרחישים המשפחתיים מול המספרים שלו. בלי אומדן לא יוצגו מספרים.</div><div class="muted small">מונחים: <b>שאירים</b> - בן/בת זוג וילדים הזכאים לקצבה חודשית מהקרן על פי חוק (זכות חוקית שאינה ניתנת לעקיפה בהצהרה) · <b>מוטבים</b> - מי שמונו בקופה לקבל כספים שלא שולמו כקצבה (למשל תשלומי תקופת הבטחה) · <b>יורשים</b> - לפי צוואה או חוק הירושה. שלוש הקבוצות שונות ואין לבלבל ביניהן.</div>
+</div>
+<div class="subhead">עדיפות ראשונה</div>
+<div class="card intake">
+<div class="track-line"><span><b>תאריך רצוי לקבלת קצבה ראשונה (חודש ושנה, למשל 01/2031)</b> · יעד פרישה</span><span class="small muted">חסר</span></div>
+<div class="muted small">למה צריך: מועד הזכאות הראשון קובע את גיל הפרישה, את המקדם לפי הטבלה, את תקופת ההבטחה ואת חישוב המס. בלי תאריך מבוקש אי אפשר להצמיד ציטוט או אומדן ליום הזכאות.</div>
+<div class="intakegrid">
+<div>
+<div class="intakegrid">
+<span class="static-value">חודש</span>
+<span class="static-value">שנה</span>
+</div>
+<div class="muted small">בתכנון זה ניתן לבחור רק חודשים עתידיים, החל מהחודש הבא.</div>
+</div>
+<span class="static-value">לא הוזן</span>
+</div>
+</div><div class="card intake">
+<div class="track-line"><span><b>תנאי הפוליסה או הקרן הוותיקה, ערכי פדיון נוכחיים, מסלולי מס והשלכות ניוד על זכויות (הבטחות תשואה, מקדמים, דמי ניהול מוסכמים)</b> · קרנות ותיקות</span><span class="small muted">חסר</span></div>
+<div class="muted small">למה צריך: השוואת קצבה מול הון ובדיקת אובדן זכויות אינן אפשריות בלי התנאים. אין כאן המלצת ניוד.</div>
+<div class="intakegrid">
+<span class="static-value">לא הוזן</span>
+<span class="static-value">לא הוזן</span>
+</div>
+<div class="docbox">
+<div class="note small">העלאת קבצים אינה זמינה בגרסת ההדגמה. הגרסה מציגה תיק סינתטי קבוע להמחשה בלבד.</div>
+</div>
+</div><div class="card intake">
+<div class="track-line"><span><b>מהמעסיק: תלוש שכר עדכני (שכר וניכויים מצטברים לשנת המס השוטפת), טופס 106 של השנה המלאה האחרונה, סידור תשלום המענקים, וחלוקת טופס 161 לפי הקופות</b> · מעסיק ומס</span><span class="small muted">חסר</span></div>
+<div class="muted small">למה צריך: טופס 106 מסכם שנה קלנדרית שהסתיימה ולא יכול לשקף את 2026; לחישוב מס עדכני בנובמבר 2026 נדרש תלוש שכר שוטף (נתוני YTD) לצד ה-106 של 2025. בלעדיהם אי אפשר לחשב מס בפועל על מענקים, קצבה או פריסה.</div>
+<div class="intakegrid">
+<span class="static-value">לא הוזן</span>
+<span class="static-value">לא הוזן</span>
+</div>
+<div class="note small"><b>אילו מסמכים רשמיים לבקש, וממי:</b>
+<ul class="notes">
+<li><b>תלוש שכר עדכני</b> - מכיל את השכר והניכויים המצטברים (YTD) לשנת המס השוטפת. טופס 106 מסכם שנה קלנדרית שהסתיימה, ולכן בנובמבר 2026 אין תחליף לתלוש השוטף לנתוני 2026.</li>
+<li><b>טופס 106</b> ("אישור על משכורת וניכוי מס") של השנה המלאה האחרונה (2025) - מכל מעסיק. המעסיק חייב למסור אותו ביום סיום ההעסקה או עד 31.3 שלאחר שנת המס. מכיל את השכר השנתי החייב (שדה 158/172) ואת מס ההכנסה שנוכה במקור (שדה 042). טופסי 106 מ-6 השנים האחרונות ניתנים גם להורדה מהאזור האישי באתר רשות המסים.</li>
+<li><b>טופס 161 חתום</b> כולל חלק א9 (חלוקת המענקים לפי הקופות) - מופק על ידי המעסיק ומוזן בשלב 2.</li>
+<li><b>טופס 161א</b> - הודעת העובד למעסיק על הפרישה; העובד ממלא אותה כדי שהמעסיק יפיק את ה-161.</li>
+</ul>
+    מקור: רשות המסים בישראל (gov.il - שירות טופס 106, מדריך פרישה מעבודה), נכון ל-11/2026.</div>
+<div class="docbox">
+<div class="note small">העלאת קבצים אינה זמינה בגרסת ההדגמה. הגרסה מציגה תיק סינתטי קבוע להמחשה בלבד.</div>
+</div>
+</div><div class="card intake">
+<div class="track-line"><span><b>אישורי מוטבים עדכניים בקופות, גיל בן/בת זוג, ילדים ותלויים, כוונת ירושה והתאמה לצוואה</b> · משפחה</span><span class="small muted">חסר</span></div>
+<div class="muted small">למה צריך: קובעת מסלול הבטחה בקצבה, בחירת מוטבים, והאם להעדיף הון על קצבה. זכויות השאירים החוקיות אינן ניתנות לעקיפה בהצהרה.</div>
+<div class="intakegrid">
+<span class="static-value">לא הוזן</span>
+<span class="static-value">לא הוזן</span>
+</div>
+<div class="quotebox">
+<div class="callout note-c small"><b>חשוב לפני ההעלאה:</b> ספח תעודת הזהות מזהה בני משפחה בלבד - הוא אינו מוכיח מי רשום כמוטב בקופה. רישום מוטבים מתאשר רק מול אישור עדכני מהגוף המנהל. לכן מי שייזהה מהספח יסומן "מהספח" ולא "מוטב/ת", ומוטבים יסומנו כך רק לפי אישור הגוף המנהל.</div>
+<div class="docbox">
+<div class="note small">העלאת קבצים אינה זמינה בגרסת ההדגמה. הגרסה מציגה תיק סינתטי קבוע להמחשה בלבד.</div>
+</div>
+<div class="docbox">
+<div class="note small">העלאת קבצים אינה זמינה בגרסת ההדגמה. הגרסה מציגה תיק סינתטי קבוע להמחשה בלבד.</div>
+</div>
+<div class="subhead small">רשימת מוטבים ובני משפחה <em class="tag-miss">לעריכה ואישור</em></div>
+
+<div class="muted small">הרשימה מעדכנת אוטומטית את שדה הערך של הסעיף; ניתן לערוך אותו גם ידנית.</div>
+</div>
+</div>
+<div class="subhead">עדיפות שניה</div>
+<div class="card intake">
+<div class="track-line"><span><b>תכנית עבודה אחרי הפרישה</b> · הכנסות עתידיות</span><span class="small muted">חסר</span></div>
+<div class="muted small">למה צריך: הכנסה מעבודה משנה את מדרגות המס על קצבה ומענקים ואת כדאיות הפריסה.</div>
+<div class="intakegrid">
+<span class="static-value">לא הוזן</span>
+<span class="static-value">לא הוזן</span>
+</div>
+
+</div><div class="card intake">
+<div class="track-line"><span><b>הכנסות אחרות בפועל בשנת הפרישה ובשנה שאחריה</b> · הכנסות ויעדים</span><span class="small muted">חסר</span></div>
+<div class="muted small">למה צריך: הכנסות אחרות משנות את מדרגות המס על קצבה ומענקים. היעדר תשובה אינו מוכיח שאין הכנסות.</div>
+<div class="intakegrid">
+<span class="static-value">לא הוזן</span>
+<span class="static-value">לא הוזן</span>
+</div>
+</div><div class="card intake">
+<div class="track-line"><span><b>יעד קצבה נטו חודשי וצרכי נזילות</b> · יעדים</span><span class="small muted">חסר</span></div>
+<div class="muted small">למה צריך: מגדירים את פער הקצבה ואת התקציב לשאר הסכומים.</div>
+<div class="intakegrid">
+<span class="static-value">לא הוזן</span>
+<span class="static-value">לא הוזן</span>
+</div>
+</div><div class="card intake">
+<div class="track-line"><span><b>כל טופסי 161 קודמים, פטורים שנוצלו, רצפים, קיבוע זכויות ומשיכות פטורות - או הצהרה שלא היו אירועי פרישה קודמים</b> · היסטוריית פרישות</span><span class="small muted">חסר</span></div>
+<div class="muted small">למה צריך: הם קובעים את יתרת הפטור לקיבוע; בלעדיהם אין לסמוך על חישוב הפטור.</div>
+<div class="intakegrid">
+<span class="static-value">לא הוזן</span>
+<span class="static-value">לא הוזן</span>
+</div>
+</div>
+<div class="subhead">עדיפות שלישית</div>
+<div class="card intake">
+<div class="track-line"><span><b>הסדרי סמכות פעולה מול הגופים (ייפוי כוח וכדומה), אם רלוונטי</b> · משפחה</span><span class="small muted">חסר</span></div>
+<div class="muted small">למה צריך: בלי סמכות פעולה מוסדרת, בקשות מידע או שינוי מסלול עלולים להיתקע.</div>
+<div class="intakegrid">
+<span class="static-value">לא הוזן</span>
+<span class="static-value">לא הוזן</span>
+</div>
+</div><div class="card intake">
+<div class="track-line"><span><b>חשיפה מנייתית מחוץ לחסכונות הפנסיוניים</b> · סיכון</span><span class="small muted">חסר</span></div>
+<div class="muted small">למה צריך: החשיפה המשוקללת כאן היא חלקית; התמונה המלאה משנה את יעד הסיכון.</div>
+<div class="intakegrid">
+<span class="static-value">לא הוזן</span>
+<span class="static-value">לא הוזן</span>
+</div>
+</div>
+<div class="subhead">השוואה אופציונלית: ציטוט קצבה רשמי מהגוף המנהל</div>
+<div class="muted small">אינו תנאי להמשך. ציטוט עדכני מהגוף המנהל (כולל מסלולי הבטחה, יתרות, פיצול הפקדות מול פיצויים והשוואת קצבת שאירים) מאפשר השוואה מדויקת של המקדם והקצבה מול האומדן מהטבלה, ונדרש לפני החלטה סופית על מסלול קצבה. תחזית הקרן במסלקה אינה ציטוט.</div>
+<div class="docbox">
+<div class="note small">העלאת קבצים אינה זמינה בגרסת ההדגמה. הגרסה מציגה תיק סינתטי קבוע להמחשה בלבד.</div>
+</div>
+</div>
+</section>
+<section class="card acc" id="acc-openq">
+<span class="acc-head">
+            16 שאלות פתוחות
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-openq">
+<div class="group-label">שאלות פתוחות</div>
+<h2>מסגרת החלטה - בדיקות שלא בוצעו עדיין</h2>
+<div class="muted small">לפי המטרות שנרשמו בשלב 3. לכל נכס - הבדיקות הנדרשות לפני ריכוז או ניוד. אין להניח שניתן לנייד או להפוך לקצבה כל נכס.</div>
+<div class="card">
+<div class="card-head"><b>מנורה מבטחים פנסיה</b> <span class="muted">(קרן פנסיה, 420,000 ₪)</span></div>
+<ul class="checks-open">
+<li>ניוד למסלול מרכז: טרם נבדק - תלוי בסוג המוצר ובתנאי החשבון.</li>
+<li>אירוע מס בעת ניוד או משיכה: טרם נבדק.</li>
+<li>אובדן זכויות קיימות (דמי ניהול מוסכמים, הבטחת תשואה, כיסויים ביטוחיים): טרם נבדק.</li>
+<li>משמעות ליורשים (מוטבים, שאירים, היוון): טרם נבדקה.</li>
+<li>מסלול קצבה מול שמירת הון ליורשים (לפי מטרת הלקוח): טרם נבדק; אין ערובה לשימור 100% מההון בכל מסלול.</li>
+</ul>
+</div><div class="card">
+<div class="card-head"><b>הפניקס השתלמות</b> <span class="muted">(קרן השתלמות, 180,000 ₪)</span></div>
+<ul class="checks-open">
+<li>ניוד למסלול מרכז: טרם נבדק - תלוי בסוג המוצר ובתנאי החשבון.</li>
+<li>אירוע מס בעת ניוד או משיכה: טרם נבדק.</li>
+<li>אובדן זכויות קיימות (דמי ניהול מוסכמים, הבטחת תשואה, כיסויים ביטוחיים): טרם נבדק.</li>
+<li>משמעות ליורשים (מוטבים, שאירים, היוון): טרם נבדקה.</li>
+<li>מסלול קצבה מול שמירת הון ליורשים (לפי מטרת הלקוח): טרם נבדק; אין ערובה לשימור 100% מההון בכל מסלול.</li>
+</ul>
+</div><div class="card">
+<div class="card-head"><b>מגדלור</b> <span class="muted">(ביטוח מנהלים (סיווג לפי קוד 1 - לא אומת), 95,000 ₪)</span></div>
+<ul class="checks-open">
+<li>ניוד למסלול מרכז: טרם נבדק - תלוי בסוג המוצר ובתנאי החשבון.</li>
+<li>אירוע מס בעת ניוד או משיכה: טרם נבדק.</li>
+<li>אובדן זכויות קיימות (דמי ניהול מוסכמים, הבטחת תשואה, כיסויים ביטוחיים): טרם נבדק.</li>
+<li>משמעות ליורשים (מוטבים, שאירים, היוון): טרם נבדקה.</li>
+<li>מסלול קצבה מול שמירת הון ליורשים (לפי מטרת הלקוח): טרם נבדק; אין ערובה לשימור 100% מההון בכל מסלול.</li>
+</ul>
+</div>
+<div class="callout note-c"><b>מה חסר כדי לקבוע.</b> תאריך קצבה ראשונה מבוקש, סך כל הנכסים מחוץ למסלקה, היסטוריית משיכות פטורות (לקיבוע זכויות), ומצב משפחתי/מוטבים עדכני. כללי המס אינם מאומתים במלואם בגרסה זו; לפני כל החלטה יש לאמת מול רשות המסים והגוף המנהל.</div>
+</div>
+</section>
+<section class="card acc" id="acc-review">
+<span class="acc-head">
+            17 סיכום לבחינה מקצועית ומשוב
+            
+            ▾
+        </span>
+<div class="acc-body" id="acc-body-review">
+<div class="muted small">רשימת הבדיקות שבוצעו והפתוחות לפני כל החלטה. המערכת אינה ממליצה ואינה מבצעת פעולות - היא מסכמת מה נבדק, ממה, ומה עוד פתוח.</div>
+<div class="subhead">בוצע ואומת</div>
+<ul class="notes"><li><b>מקור טבלת המקדמים:</b> נספחי הזקנה של תקנוני כל 18 הקרנות (9 מקיפות + 9 כלליות/משלימות, מלאי פנסיה-נט 09/2026) - חולצו ואומתו מספרית ב-8.11.2026; הערות שקופות מוצגות לטבלאות משוערכות (הראל) או חלקיות (מיטב)</li><li><b>מקור נתוני העמיתים:</b> גמל-נט ופנסיה-נט של רשות שוק ההון (data.gov.il), תקופת דיווח 09/2026</li><li><b>כללי ניוד ואכשרה:</b> חוזר העברת כספים בין קופות גמל (2017), סעיפים 3-4, נקרא מול הנוסח הרשמי</li></ul>
+<div class="subhead">פתוח לפני ביצוע</div>
+<ul class="notes"><li>אישור הלקוח לכל ערך שחולץ אוטומטית מול המסמך המקורי</li><li>ציטוט קצבה מחייב מהגוף המנהל - אופציונלי כעת, נדרש לפני החלטה על מסלול קצבה</li><li>בדיקת הרכב תנאים מול דברי הסכמי עבודה קודמים</li></ul>
+<div class="subhead">משוב</div>
+<div class="muted small">יש הערה, תיקון או בקשה? כתבו אותה כאן והעתיקו - ההעתקה נשארת במכשיר שלכם בלבד, ואתם מדביקים אותה בווצאפ או בדוא"ל למי שתבחרו. שום דבר לא נשלח מהעמוד, ושום נתון לקוח אינו מצורף אוטומטית.</div>
+<span class="static-value">לא הוזן</span>
+
+<span class="muted small" id="feedback-done"></span></div>
+</section>
+<footer class="closing">אב-טיפוס · נתוני ייחוס 09/2026 בלבד · כללים: ספריית כללים ראשונית 08/11/2026 (כיסוי חלקי; כללי פריסה מעתק מראה בלבד) · נתוני לקוח לא נשלחים, לא נשמרים ולא מוזנים לאף מערכת מהעמוד הזה; פרטי הסוכן לדוח בלבד נשמרים מקומית בדפדפן שלך.
+        <details class="srcbox"><summary>מקורות החישוב ותאריכי עדכון</summary><ul class="srcbox-list">
+<li>מדרגות מס הכנסה, מס יסף (סעיף 121ב) ונקודת זיכוי (33א) ל-2026 - רשות המסים, לוח הניכויים הרשמי 2026.</li>
+<li>פטור קצבה מזכה 2026: 57.5% מתקרת הקצבה המזכה - רשות המסים, מדריך לקיבוע זכויות (טופס 161ד) 2026, gov.il.</li>
+<li>קצבת שאירים - משטר מס נפרד: פקודת מס הכנסה סעיף 9(6ו) (תיקון 190), פטור מלא עד תקרת הקצבה המזכה 2026, לפי לוח הניכויים הרשמי.</li>
+<li>מקדמי המרה לקצבה - הטבלאות הרשמיות באתרי החברות, נכון לנתוני ייחוס 09/2026.</li>
+<li>השוואת עמיתים - גמל-נט / פנסיה-נט; תקופת הדיווח מוצגת בחלק ההשוואה עצמו.</li>
+<li>תקן קובץ המסלקה - ממשק הזדהות לקוח (מסלקה פנסיונית), רשות שוק ההון.</li>
+</ul></details>
+</footer>
+</main></div></body></html>

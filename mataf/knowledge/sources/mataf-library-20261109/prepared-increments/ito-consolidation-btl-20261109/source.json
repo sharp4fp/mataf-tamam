@@ -1,0 +1,20 @@
+{
+  "id": "ito-consolidation-btl-retained20261109",
+  "title": "פקודת מס הכנסה [נוסח חדש] - נוסח מאוחד באתר ביטוח לאומי",
+  "publisher_host": "המוסד לביטוח לאומי",
+  "url": "https://www.btl.gov.il/Laws1/00_0103_000000.pdf",
+  "classification": "government_hosted_compiled_statutory_text_not_original_gazette",
+  "retrieved_on": "2026-11-09",
+  "pdf_pages": 165,
+  "last_amendment_in_document_ledger": "2026-06-08, amendment292,PDFpage5",
+  "post_ledger_amendment_check": "not completed",
+  "pdf_metadata_creation": "2026-06-21,not legal effective date",
+  "verified_pixel_pages": [
+    19,
+    21,
+    27
+  ],
+  "full_text_readability_status": "NOT prepared; PDFfirst except explicitly labelled inspected-clause auxiliary transcription.",
+  "pdf_sha256": "6deb4dc4ee99460cbdc6d468618169db411812847bb23ee653ad6cce6b14b815",
+  "app_rule_changes_authorised": false
+}

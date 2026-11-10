@@ -1,0 +1,40 @@
+[
+  {
+    "collection_family_id": "S010",
+    "title": "תקנות מס הכנסה (כללים לאישור ולניהול קופות גמל), התשכד-1964",
+    "filename": "provident-fund-approval-regs-btl.pdf",
+    "source_url": "https://www.btl.gov.il/Laws1/02_0103_100022.pdf",
+    "host": "המוסד לביטוח לאומי",
+    "source_type": "official_hosted_compilation",
+    "retrieved_on": "2026-11-09",
+    "pdf_pages": 33,
+    "pdf_metadata_creation": "2025-08-18",
+    "visually_reviewed_pages": [
+      2,
+      3
+    ],
+    "notes": "רשימת תיקונים בעמוד2מסתיימת12.7.2023; אין להסיק ממועד יצירתPDFעדכניות משפטית2025/2026. יש לבדוק תיקונים מאוחרים והוראות מעבר.",
+    "current_law_certified": false,
+    "text_status": "PDFonly;rawextractionwithheldpendingfullQA",
+    "sha256": "c1a910e7108c37690a2169fe93a5783f60111abdbbc4419d95bcf94a3a57f86b"
+  },
+  {
+    "collection_family_id": "S016",
+    "title": "חוק פיצויי פיטורים, התשכג-1963",
+    "filename": "severance-pay-law-btl.pdf",
+    "source_url": "https://www.btl.gov.il/Laws1/00_0040_000000.pdf",
+    "host": "המוסד לביטוח לאומי",
+    "source_type": "official_hosted_compilation",
+    "retrieved_on": "2026-11-09",
+    "pdf_pages": 6,
+    "pdf_metadata_creation": "2025-09-09",
+    "visually_reviewed_pages": [
+      3,
+      4
+    ],
+    "notes": "עמוד4כולל סעיף14בדבר הפקדות במקום פיצויים. החוק לבדו אינו האישור הכללי, צו הרחבה או הסכם קיבוצי; אין להסיק תחולתסעיף14עלמקרהאישי.",
+    "current_law_certified": false,
+    "text_status": "PDFonly;rawextractionwithheldpendingfullQA",
+    "sha256": "6aa609f3601102121dfb42312a00bd54180f4294cc26caba59a93d361a2eac79"
+  }
+]
