@@ -413,17 +413,23 @@ function renderField161(key) {
         <input data-f161="${key}" value="${esc(v)}" placeholder="${ph}"></label>`;
 }
 
+// שלב 2: 6 ערכי המפתח להחלטה למעלה; כל 15 השדות והמענקים בקיפול (פתוח כברירת מחדל כשטרם הועלה טופס)
+const KEY161 = ['retireDate', 'workYears', 'salarySeverance', 'totalGrant', 'maxExempt', 'taxableGrant'];
+function renderKey161() {
+    const tag = (key) => !state.f161Found[key] ? '<em class="tag-miss">לא חולץ</em>'
+        : state.f161Confirmed ? '<em class="tag-ok">אומת מול הטופס ✓</em>' : '<em class="tag-miss">חולץ - טרם אומת מול הטופס</em>';
+    return `<table class="key161"><tbody>${KEY161.map(k => `<tr><th>${FIELD_LABELS[k]}</th><td>${state.f161[k] ? esc(state.f161[k]) : '<span class="muted">-</span>'}</td><td>${tag(k)}</td></tr>`).join('')}</tbody></table>`;
+}
+function fold161(body) {
+    const def = state.open.f161fields === undefined && !state.f161Tried;
+    return acc('f161fields', state.f161Tried ? 'כל השדות שחולצו, המענקים ותיקון' : 'הזנה ידנית של שדות הטופס', '', body, def).replace('class="card acc"', 'class="card acc sub"');
+}
+
 function renderStep2() {
     const g = state.f161.grants;
     const grantsFound = state.f161Tried && state.f161Found.grants;
     const grantsMissing = state.f161Tried && !state.f161Found.grants;
-    return `
-        <div class="drop">
-            <input type="file" id="f161-input" accept=".pdf">
-            <div class="drop-hint">בחרו את טופס 161 שהופק ברשות המסים. המערכת מחלצת את השדות אוטומטית: מה שחולץ מוצג לאישור (לא תתבקשו להזין שוב), ורק מה שלא חולץ יסומן להזנה ידנית.</div>
-        </div>
-        ${state.f161Status ? `<div class="status-line">${esc(state.f161Status)}</div>` : ''}
-        <div class="fldgrid">
+    const fields161 = `        <div class="fldgrid">
             ${renderField161('fullName')}
             ${renderField161('idNumber')}
             ${renderField161('birthDate')}
@@ -451,7 +457,15 @@ function renderStep2() {
             ${renderField161('maxPitzuim')}
             ${renderField161('maxExempt')}
             ${renderField161('taxableGrant')}
+        </div>`;
+    return `
+        <div class="drop">
+            <input type="file" id="f161-input" accept=".pdf">
+            <div class="drop-hint">בחרו את טופס 161 שהופק ברשות המסים. המערכת מחלצת את השדות אוטומטית: מה שחולץ מוצג לאישור (לא תתבקשו להזין שוב), ורק מה שלא חולץ יסומן להזנה ידנית.</div>
         </div>
+        ${state.f161Status ? `<div class="status-line">${esc(state.f161Status)}</div>` : ''}
+        ${state.f161Tried ? renderKey161() : ''}
+        ${fold161(`${fields161}`)}
         ${state.f161Tried && Object.keys(state.f161Found).length ? (state.f161Confirmed
             ? `<div class="a161 a161-ok"><b>השדות שחולצו אושרו מול הטופס החתום.</b> הנתונים המחושבים מהטופס (ניתוח פרישה, קיבוע זכויות, חלוקת כספים) פעילים על השדות כפי שאושרו. כל שינוי בשדה או העלאת טופס חדש מחזירים את החלק למצב "ממתין לאישור".</div>`
             : `<div class="a161 a161-red"><b>השדות שחולצו אינם מאומתים עדיין - חילוץ אוטומטי עלול לטעות.</b> עברו על כל שדה מול תמונת הטופס למטה (או מול הטופס החתום), תקנו ב"תיקון" מה שצריך, ורק אז אשרו. עד לאישור מפורש, הנתונים המחושבים מהטופס מושהים ואינם מוצגים.</div>
@@ -1746,7 +1760,7 @@ export function renderTargetProposal(p) { // export: QA בלבד - הזרקת מ
     // mix
     const wh = Math.round(pr.wHigh * 1000) / 10, wl = Math.round(pr.wLow * 1000) / 10;
     return `<div class="track-line"><span>${name} <span class="muted small">(${acct})</span></span><b>${pct(p.curEq)} ← ${pct(pr.achieved)}</b></div>
-        <div class="small">שילוב בתוך ${esc(pr.low.parentCoName || (pr.takanon && pr.takanon.fund) || 'אותה קרן/קופה')} (אותה קרן/קופה, בלי ניוד): <b>${wh}%</b> ל"${esc(pr.high.name)}"${pr.high.isCurrent ? ' (המסלול הנוכחי - נשאר)' : ''}${geoTagOf(pr.high)} (${pct(pr.high.eq)}) + <b>${wl}%</b> ל"${esc(pr.low.name)}"${pr.low.isCurrent ? ' (המסלול הנוכחי - נשאר)' : ''}${geoTagOf(pr.low)} (${pct(pr.low.eq)}) → חשיפה מושגת <b>${pct(pr.achieved)}</b> (חשבון מדויק על נתוני ${REF_DATE} הרשמיים).${geoUnmetHtml(pr)}</div>
+        <div class="small">שילוב בתוך ${esc(pr.low.parentCoName || (pr.takanon && pr.takanon.fund) || 'אותה קרן/קופה')} (אותה קרן/קופה, בלי ניוד): <b>${wh}%</b> ל"${esc(pr.high.name)}"${pr.high.isCurrent ? ' (המסלול הנוכחי - נשאר)' : ''}${geoTagOf(pr.high)} (${pct(pr.high.eq)}) + <b>${wl}%</b> ל"${esc(pr.low.name)}"${pr.low.isCurrent ? ' (המסלול הנוכחי - נשאר)' : ''}${geoTagOf(pr.low)} (${pct(pr.low.eq)}) ← חשיפה מושגת <b>${pct(pr.achieved)}</b> (חשבון מדויק על נתוני ${REF_DATE} הרשמיים).${geoUnmetHtml(pr)}</div>
         ${geoMixHtml(pr.geoMix)}${pr.geoNote ? `<div class="muted small">${esc(pr.geoNote)}</div>` : ''}
         <div class="muted small">נתוני רכיבים רשמיים: "${esc(pr.high.name)}" - שארפ ${pr.high.sharpe ?? '-'}, תשואה 3 שנים ${pr.high.y3 ?? '-'}% · "${esc(pr.low.name)}" - שארפ ${pr.low.sharpe ?? '-'}, תשואה 3 שנים ${pr.low.y3 ?? '-'}%. אין לחשב "שארפ של השילוב" כממוצע משוקלל של שארפ הרכיבים - שילוב מסלולים משנה את פרופיל הסיכון הכולל, והמדד המשולב אינו ממוצע המדדים. בסיס רגולטורי להחזקה בשני מסלולים במקביל: ${esc(pr.takanon.clause)} (<a href="${esc(pr.takanon.src)}" target="_blank" rel="noopener">מקור</a>).${pr.ageClause ? ` בחירת מסלול טווח-גיל שאינו תואם את גיל העמית: ${esc(pr.ageClause)}.` : ''}</div>`;
 }

@@ -30,6 +30,15 @@ for (const [label, viewport] of [['מחשב', { width: 1280, height: 900 }], ['�
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
         check(`${label}: ${name} - בלי גלילה אופקית`, overflow <= 1, String(overflow));
     }
+    // עברית: "הקודם" מימין ל"הבא" בצופה (בקשת הבעלים 11.11)
+    await page.goto(base + '/#/source/tax-161d-2026/4', { waitUntil: 'networkidle' });
+    await page.waitForTimeout(500);
+    const pos = await page.evaluate(() => {
+        const bs = [...document.querySelectorAll('.pager button')];
+        const prev = bs.find(b => b.textContent.includes('הקודם')), next = bs.find(b => b.textContent.includes('הבא'));
+        return prev && next ? { prev: prev.getBoundingClientRect().left, next: next.getBoundingClientRect().left } : null;
+    });
+    check(`${label}: צופה - "הקודם" מימין ל"הבא"`, !!pos && pos.prev > pos.next, JSON.stringify(pos));
     check(`${label}: בלי שגיאות JS`, errors.length === 0, errors.slice(0, 3).join(' | '));
     await page.close();
 }

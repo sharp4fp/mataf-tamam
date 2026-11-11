@@ -147,9 +147,10 @@ async function viewSource(id, page, params) {
         h('div', { class: 'note' + (checked ? '' : ' warn') }, checked ? 'הטקסט של עמוד זה נבדק מול תמונת העמוד.' : 'טקסט עזר בחילוץ אוטומטי - לא נבדק מול העמוד. לפני שימוש מקצועי: לקרוא ב-PDF.'),
         h('div', { class: 'viewer-head' },
             h('div', { class: 'pager' },
-                h('button', { class: 'btn ghost sm', type: 'button', disabled: n >= pages.length, onclick: () => go(n + 1) }, 'הבא ‹'),
+                // עברית, מימין לשמאל: "הקודם" בצד ימין (תחילת השורה), "הבא" בצד שמאל
+                h('button', { class: 'btn ghost sm', type: 'button', disabled: n <= 1, onclick: () => go(n - 1) }, '→ הקודם'),
                 h('span', {}, 'עמוד '), num, h('span', {}, ` מתוך ${pages.length}`),
-                h('button', { class: 'btn ghost sm', type: 'button', disabled: n <= 1, onclick: () => go(n - 1) }, '› הקודם')),
+                h('button', { class: 'btn ghost sm', type: 'button', disabled: n >= pages.length, onclick: () => go(n + 1) }, 'הבא ←')),
             h('div', { class: 'pager' }, pdfLink(s, n, `עמוד ${n} ב-PDF`), s.pdf ? h('a', { class: 'btn ghost sm', href: s.pdf, download: s.id + '.pdf' }, 'הורדת PDF') : null)),
         body);
 }
