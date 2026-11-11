@@ -1,0 +1,315 @@
+{
+ "_meta": {
+  "title": "מדרגות מס הכנסה על הכנסה מיגיעה אישית, ערך נקודת זיכוי ומס יסף, 2020-2026",
+  "publisher": "רשות המסים - לוח עזר לחישוב מס הכנסה ממשכורת ושכר עבודה (לוח ניכויים), לכל שנה",
+  "units": "ש\"ח לשנה; rate כשבר עשרוני. upTo = הגבול העליון השנתי של המדרגה, כולל; null = מכל שקל נוסף",
+  "pages": "מספרי עמודי ה-PDF",
+  "verification": "בכל השנים טבלת המדרגות נבדקה מול תמונת העמוד (11.11.2026). נקודת הזיכוי ומס היסף נלקחו מהטקסט של העמוד הנקוב; ב-2020 מס היסף מופיע בעמוד המדרגות, שנבדק מול תמונה.",
+  "notes": [
+   "ההכנסה שאינה מיגיעה אישית מתחילה ב-31% (טבלה נפרדת באותו עמוד); לא נכללה כאן.",
+   "מ-2025 נוסף מס של 2% על הכנסה חייבת ממקורות הוניים מעל אותו סף (חוק ההתייעלות, הקפאת עדכוני מס ומס יסף, התשפ\"ה-2024). הוא אינו חל על הכנסה מיגיעה אישית; ראו עמוד מס היסף בלוחות 2025 ו-2026.",
+   "creditPointAnnual = ערך חודשי × 12, לפי הלוח. ב-2025 הסכומים לא עודכנו (חוק ההקפאה), ולכן זהים ל-2024. ב-2026 הורחבו מדרגות ה-20% וה-31% (\"לאחר חוק ריווח מדרגות מס הכנסה\", כותרת הטבלה בעמ' 10). נקודת הזיכוי ומס היסף נשארו ברמת 2024."
+  ]
+ },
+ "2020": {
+  "brackets": [
+   {
+    "upTo": 75960,
+    "rate": 0.1
+   },
+   {
+    "upTo": 108960,
+    "rate": 0.14
+   },
+   {
+    "upTo": 174960,
+    "rate": 0.2
+   },
+   {
+    "upTo": 243120,
+    "rate": 0.31
+   },
+   {
+    "upTo": 505920,
+    "rate": 0.35
+   },
+   {
+    "upTo": null,
+    "rate": 0.47
+   }
+  ],
+  "creditPointMonthly": 219,
+  "creditPointAnnual": 2628,
+  "surtax": {
+   "threshold": 651600,
+   "rate": 0.03
+  },
+  "source": {
+   "file": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2020.pdf",
+   "page": 3,
+   "creditPointPage": 6,
+   "surtaxPage": 3,
+   "bracketsVerified": "image",
+   "creditPointVerified": "text",
+   "surtaxVerified": "image"
+  }
+ },
+ "2021": {
+  "brackets": [
+   {
+    "upTo": 75480,
+    "rate": 0.1
+   },
+   {
+    "upTo": 108360,
+    "rate": 0.14
+   },
+   {
+    "upTo": 173880,
+    "rate": 0.2
+   },
+   {
+    "upTo": 241680,
+    "rate": 0.31
+   },
+   {
+    "upTo": 502920,
+    "rate": 0.35
+   },
+   {
+    "upTo": null,
+    "rate": 0.47
+   }
+  ],
+  "creditPointMonthly": 218,
+  "creditPointAnnual": 2616,
+  "surtax": {
+   "threshold": 647640,
+   "rate": 0.03
+  },
+  "source": {
+   "file": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2021.pdf",
+   "page": 3,
+   "creditPointPage": 7,
+   "surtaxPage": 4,
+   "bracketsVerified": "image",
+   "creditPointVerified": "text",
+   "surtaxVerified": "text"
+  }
+ },
+ "2022": {
+  "brackets": [
+   {
+    "upTo": 77400,
+    "rate": 0.1
+   },
+   {
+    "upTo": 110880,
+    "rate": 0.14
+   },
+   {
+    "upTo": 178080,
+    "rate": 0.2
+   },
+   {
+    "upTo": 247440,
+    "rate": 0.31
+   },
+   {
+    "upTo": 514920,
+    "rate": 0.35
+   },
+   {
+    "upTo": null,
+    "rate": 0.47
+   }
+  ],
+  "creditPointMonthly": 223,
+  "creditPointAnnual": 2676,
+  "surtax": {
+   "threshold": 663240,
+   "rate": 0.03
+  },
+  "source": {
+   "file": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2022.pdf",
+   "page": 3,
+   "creditPointPage": 7,
+   "surtaxPage": 4,
+   "bracketsVerified": "image",
+   "creditPointVerified": "text",
+   "surtaxVerified": "text"
+  }
+ },
+ "2023": {
+  "brackets": [
+   {
+    "upTo": 81480,
+    "rate": 0.1
+   },
+   {
+    "upTo": 116760,
+    "rate": 0.14
+   },
+   {
+    "upTo": 187440,
+    "rate": 0.2
+   },
+   {
+    "upTo": 260520,
+    "rate": 0.31
+   },
+   {
+    "upTo": 542160,
+    "rate": 0.35
+   },
+   {
+    "upTo": null,
+    "rate": 0.47
+   }
+  ],
+  "creditPointMonthly": 235,
+  "creditPointAnnual": 2820,
+  "surtax": {
+   "threshold": 698280,
+   "rate": 0.03
+  },
+  "source": {
+   "file": "prepared-increments/circulars-tax-20261111/ita-monthly-deductions-booklet-2023.pdf",
+   "page": 6,
+   "creditPointPage": 8,
+   "surtaxPage": 7,
+   "bracketsVerified": "image",
+   "creditPointVerified": "text",
+   "surtaxVerified": "text"
+  }
+ },
+ "2024": {
+  "brackets": [
+   {
+    "upTo": 84120,
+    "rate": 0.1
+   },
+   {
+    "upTo": 120720,
+    "rate": 0.14
+   },
+   {
+    "upTo": 193800,
+    "rate": 0.2
+   },
+   {
+    "upTo": 269280,
+    "rate": 0.31
+   },
+   {
+    "upTo": 560280,
+    "rate": 0.35
+   },
+   {
+    "upTo": null,
+    "rate": 0.47
+   }
+  ],
+  "creditPointMonthly": 242,
+  "creditPointAnnual": 2904,
+  "surtax": {
+   "threshold": 721560,
+   "rate": 0.03
+  },
+  "source": {
+   "file": "prepared-increments/circulars-tax-20261111/ita-monthly-deductions-booklet-2024.pdf",
+   "page": 9,
+   "creditPointPage": 11,
+   "surtaxPage": 10,
+   "bracketsVerified": "image",
+   "creditPointVerified": "text",
+   "surtaxVerified": "text"
+  }
+ },
+ "2025": {
+  "brackets": [
+   {
+    "upTo": 84120,
+    "rate": 0.1
+   },
+   {
+    "upTo": 120720,
+    "rate": 0.14
+   },
+   {
+    "upTo": 193800,
+    "rate": 0.2
+   },
+   {
+    "upTo": 269280,
+    "rate": 0.31
+   },
+   {
+    "upTo": 560280,
+    "rate": 0.35
+   },
+   {
+    "upTo": null,
+    "rate": 0.47
+   }
+  ],
+  "creditPointMonthly": 242,
+  "creditPointAnnual": 2904,
+  "surtax": {
+   "threshold": 721560,
+   "rate": 0.03
+  },
+  "source": {
+   "file": "prepared-increments/circulars-tax-20261111/ita-monthly-deductions-booklet-2025.pdf",
+   "page": 8,
+   "creditPointPage": 10,
+   "surtaxPage": 9,
+   "bracketsVerified": "image",
+   "creditPointVerified": "text",
+   "surtaxVerified": "text"
+  }
+ },
+ "2026": {
+  "brackets": [
+   {
+    "upTo": 84120,
+    "rate": 0.1
+   },
+   {
+    "upTo": 120720,
+    "rate": 0.14
+   },
+   {
+    "upTo": 228000,
+    "rate": 0.2
+   },
+   {
+    "upTo": 301200,
+    "rate": 0.31
+   },
+   {
+    "upTo": 560280,
+    "rate": 0.35
+   },
+   {
+    "upTo": null,
+    "rate": 0.47
+   }
+  ],
+  "creditPointMonthly": 242,
+  "creditPointAnnual": 2904,
+  "surtax": {
+   "threshold": 721560,
+   "rate": 0.03
+  },
+  "source": {
+   "file": "sources/tax-booklet-2026.pdf",
+   "page": 10,
+   "creditPointPage": 12,
+   "surtaxPage": 11,
+   "bracketsVerified": "image",
+   "creditPointVerified": "text",
+   "surtaxVerified": "text"
+  }
+ }
+}

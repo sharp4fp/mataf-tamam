@@ -1,0 +1,15 @@
+{
+ "as_of": "2026-11-11",
+ "base_index": "profession-index/v1.3-20261110 (לא שונה; זהו delta)",
+ "note": "pdf_pages = עמודי ה-PDF.",
+ "topics": [
+  {"id": "P22.01", "title": "מדרגות מס, נקודות זיכוי, מס נוסף וסכומים לפי שנת מס", "previous_status": "לפי v1.3 / delta קודם", "new_status": "סעיף נבדק",
+   "mappings": [
+    {"source_id": "ita-monthly-deductions-booklet-2020", "section": "סעיף 121 ו-121ב - מדרגות ומס יסף 2020", "pdf_pages": [3], "verified_how": "image", "limits": ""},
+    {"source_id": "ita-monthly-deductions-booklet-2021", "section": "סעיף 121 - מדרגות 2021", "pdf_pages": [3], "verified_how": "image", "limits": ""},
+    {"source_id": "ita-monthly-deductions-booklet-2022", "section": "סעיף 121 - מדרגות 2022", "pdf_pages": [3], "verified_how": "image", "limits": ""}]},
+  {"id": "P22.04", "title": "תכנון משיכות, רזרבה, אינפלציה, אריכות ימים וסיכון רצף תשואות", "previous_status": "לפי v1.3 / delta קודם", "new_status": "סעיף נבדק",
+   "mappings": [
+    {"source_id": "cbs-complete-life-tables-2018-2022", "section": "לוח 1 (גברים) ולוח 2 (נשים), גילים 57-110+", "pdf_pages": [4, 6], "verified_how": "image", "limits": "לוח אוכלוסייה, לא מקדמי קרנות"}]}
+ ]
+}
