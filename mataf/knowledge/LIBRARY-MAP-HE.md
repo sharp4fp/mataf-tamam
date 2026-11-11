@@ -25,6 +25,7 @@
 | עדכון חוזר 2/2022 (8.4.2024) | רשות המסים | `mataf-library-20261109/prepared-increments/priority1-findings-20261110/circular-2-2022-update-20240408.pdf` | מילואים ודמי לידה |
 | טופס 116ג - בקשת פריסה | רשות המסים | `mataf-library-20261109/prepared-increments/priority1-findings-20261110/form-116c.pdf` | "מעודכן ל-12.2023"; עמ' 2 חוזר על נוסח נספח ב' ("אינו עולה על שש - לא תאושר") |
 | טופס 161ג - חזרה מרצף | רשות המסים | `mataf-library-20261109/prepared-increments/priority1-findings-20261110/form-161c.pdf` | |
+| תקנות העברת כספים בין קופות גמל, 2008 + תיקונים 2014, 2020, 2022, 2023 | רשומות, קובץ התקנות 6657/7407/8735/10170/10716 (סריקות; אירוח olaw.org.il) | `mataf-library-20261109/prepared-increments/transfer-regs-2008-20261111/` | נוסף 11.11. נוסח משולב מויקיטקסט - אתר מראה (קטגוריה 4 כנוסח מחייב); תקנה 3 נבדקה מול עמ' 629 |
 | מבט עומק: ביטוח ניתוחים | משרד הבריאות | `mataf-library-20261109/prepared-increments/health-sources-first-20261110/health-surgery-report-2025.pdf` | מחקר מדיניות, לא חקיקה |
 | חוק גיל פרישה, התשס"ד-2004 | רשומות, ס"ח 1919 | `mataf-library-20261109/prepared-increments/official-sources-20261111/knesset-retirement-age-law-2004-original.pdf` | **נוסח מקורי**, בלי תיקונים; סריקה (OCR) |
 | חוק התכנית הכלכלית 2021-2022 (תיקון 7 לחוק גיל פרישה) | רשומות, ס"ח 2933 | `.../official-sources-20261111/knesset-economic-plan-law-2021-sh2933.pdf` | פרק ט"ז בעמ' PDF 172-183; טבלת הנשים המחייבת בעמ' 174 |
