@@ -32,7 +32,7 @@ jobs:
             kind: gate
           - name: ספריית המקורות
             url: https://mataf-library.pages.dev
-            kind: up
+            kind: libgate
           - name: תמ״מ (שטר מטען)
             url: https://tamam-waybill.pages.dev
             kind: tamam
@@ -52,9 +52,10 @@ jobs:
                 js=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL/js/app.js")
                 detail="דף הבית $root, קובץ קוד בלי כניסה $js"
                 if [[ "$root" =~ ^(200|302|303|401)$ ]] && [ "$js" != "200" ]; then ok=0; fi ;;
-              up)
-                detail="דף הבית $root"
-                if [ "$root" = "200" ]; then ok=0; fi ;;
+              libgate)
+                data=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL/data/sources.json")
+                detail="דף הבית $root, נתונים בלי כניסה $data"
+                if [ "$root" = "401" ] && grep -q 'ספריית המקורות' /tmp/body && [ "$data" != "200" ]; then ok=0; fi ;;
               tamam)
                 detail="דף הבית $root"
                 if [ "$root" = "200" ] && grep -q 'שטר מטען' /tmp/body; then ok=0; fi ;;
