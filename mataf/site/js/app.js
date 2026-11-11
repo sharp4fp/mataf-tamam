@@ -370,6 +370,8 @@ function renderCallouts() {
             <li>משלם בטופס 161 או גוף גביה במסלקה אינו בהכרח מעסיק, ואותו מספר ח"פ אינו הוכחה לרישום בטופס או לכיסוי הפיצויים - הזהויות והקצאות מסתמכות על המסמכים בלבד.</li>
         </ul></div>`;
     }
+    // תכנון פרישה: שורה אחת שנפתחת בלחיצה (הצעת הפישוט 11.11.2026) - התוכן זהה, רק מקופל
+    if (state.mode === 'retirement') return fold('limits', 'אב-טיפוס לבחינה מקצועית, לא ייעוץ - גבולות ומקורות', html);
     return html;
 }
 
@@ -1002,11 +1004,6 @@ function renderFamilyScenarios() {
     </div>`;
 }
 
-function badgeKibua() {
-    const k = state.kibua;
-    const missing = [!k.eligDate, !k.grantExempt && !(state.f161.grants && state.f161.grants.length)].filter(Boolean).length;
-    return missing ? `חסרים ${missing} פרמטרי תכנון` : 'פרמטרי התכנון הוזנו';
-}
 // חישוב הקיבוע המשותף לסעיף הקיבוע ולסעיף חלוקת הכספים - מקור אחד בלבד לנוסחה ולשערים.
 // מחזיר {missing} (קלט חסר), {blocked:'year'|'indexed'} (חישוב נעצר) או {ok:true,...} עם התוצאות.
 function kibuaCalc(k) {
@@ -1101,7 +1098,7 @@ function kibAssist161Html() {
     const tot = num(f.totalGrant);
     if (tot !== null) items.push('<div class="track-line"><span>סכום המענק הכולל המודפס (א13) - כולל פטור וחייב יחד; אין להעתיקו לשדה הפטורים</span><b>₪' + fmt(tot) + '</b></div>');
     if (!items.length) return '';
-    return '<div class="note small"><b>סיוע מטופס 161 שהועלה (סעיף 3):</b> הערכים הבאים זוהו בטופס ומוצגים לעיון בלבד. שדה "מענקים פטורים ב-32 השנים" דורש את הסכום הפטור <b>שנמשך או שיימשך בפועל</b>; בחילוץ הקיים לא זוהה בטופס שהועלה שדה נפרד של סכום זה, ולכן יש לאמת ולהזין אותו מול הטופס החתום ואישורי המעסיק/הקופה. אין לחשב אותו בחיסור שדות מודפסים (בסיסים שונים). הערכים נומינליים: שדה המידוד נשאר הצהרה נפרדת.</div>'
+    return '<div class="note small"><b>סיוע מטופס 161 שהועלה (שלב "טופס 161"):</b> הערכים הבאים זוהו בטופס ומוצגים לעיון בלבד. שדה "מענקים פטורים ב-32 השנים" דורש את הסכום הפטור <b>שנמשך או שיימשך בפועל</b>; בחילוץ הקיים לא זוהה בטופס שהועלה שדה נפרד של סכום זה, ולכן יש לאמת ולהזין אותו מול הטופס החתום ואישורי המעסיק/הקופה. אין לחשב אותו בחיסור שדות מודפסים (בסיסים שונים). הערכים נומינליים: שדה המידוד נשאר הצהרה נפרדת.</div>'
         + items.join('')
         + '<div class="muted small">הטופס מתייחס למעסיק ולתקופה שבו בלבד. אם היו מענקי פרישה פטורים ממעסיקים קודמים ב-32 השנים שלפני גיל הזכאות, הם אינם בטופס זה ויש לכלול אותם בסכום (טפסי 161 קודמים).' + (state.kibua.empHistory === 'only' ? ' לפי ההצהרה שסומנה (מקום עבודה יחיד), הטופס מכסה את כל התקופה הרלוונטית - ועדיין יש לאמת את הסכום הפטור בפועל מול הטופס החתום: התקרה המודפסת אינה בהכרח הסכום.' : '') + '</div>';
 }
@@ -1169,13 +1166,13 @@ function allocBuckets() {
         let detail = 'הערכים המודפסים הם בעלי בסיסים שונים: הפטור המרבי ומרבי הרצפים הם תקרות (לא סכומים בפועל), ואילו החייב במס ושורות המענקים הם סכומים בפועל - אין לחבר אותם זה לזה, אין לראות בהם רכיבים של הסכום הכולל, ואין להשוות תקרה מול סכום בפועל. פטור מרבי מודפס (9א(7), תקרה): ' + (esc(f.maxExempt) || '—') + ' ₪ · חייב במס כמודפס (סכום בפועל): ' + (esc(f.taxableGrant) || '—') + ' ₪ · זכאי רצף קצבה (קוד 5/6): ' + Math.round(ins.ktsevaEligible).toLocaleString('he-IL') + ' ₪' + (ins.directEmployer > 0 ? ' · מענק מעסיק ישיר (קוד 1): ' + Math.round(ins.directEmployer).toLocaleString('he-IL') + ' ₪ - אינו זכאי לרצף קצבה אך נכלל בסה"כ המענק' : '');
         const mflags = moneyConsistency161(f);
         if (mflags.length) detail += ' · אי-התאמה מספרית בטופס: ' + mflags.join('; ') + ' - לפני אימות אין להשתמש בנתונים לתכנון.';
-        rows.push({ label: 'מענקי פרישה מהמעסיק', src: 'טופס 161 (סעיף 3)',
+        rows.push({ label: 'מענקי פרישה מהמעסיק', src: 'טופס 161 (שלב 2)',
             val: f.totalGrant ? esc(f.totalGrant) + ' ₪ (כמודפס)' : 'לא זוהה סכום כולל',
             detail });
     } else if (state.f161Tried && (f.retireDate || f.totalGrant || (f.grants && f.grants.length))) {
-        rows.push({ label: 'מענקי פרישה מהמעסיק', src: 'טופס 161 (סעיף 3)', val: 'מושהה - ממתין לאישור', detail: 'השדות שחולצו מטופס 161 טרם אומתו מול הטופס החתום. אשרו אותם בחלק 2 ורק אז נתוני המענקים יכנסו לחלוקה.' });
+        rows.push({ label: 'מענקי פרישה מהמעסיק', src: 'טופס 161 (שלב 2)', val: 'מושהה - ממתין לאישור', detail: 'השדות שחולצו מטופס 161 טרם אומתו מול הטופס החתום. אשרו אותם בשלב "טופס 161" ורק אז נתוני המענקים יכנסו לחלוקה.' });
     } else {
-        rows.push({ label: 'מענקי פרישה מהמעסיק', src: 'טופס 161 (סעיף 3)', val: 'חסר', detail: 'העלו את הטופס בסעיף 3 - בלעדיו אין נתוני מענקים ואין מה לחלק ברכיב זה.' });
+        rows.push({ label: 'מענקי פרישה מהמעסיק', src: 'טופס 161 (שלב 2)', val: 'חסר', detail: 'העלו את הטופס בשלב "טופס 161" - בלעדיו אין נתוני מענקים ואין מה לחלק ברכיב זה.' });
     }
     if (state.portfolio) {
         const sums = {};
@@ -1186,10 +1183,10 @@ function allocBuckets() {
         }
         const kinds = ['pensia', 'menahalim', 'tagmulim', 'hishtalmut', 'hashkaa', 'other'];
         for (const kind of kinds) {
-            if (sums[kind] > 0) rows.push({ label: 'יתרה ב' + (KIND_LABEL[kind] || kind), src: 'קובץ המסלקה (סעיף 1)', val: '₪' + Math.round(sums[kind]).toLocaleString('he-IL'), detail: 'צבירה כפי שדווחה בקובץ; פיצול קצבה/פיצויים פנימי לפי המסלולים שדווחו.' });
+            if (sums[kind] > 0) rows.push({ label: 'יתרה ב' + (KIND_LABEL[kind] || kind), src: 'קובץ המסלקה (שלב 1)', val: '₪' + Math.round(sums[kind]).toLocaleString('he-IL'), detail: 'צבירה כפי שדווחה בקובץ; פיצול קצבה/פיצויים פנימי לפי המסלולים שדווחו.' });
         }
     } else {
-        rows.push({ label: 'יתרות הקופות', src: 'קובץ המסלקה (סעיף 1)', val: 'חסר', detail: 'העלו קובץ מסלקה בסעיף 1 - בלעדיו אין תמונת צבירה.' });
+        rows.push({ label: 'יתרות הקופות', src: 'קובץ המסלקה (שלב 1)', val: 'חסר', detail: 'העלו קובץ מסלקה בשלב 1 - בלעדיו אין תמונת צבירה.' });
     }
     return rows;
 }
@@ -1206,19 +1203,19 @@ function allocScenariosHtml() {
     const caseLabel = hasCase ? 'החישוב על נתוני התיק שהוזנו.' : 'דוגמה חישובית כללית על ערכים שהוזנו ידנית - לא מבוססת על תיק לקוח טעון.';
     if (state.f161Confirmed && (f.totalGrant || (f.grants && f.grants.length))) {
         const mflags = moneyConsistency161(f);
-        if (mflags.length) return '<div class="note small">דירוג התרחישים על נתוני התיק נעצר: נמצאה אי-התאמה מספרית בטופס 161 - ' + mflags.join('; ') + '. לא יוצג דירוג על נתוני תיק עד לאימות מול הטופס החתום; ניתן לתקן את השדות בסעיף 3 או להעלות את הטופס מחדש.</div>';
+        if (mflags.length) return '<div class="note small">דירוג התרחישים על נתוני התיק נעצר: נמצאה אי-התאמה מספרית בטופס 161 - ' + mflags.join('; ') + '. לא יוצג דירוג על נתוני תיק עד לאימות מול הטופס החתום; ניתן לתקן את השדות בשלב "טופס 161" או להעלות את הטופס מחדש.</div>';
     }
     const c = kibuaCalc(k);
     const missing = [];
-    if (!pension) missing.push('אומדן קצבה מהמקדם (כרטיס המקדם בסעיף "מידע חסר להשלמת התמונה")');
-    if (c.missing) missing.push(...c.missing.map(m => m + ' (סעיף 4)'));
+    if (!pension) missing.push('אומדן קצבה מהמקדם (שלב "הקצבה הצפויה")');
+    if (c.missing) missing.push(...c.missing.map(m => m + ' (שלב "נתוני הקיבוע")'));
     if (!ni.eligMain) missing.push('סימון זכאות לקצבה מזכה בפאנל הנטו (בכרטיס המקדם) - בלי סיווג זכאות אין פטור על הקצבה וכל התרחישים שווים במס');
-    if (!k.empHistory) missing.push('הצהרת היסטוריית מעסיקים (סעיף 4) - כדי לדעת אם סכום המענקים שהוזן מלא');
+    if (!k.empHistory) missing.push('הצהרת היסטוריית מעסיקים (שלב "נתוני הקיבוע") - כדי לדעת אם סכום המענקים שהוזן מלא');
     const HORIZON = Math.min(600, Math.max(0, parseInt(state.alloc.horizon, 10) || 0));
-    if (!HORIZON) missing.push('תקופת ההשוואה לדירוג בחודשים (בחירה בסעיף זה) - אין ברירת מחדל: זו בחירת תכנון שלכם ואינה קשורה למחלק הסל החוקי (180) בנוסחת הקיבוע');
+    if (!HORIZON) missing.push('תקופת ההשוואה לדירוג בחודשים (בחירה בשלב זה) - אין ברירת מחדל: זו בחירת תכנון שלכם ואינה קשורה למחלק הסל החוקי (180) בנוסחת הקיבוע');
     if (missing.length) return '<div class="muted small">' + caseLabel + ' דירוג התרחישים יוצג לאחר השלמת: ' + missing.join(' · ') + '. אין דירוג מספרי על נתונים חסרים.</div>';
-    if (c.blocked === 'year') return '<div class="note small">הדירוג נעצר: שנת הזכאות שהוזנה בסעיף 4 היא ' + c.eligYear + ' וקבועי 2026 אינם תקפים לה. ניתן לבחור "הדמיית 2026" בסעיף 4, או לחשב בקבועי שנת הזכאות מול מקור רשמי עדכני.</div>';
-    if (c.blocked === 'indexed') return '<div class="note small">הדירוג נעצר: הוזנו מענקים בסעיף 4 ללא הצהרת מידוד. הנוסחה הרשמית דורשת סכום ממודד לתחילת שנת הזכאות, והמערכת אינה ממדדת.</div>';
+    if (c.blocked === 'year') return '<div class="note small">הדירוג נעצר: שנת הזכאות שהוזנה בשלב "נתוני הקיבוע" היא ' + c.eligYear + ' וקבועי 2026 אינם תקפים לה. ניתן לבחור "הדמיית 2026" בשלב "נתוני הקיבוע", או לחשב בקבועי שנת הזכאות מול מקור רשמי עדכני.</div>';
+    if (c.blocked === 'indexed') return '<div class="note small">הדירוג נעצר: הוזנו מענקים בשלב "נתוני הקיבוע" ללא הצהרת מידוד. הנוסחה הרשמית דורשת סכום ממודד לתחילת שנת הזכאות, והמערכת אינה ממדדת.</div>';
     if (c.grant <= 0) return '<div class="muted small">' + caseLabel + ' הוזן סכום מענקים פטורים 0 - אין משיכה הונית פטורה לשקול, ולכן אין פשרת מס לדרג ברכיב זה. תקרת הפטור החודשית המשוערת: ₪' + Math.round(c.monthly).toLocaleString('he-IL') + ' (כולל ההיוון שהוזן, אם הוזן). המענק החייב ואפשרויות הפריסה/רצף - בטבלת האפשרויות למטה (טרם אומתו, אין דירוג מספרי).</div>';
     const noGrant = kibuaCalc({ ...k, grantExempt: '0' });
     // שני קבועים שונים: מחלק הסל החוקי (180) משרת את נוסחת הקיבוע בלבד; תקופת ההשוואה לדירוג נבחרת על ידי המשתמש.
@@ -1269,13 +1266,13 @@ function allocMissingHtml() {
     const f161Pending = !hasF161 && state.f161Tried && !!(f.retireDate || f.totalGrant || (f.grants && f.grants.length));
     const missing = [];
     if (f161Pending) missing.push('אישור השדות שחולצו מטופס 161 מול הטופס החתום (חלק 2) - בלעדיו נתוני המענקים מושהים');
-    else if (!hasF161) missing.push('טופס 161 מהמעסיק (העלאה בסעיף 3) - מקור סכומי המענקים והרצפים');
-    if (!state.portfolio) missing.push('קובץ מסלקה (סעיף 1) - תמונת הצבירה והיתרות');
-    if (!k.eligDate) missing.push('חודש הגעה לגיל זכאות (סעיף 4)');
-    if (k.grantExempt === '' || k.hivunPast === '' || k.hivunPlan === '') missing.push('מענקים פטורים והיוון עבר/מתוכנן עם הצהרת מידוד (סעיף 4)');
-    if (!k.empHistory) missing.push('הצהרת היסטוריית מעסיקים ב-32 השנים שלפני גיל הזכאות (סעיף 4)');
-    if (k.empHistory === 'additional') missing.push('סכומי מענקים פטורים ממעסיקים קודמים (טפסי 161 קודמים) - לכלול בשדה המענקים בסעיף 4');
-    if (!state.mekLast || !state.mekLast.pension) missing.push('אומדן קצבה מהמקדם (כרטיס המקדם בסעיף "מידע חסר להשלמת התמונה") - לבדיקת הפטור מול הקצבה הצפויה');
+    else if (!hasF161) missing.push('טופס 161 מהמעסיק (העלאה בשלב "טופס 161") - מקור סכומי המענקים והרצפים');
+    if (!state.portfolio) missing.push('קובץ מסלקה (שלב 1) - תמונת הצבירה והיתרות');
+    if (!k.eligDate) missing.push('חודש הגעה לגיל זכאות (שלב "נתוני הקיבוע")');
+    if (k.grantExempt === '' || k.hivunPast === '' || k.hivunPlan === '') missing.push('מענקים פטורים והיוון עבר/מתוכנן עם הצהרת מידוד (שלב "נתוני הקיבוע")');
+    if (!k.empHistory) missing.push('הצהרת היסטוריית מעסיקים ב-32 השנים שלפני גיל הזכאות (שלב "נתוני הקיבוע")');
+    if (k.empHistory === 'additional') missing.push('סכומי מענקים פטורים ממעסיקים קודמים (טפסי 161 קודמים) - לכלול בשדה המענקים בשלב "נתוני הקיבוע"');
+    if (!state.mekLast || !state.mekLast.pension) missing.push('אומדן קצבה מהמקדם (שלב "הקצבה הצפויה") - לבדיקת הפטור מול הקצבה הצפויה');
     if (ni.otherMain === '' ) missing.push('הכנסות נוספות צפויות בפרישה (פאנל הנטו)');
     missing.push('ציטוט קצבה רשמי מהגוף המנהל (אינו תנאי, אך נדרש לפני החלטה סופית)');
     missing.push('בדיקת מקרי קצה: נכות, פעולות ביטחוניות, מענקים אחרי גיל זכאות ומקרים מלפני 2012 - אינם מכוסים בנוסחה ודורשים בדיקה נפרדת');
@@ -1289,7 +1286,7 @@ function renderAlloc() {
         { name: 'רצף פיצויים', now: 'אפשרות המודפסת בטופס 161; דוחה את אירוע המס ואינו פוגע בסל הקיבוע', later: 'המס ישולם במשיכה העתידית לפי הדין שיחול אז - לא ניתן לחיזוי וטרם אומת; אין מספרים כאן', st: 'חלקי - פירוט המיסוי טרם אומת' },
         { name: 'רצף קצבה', now: 'אפשרות המודפסת בטופס 161 (עד התקרה המודפסת בטופס); מכניקת הביצוע של הרצף והשלכותיה המלאות טרם אומתו מול מקור רשמי', later: 'מודל מס הקצבה 2026 עצמו מאומת וניתן להדגים בפאנל הנטו; הטיפול המדויק ברצף עצמו טרם אומת - אין להסיק מספרים מעבר למודל הקצבה הכללי', st: 'חלקי - מאומת מודל מס קצבה 2026 בלבד' },
         { name: 'פריסת המענק החייב', now: 'פיזור החייב על שנות פריסה (הערכת השנים מוצגת בניתוח 161 בסעיף "פרישה")', later: 'מקור כלל הפריסה בעתק מראה בלבד וטרם אומת מול טקסט רשמי - אין חישוב כאן', st: 'טרם אומת - מסומן' },
-        { name: 'היוון קצבה', now: 'משיכה חד-פעמית מתוך הצבירה; תנאי ותקרות ההיוון טרם אומתו', later: 'היוון פטור פוגע בסל הקיבוע ומקטין את הקצבה - ההשפעה על הסל מודגמת בסעיף 4', st: 'חלקי - תקרות טרם אומתו' },
+        { name: 'היוון קצבה', now: 'משיכה חד-פעמית מתוך הצבירה; תנאי ותקרות ההיוון טרם אומתו', later: 'היוון פטור פוגע בסל הקיבוע ומקטין את הקצבה - ההשפעה על הסל מודגמת בשלב "נתוני הקיבוע"', st: 'חלקי - תקרות טרם אומתו' },
         { name: 'קרן השתלמות נזילה', now: 'רכיב נזיל שאינו חלק מסל הקיבוע', later: 'כללי המס על המשיכה (לרבות פטור רווחי הון אחרי ותק) טרם אומתו מול מקור רשמי - יושלם בעדכון', st: 'טרם אומת - מסומן' },
     ];
     const routeRows = routes.map(r => '<tr><td><b>' + r.name + '</b></td><td class="small">' + r.now + '</td><td class="small">' + r.later + '</td><td class="small">' + r.st + '</td></tr>').join('');
@@ -1420,34 +1417,101 @@ function renderRiskGoals() {
         + '<div id="rg-flags">' + rgFlagsHtml() + '</div>'
         + '</div>';
 }
-function renderStep4() {
-    return `
-        <div class="muted small">המערכת מבקשת רק את מה שחסר להחלטה הקרובה, לפי עדיפות. לכל פריט נרשם גם מקור הערך (מסמך, גוף, תאריך) - ערך בלי מקור מסומן כלא מאומת ולא נכנס לחישובים. תשובות מאומתות יהפכו בעתיד לכללים ובדיקות; נתוני הלקוח עצמו לא ישמשו ללקוחות אחרים.</div>
-        <div class="subhead">עדיפות ראשונה: מקדם הקצבה לפי הגוף והמוצר בפועל</div>
-        ${renderMekadem()}
+// כרטיס השלמה אחד (פריט INTAKE) - משמש את שלבי תכנון הפרישה 3, 4, 5 ו-7
+function intakeCard(it) {
+    const st = state.intake[it.id] || { value: '', source: '' };
+    const done = st.value.trim().length > 0;
+    return `<div class="card intake${done ? (st.source.trim() ? ' done' : ' unverified') : ''}">
+        <div class="track-line"><span><b>${it.label}</b> · ${it.cat}</span><span class="small muted">${done ? (st.source.trim() ? 'התקבל עם מקור' : 'התקבל בלי מקור - לא מאומת') : 'חסר'}</span></div>
+        <div class="muted small">למה צריך: ${it.why}</div>
+        <div class="intakegrid">
+            ${it.id === 'pension-start' ? renderPensionStart(st) : `<input placeholder="ערך / תשובה" data-intake="${it.id}|value" value="${esc(st.value)}">`}
+            <input placeholder="מקור (מסמך, גוף, תאריך)" data-intake="${it.id}|source" value="${esc(st.source)}">
+        </div>
+        ${it.attestation && !done ? `<button type="button" class="ghostbtn" data-attest="${it.id}">${it.attBtn || 'סמנו: מוצהר שלא היו אירועים קודמים'}</button>` : ''}
+        ${it.id === 'income-tax' ? INCOME_TAX_GUIDE : ''}
+        ${DOC_UPLOADS[it.id] ? renderDocUpload(it.id) : ''}
+        ${it.id === 'family' ? renderFamilyBlock() : ''}
+    </div>`;
+}
+const intakeShown = (it) => !it.when || !state.portfolio || it.when(state.portfolio);
+function renderIntakeIds(ids) {
+    return ids.map(id => INTAKE.find(it => it.id === id)).filter(it => it && intakeShown(it)).map(intakeCard).join('');
+}
+// פריטים חסרים (ריקים) מתוך רשימה - לתגית "חסר: ..." בכותרת השלב
+function missingIntake(ids) {
+    return ids.map(id => INTAKE.find(it => it.id === id)).filter(it => it && intakeShown(it) && !(state.intake[it.id] && state.intake[it.id].value.trim()));
+}
+// קיפול משני בתוך שלב (נשמר בין רינדורים דרך state.open, כמו האקורדיון)
+function fold(id, title, body, badge = '') {
+    return acc(id, title, badge, body).replace('class="card acc"', 'class="card acc sub"');
+}
+
+// ---------- תכנון פרישה: 7 שלבים (הצעת הפישוט 11.11.2026, אושרה) ----------
+// שמות השלבים - להפניות בטקסט במקום מספרי סעיפים קשיחים (M-018)
+const RS = {
+    maslaka: 'שלב "קובץ המסלקה"', f161: 'שלב "טופס 161"', kibua: 'שלב "נתוני הקיבוע"',
+    questions: 'שלב "שאלות לפני החלטה"', pension: 'שלב "הקצבה הצפויה"', rec: 'שלב "ההמלצה"', summary: 'שלב "סיכום ופעולות"',
+};
+const RS_IDS = {
+    kibua: ['pension-start', 'prior-161'],
+    questions: ['work-after', 'future-income', 'target-net', 'family', 'risk-outside'],
+    pension: ['legacy-terms'],
+    summary: ['income-tax', 'legal-continuity'],
+};
+// שמות קצרים לתגיות "חסר: ..." בכותרות השלבים
+const INTAKE_SHORT = {
+    'pension-start': 'מועד קצבה', 'prior-161': 'אירועי פרישה קודמים', 'work-after': 'עבודה אחרי פרישה',
+    'future-income': 'הכנסות צפויות', 'target-net': 'יעד נטו ונזילות', family: 'משפחה ומוטבים',
+    'risk-outside': 'השקעות מחוץ לפנסיה', 'legacy-terms': 'תנאי פוליסה ותיקה', 'income-tax': 'תלוש ו-106',
+    'legal-continuity': 'ייפוי כוח',
+};
+const shortOf = (it) => INTAKE_SHORT[it.id] || it.label.split(/[(,]/)[0].trim();
+const missBadge = (ids, extra = []) => {
+    const m = [...extra, ...missingIntake(ids).map(shortOf)];
+    if (!m.length) return 'הושלם';
+    return 'חסר: ' + m.slice(0, 2).join(', ') + (m.length > 2 ? ` ועוד ${m.length - 2}` : '');
+};
+
+function renderKibuaStep() {
+    return `${renderKibua()}
+        <div class="subhead">מועד הקצבה ואירועי פרישה קודמים</div>
+        ${renderIntakeIds(RS_IDS.kibua)}`;
+}
+function badgeKibuaStep() {
+    const k = state.kibua, extra = [];
+    if (!k.eligDate) extra.push('חודש זכאות');
+    if (!k.grantExempt && !(state.f161.grants && state.f161.grants.length)) extra.push('מענקים פטורים');
+    return missBadge(RS_IDS.kibua, extra);
+}
+
+function renderQuestionsStep() {
+    return `<div class="muted small">התשובות כאן קובעות את ההמלצה בשלב 6: האם יש מעסיק חדש בתוך שנה (רצף פיצויים), אילו הכנסות צפויות בשנות הפריסה, כמה נזילות נדרשת ומה מטרות הלקוח.</div>
+        ${renderIntakeIds(RS_IDS.questions)}
+        <div class="subhead">מטרות הלקוח</div>
+        ${renderStep3()}
+        ${fold('riskgoals', 'דף עבודה פנימי: התאמת סיכון למטרות', renderRiskGoals(), badgeRg())}`;
+}
+
+function renderPensionStep() {
+    return `${renderMekadem()}
         ${renderFamilyScenarios()}
-        ${[1, 2, 3].map(pri => `
-            <div class="subhead">עדיפות ${pri === 1 ? 'ראשונה' : pri === 2 ? 'שניה' : 'שלישית'}</div>
-            ${INTAKE.filter(it => it.pri === pri && (!it.when || !state.portfolio || it.when(state.portfolio))).map(it => {
-                const st = state.intake[it.id] || { value: '', source: '' };
-                const done = st.value.trim().length > 0;
-                return `<div class="card intake${done ? (st.source.trim() ? ' done' : ' unverified') : ''}">
-                    <div class="track-line"><span><b>${it.label}</b> · ${it.cat}</span><span class="small muted">${done ? (st.source.trim() ? 'התקבל עם מקור' : 'התקבל בלי מקור - לא מאומת') : 'חסר'}</span></div>
-                    <div class="muted small">למה צריך: ${it.why}</div>
-                    <div class="intakegrid">
-                        ${it.id === 'pension-start' ? renderPensionStart(st) : `<input placeholder="ערך / תשובה" data-intake="${it.id}|value" value="${esc(st.value)}">`}
-                        <input placeholder="מקור (מסמך, גוף, תאריך)" data-intake="${it.id}|source" value="${esc(st.source)}">
-                    </div>
-                    ${it.attestation && !done ? `<button type="button" class="ghostbtn" data-attest="${it.id}">${it.attBtn || 'סמנו: מוצהר שלא היו אירועים קודמים'}</button>` : ''}
-                    ${it.id === 'income-tax' ? INCOME_TAX_GUIDE : ''}
-                    ${DOC_UPLOADS[it.id] ? renderDocUpload(it.id) : ''}
-                    ${it.id === 'family' ? renderFamilyBlock() : ''}
-                </div>`;
-            }).join('')}`).join('')}
-        <div class="subhead">השוואה אופציונלית: ציטוט קצבה רשמי מהגוף המנהל</div>
-        <div class="muted small">אינו תנאי להמשך. ציטוט עדכני מהגוף המנהל (כולל מסלולי הבטחה, יתרות, פיצול הפקדות מול פיצויים והשוואת קצבת שאירים) מאפשר השוואה מדויקת של המקדם והקצבה מול האומדן מהטבלה, ונדרש לפני החלטה סופית על מסלול קצבה. תחזית הקרן במסלקה אינה ציטוט.</div>
-        ${renderDocUpload('quote')}
-    `;
+        ${renderIntakeIds(RS_IDS.pension)}
+        ${fold('quote', 'השוואה אופציונלית: ציטוט קצבה רשמי מהגוף המנהל', `<div class="muted small">אינו תנאי להמשך. ציטוט עדכני מהגוף המנהל (כולל מסלולי הבטחה, יתרות, פיצול הפקדות מול פיצויים והשוואת קצבת שאירים) מאפשר השוואה מדויקת של המקדם והקצבה מול האומדן מהטבלה, ונדרש לפני החלטה סופית על מסלול קצבה. תחזית הקרן במסלקה אינה ציטוט.</div>${renderDocUpload('quote')}`)}`;
+}
+function badgePensionStep() {
+    return state.mekLast && state.mekLast.pension ? `אומדן ₪${fmt(state.mekLast.pension)} לחודש` : 'חסר: מקדם ואומדן קצבה';
+}
+
+function renderRecommendationStep() {
+    return `${renderAlloc()}
+        ${view ? fold('retirement', 'פירוט: ניתוח טופס 161 (קודי משלם, פגיעה בסל, שנות פריסה)', renderRetirement()) : ''}`;
+}
+
+function renderSummaryStep() {
+    return `<div class="subhead">מסמכים מהמעסיק והסדרים</div>
+        ${renderIntakeIds(RS_IDS.summary)}
+        ${fold('review', 'מה נבדק, מה פתוח, מקורות ומשוב', renderReview())}`;
 }
 
 // ההחזקות הנכללות בממוצע הסיכון (זיהוי רשמי/אוברייד מתועד אוטומטית, או התאמת שם שאושרה ידנית; הוצאה ידנית גוברת)
@@ -1825,13 +1889,13 @@ function renderRetirement() {
         <h2>ניתוח פרישה</h2>
         <div class="card">
             <div class="muted">עוד לא הועלה טופס 161, ולכן אין עדיין ניתוח מענקים ונקודות החלטה.</div>
-            <div class="muted small">העלו את הטופס בחלק 2 (PDF), או מלאו את השדות ידנית. בחלק 4 ניתן להיעזר במעריך הקצבה ובשאלות ההשלמה.</div>
+            <div class="muted small">העלו את הטופס בשלב "טופס 161" (PDF), או מלאו את השדות ידנית. אומדן הקצבה - בשלב "הקצבה הצפויה".</div>
         </div>`;
     if (!state.f161Confirmed) return `
         <div class="group-label">פרישה</div>
         <h2>ניתוח פרישה</h2>
         <div class="card">
-            <div class="muted">טופס 161 נטען, אך השדות שחולצו ממנו <b>טרם אומתו מול הטופס החתום</b>. הניתוח המחושב (תקרת הפטור, הרצפים ונקודות ההחלטה) מושהה ואינו מוצג עד לאישור מפורש של השדות בחלק 2.</div>
+            <div class="muted">טופס 161 נטען, אך השדות שחולצו ממנו <b>טרם אומתו מול הטופס החתום</b>. הניתוח המחושב (תקרת הפטור, הרצפים ונקודות ההחלטה) מושהה ואינו מוצג עד לאישור מפורש של השדות בשלב "טופס 161".</div>
         </div>`;
     const ins = insights161(f);
     return `
@@ -2049,11 +2113,6 @@ function badgeStep2() {
     const n = Object.values(state.f161Found).filter(Boolean).length;
     return `חולצו ${n} שדות`;
 }
-function badgeStep4() {
-    const open = INTAKE.filter(it => it.pri === 1 && (!it.when || !state.portfolio || it.when(state.portfolio)))
-        .filter(it => !(state.intake[it.id] && state.intake[it.id].value.trim())).length;
-    return open ? `נדרשות ${open} השלמות בעדיפות ראשונה` : 'עדיפות ראשונה הושלמה';
-}
 
 function render() {
     recompute();
@@ -2065,26 +2124,31 @@ function render() {
     const isNif = state.mode === 'nifraim';
     const isIns = state.mode === 'life' || state.mode === 'health' || state.mode === 'calc';
     const isPlain = isNif || isIns;
+    const isRet = state.mode === 'retirement';
+    const isPort = !isPlain && !isRet;
     const numStep1 = isNif ? '' : nextStepNum();
-    const numSecure = isNif ? '' : nextStepNum();
-    const numStep2 = isNif ? '' : state.mode === 'retirement' ? nextStepNum() : '';
-    const numKibua = isNif ? '' : state.mode === 'retirement' ? nextStepNum() : '';
-    const numAlloc = isNif ? '' : state.mode === 'retirement' ? nextStepNum() : '';
-    const numNif = state.mode === 'nifraim' ? nextStepNum() : '';
-    const numPortfolio = isNif ? '' : hasP ? nextStepNum() : '';
-    const numReport = isNif ? '' : hasP ? nextStepNum() : '';
-    const numMasdiff = isNif ? '' : hasP && state.diff.open ? nextStepNum() : '';
-    const numBeforeAfter = isNif ? '' : hasP ? nextStepNum() : '';
-    const numPeers = isNif ? '' : hasP ? nextStepNum() : '';
-    const numRisk = isNif ? '' : hasP ? nextStepNum() : '';
-    const numEfficiency = isNif ? '' : hasP ? nextStepNum() : '';
-    const numRetirement = isNif ? '' : state.mode === 'retirement' && hasP ? nextStepNum() : '';
-    const numStep3 = isNif ? '' : nextStepNum();
-    const numRiskGoals = isNif ? '' : nextStepNum();
-    const numStep4 = isNif ? '' : state.mode === 'retirement' ? nextStepNum() : '';
-    const numOpenq = isNif ? '' : hasP ? nextStepNum() : '';
-    const numReview = isNif ? '' : nextStepNum();
-    const numWhat = isNif ? '' : !hasP ? nextStepNum() : '';
+    const numSecure = isPort ? nextStepNum() : '';
+    // תכנון פרישה: 7 שלבים קבועים, מהקלט להמלצה
+    const numStep2 = isRet ? nextStepNum() : '';
+    const numKibua = isRet ? nextStepNum() : '';
+    const numQuestions = isRet ? nextStepNum() : '';
+    const numPension = isRet ? nextStepNum() : '';
+    const numAlloc = isRet ? nextStepNum() : '';
+    const numSummary = isRet ? nextStepNum() : '';
+    const numNif = isNif ? nextStepNum() : '';
+    // תיק פנסיוני: חלקי בדיקת התיק
+    const numPortfolio = isPort && hasP ? nextStepNum() : '';
+    const numReport = isPort && hasP ? nextStepNum() : '';
+    const numMasdiff = isPort && hasP && state.diff.open ? nextStepNum() : '';
+    const numBeforeAfter = isPort && hasP ? nextStepNum() : '';
+    const numPeers = isPort && hasP ? nextStepNum() : '';
+    const numRisk = isPort && hasP ? nextStepNum() : '';
+    const numEfficiency = isPort && hasP ? nextStepNum() : '';
+    const numStep3 = isPort ? nextStepNum() : '';
+    const numRiskGoals = isPort ? nextStepNum() : '';
+    const numOpenq = isPort && hasP ? nextStepNum() : '';
+    const numReview = isPort ? nextStepNum() : '';
+    const numWhat = !isPlain && !hasP ? nextStepNum() : '';
     document.getElementById('root').innerHTML = `
     <header class="hero">
         <div class="hero-inner">
@@ -2116,28 +2180,29 @@ function render() {
     </header>
     <main class="wrap">
         ${!isPlain ? renderCallouts() : ''}
-        ${!isPlain ? acc('step1', `${numStep1} קובץ המסלקה (ZIP או XML)`, badgeStep1(), renderStep1(), !hasP) : ''}
-        ${!isPlain ? acc('secure', `${numSecure} שמירת העבודה לקובץ מוצפן (אופציונלי)`, '', renderEncPanel()) : ''}
+        ${!isPlain ? acc('step1', `${numStep1} קובץ המסלקה (ZIP או XML)`, badgeStep1(), renderStep1() + (isRet ? fold('secure', 'שמירה או טעינה של תיק מוצפן (אופציונלי)', renderEncPanel()) : ''), !hasP) : ''}
+        ${isPort ? acc('secure', `${numSecure} שמירת העבודה לקובץ מוצפן (אופציונלי)`, '', renderEncPanel()) : ''}
         ${isNif ? acc('nifraim', `${numNif} נפרעים צפויים לפי חברת ביטוח`, state.nif.parsed ? 'קובץ נטען' : '', renderNifraimBody({ nif: state.nif, portfolio: null }), true) : ''}
         ${state.mode === 'life' ? renderLifeTab(state) : ''}
         ${state.mode === 'health' ? renderHealthTab(state) : ''}
         ${state.mode === 'calc' ? renderCalcTab(state) : ''}
-        ${!isPlain && state.mode === 'retirement' ? acc('step2', `${numStep2} טופס 161 (PDF)`, badgeStep2(), renderStep2()) : ''}
-        ${!isPlain && state.mode === 'retirement' ? acc('kibua', `${numKibua} קיבוע זכויות (טופס 161ד) - מסמכים ותכנון`, badgeKibua(), renderKibua()) : ''}
-        ${!isPlain && state.mode === 'retirement' ? acc('alloc', `${numAlloc} חלוקת הכספים ותכנון המס`, badgeAlloc(), renderAlloc()) : ''}
-        ${!isPlain && hasP ? acc('portfolio', `${numPortfolio} תיק הנכסים`, `${fmt(view.totalValue)} ₪ · ${visibleAccounts(state.portfolio).length} חשבונות${view.rejectedImports && view.rejectedImports.length ? ' · ⚠ יבוא חלקי' : ''}`, renderPortfolio(), true) : ''}
-        ${!isPlain && hasP ? acc('report', `${numReport} דוח מקוצר ללקוח (A4)`, 'מבוסס על קובץ המסלקה שהועלה', renderReportSection()) : ''}
-        ${!isPlain && hasP && state.diff.open ? acc('masdiff', `${numMasdiff} השוואת מסלקה חדשה מול קודמת`, state.diff.result ? 'הושוואה' : '', renderDiffBody(state), true) : ''}
-        ${!isPlain && hasP ? acc('beforeafter', `${numBeforeAfter} דוח לפני/אחרי מסכם (הדמיה)`, 'מול החלופות הזכאיות המדורגות', renderBeforeAfterSection()) : ''}
-        ${!isPlain && hasP ? acc('peers', `${numPeers} השוואת עמיתים רשמית (גמל-נט / פנסיה-נט)`, state.peers ? `תקופת דיווח ${periodLabel(state.peers.period)}` : 'טרם הופעלה', renderPeers()) : ''}
-        ${!isPlain && hasP ? acc('risk', `${numRisk} רמת סיכון`, '', renderRisk()) : ''}
-        ${!isPlain && hasP ? acc('efficiency', `${numEfficiency} התייעלות מול נתוני ייחוס`, '', renderEfficiency()) : ''}
-        ${!isPlain && state.mode === 'retirement' && hasP ? acc('retirement', `${numRetirement} פרישה`, '', renderRetirement(), true) : ''}
-        ${!isPlain ? acc('step3', `${numStep3} מטרות הלקוח`, '', renderStep3()) : ''}
-        ${!isPlain ? acc('riskgoals', `${numRiskGoals} התאמת סיכון למטרות - דף עבודה פנימי`, badgeRg(), renderRiskGoals()) : ''}
-        ${!isPlain && state.mode === 'retirement' ? acc('step4', `${numStep4} מידע חסר להשלמת התמונה`, badgeStep4(), renderStep4()) : ''}
-        ${!isPlain && hasP ? acc('openq', `${numOpenq} שאלות פתוחות`, '', renderOpenQuestions()) : ''}
-        ${!isPlain ? acc('review', `${numReview} סיכום לבחינה מקצועית ומשוב`, '', renderReview()) : ''}
+        ${isRet ? acc('step2', `${numStep2} טופס 161 (PDF)`, badgeStep2(), renderStep2()) : ''}
+        ${isRet ? acc('kibua', `${numKibua} נתוני הקיבוע (טופס 161ד)`, badgeKibuaStep(), renderKibuaStep()) : ''}
+        ${isRet ? acc('questions', `${numQuestions} שאלות לפני החלטה`, missBadge(RS_IDS.questions), renderQuestionsStep()) : ''}
+        ${isRet ? acc('pension', `${numPension} הקצבה הצפויה`, badgePensionStep(), renderPensionStep()) : ''}
+        ${isRet ? acc('alloc', `${numAlloc} ההמלצה: אופן המשיכה ותכנון המס`, badgeAlloc(), renderRecommendationStep()) : ''}
+        ${isRet ? acc('summary', `${numSummary} סיכום ופעולות`, missBadge(RS_IDS.summary), renderSummaryStep()) : ''}
+        ${isPort && hasP ? acc('portfolio', `${numPortfolio} תיק הנכסים`, `${fmt(view.totalValue)} ₪ · ${visibleAccounts(state.portfolio).length} חשבונות${view.rejectedImports && view.rejectedImports.length ? ' · ⚠ יבוא חלקי' : ''}`, renderPortfolio(), true) : ''}
+        ${isPort && hasP ? acc('report', `${numReport} דוח מקוצר ללקוח (A4)`, 'מבוסס על קובץ המסלקה שהועלה', renderReportSection()) : ''}
+        ${isPort && hasP && state.diff.open ? acc('masdiff', `${numMasdiff} השוואת מסלקה חדשה מול קודמת`, state.diff.result ? 'הושוואה' : '', renderDiffBody(state), true) : ''}
+        ${isPort && hasP ? acc('beforeafter', `${numBeforeAfter} דוח לפני/אחרי מסכם (הדמיה)`, 'מול החלופות הזכאיות המדורגות', renderBeforeAfterSection()) : ''}
+        ${isPort && hasP ? acc('peers', `${numPeers} השוואת עמיתים רשמית (גמל-נט / פנסיה-נט)`, state.peers ? `תקופת דיווח ${periodLabel(state.peers.period)}` : 'טרם הופעלה', renderPeers()) : ''}
+        ${isPort && hasP ? acc('risk', `${numRisk} רמת סיכון`, '', renderRisk()) : ''}
+        ${isPort && hasP ? acc('efficiency', `${numEfficiency} התייעלות מול נתוני ייחוס`, '', renderEfficiency()) : ''}
+        ${isPort ? acc('step3', `${numStep3} מטרות הלקוח`, '', renderStep3()) : ''}
+        ${isPort ? acc('riskgoals', `${numRiskGoals} התאמת סיכון למטרות - דף עבודה פנימי`, badgeRg(), renderRiskGoals()) : ''}
+        ${isPort && hasP ? acc('openq', `${numOpenq} שאלות פתוחות`, '', renderOpenQuestions()) : ''}
+        ${isPort ? acc('review', `${numReview} סיכום לבחינה מקצועית ומשוב`, '', renderReview()) : ''}
         ${!isPlain && !hasP ? acc('what', `${numWhat} מה רואים כאן`, '', renderIntroWhat(), true) : ''}
         <footer class="closing">אב-טיפוס · נתוני ייחוס ${REF_DATE} בלבד · כללים: ${RULES_SRC} · נתוני לקוח לא נשלחים, לא נשמרים ולא מוזנים לאף מערכת מהעמוד הזה; פרטי הסוכן לדוח בלבד נשמרים מקומית בדפדפן שלך.
         ${!isPlain ? renderSrcBox() : ''}

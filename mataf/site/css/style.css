@@ -655,3 +655,9 @@ body { background: var(--ivory); background-attachment: scroll; color: var(--ink
 
 @media (max-width: 560px) { .hero h1 { font-size: 1.55rem; } }
 @media print { .rpage-cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+
+/* קיפול משני בתוך שלב (תכנון פרישה, 11.11.2026) */
+.acc.sub { margin: 12px 0 0; box-shadow: none; border: 1px solid #d9dde3; }
+.acc.sub > .acc-head { padding: 9px 14px; font-size: 0.9rem; font-weight: 600; background: #f8f9fb; }
+.acc.sub > .acc-head[aria-expanded="true"] { background: #f1f3f6; }
+.acc.sub > .acc-body { padding: 10px 14px 12px; }

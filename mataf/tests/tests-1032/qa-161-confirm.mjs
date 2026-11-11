@@ -6,7 +6,8 @@ page.on('pageerror', e => console.log('PAGEERR:', String(e)));
 await page.goto('http://127.0.0.1:8099/?tab=retirement', { waitUntil: 'networkidle2', timeout: 30000 });
 await page.click('[data-action="demo"]');
 await new Promise(r => setTimeout(r, 800));
-await page.evaluate(() => { const h = document.querySelector('[data-acc="step2"]'); if (h && h.getAttribute('aria-expanded') !== 'true') h.click(); });
+// מבנה 7 השלבים (11.11.2026): ניתוח 161 נמצא בשלב "ההמלצה" (alloc) בתוך קיפול "retirement" - פותחים את שלושתם
+await page.evaluate(() => { for (const id of ['step2', 'alloc', 'retirement']) { const h = document.querySelector(`[data-acc="${id}"]`); if (h && h.getAttribute('aria-expanded') !== 'true') h.click(); } });
 await new Promise(r => setTimeout(r, 400));
 const probe = () => page.evaluate(() => ({
     confirmBtn: !!document.querySelector('[data-action="confirm161"]'),

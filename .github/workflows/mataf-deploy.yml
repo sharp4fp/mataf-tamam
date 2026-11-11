@@ -72,13 +72,14 @@ jobs:
           sudo mkdir -p /downloads && sudo chmod 777 /downloads
           which google-chrome
 
-      - name: בדיקות דפדפן (דמי ניהול מעורבים, אישור טופס 161)
+      - name: בדיקות דפדפן (דמי ניהול מעורבים, אישור טופס 161, מבנה 7 השלבים)
         run: |
           cd "$RUNNER_TEMP/tree"
           python3 -m http.server 8099 >/dev/null 2>&1 &
           sleep 2
           node tests-1032/qa-maslaka-mixed.mjs
           node tests-1032/qa-161-confirm.mjs
+          node tests-1032/qa-retirement-steps.mjs
 
   deploy:
     name: פריסה
