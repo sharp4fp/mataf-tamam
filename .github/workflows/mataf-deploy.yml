@@ -6,8 +6,9 @@
 #   2. אם הכול עבר - פריסה אוטומטית לסביבת הבדיקה (pension-planner-preview).
 #   3. בדיקת עשן מול הכתובת שנפרסה: שער הכניסה עונה ונועל את הקבצים.
 #      כשל ← חזרה אוטומטית לפריסה הקודמת (.github/scripts/cf-rollback.sh).
-# פריסה לאתר החי (pension-planner) ולדמו: רק בהפעלה ידנית (Run workflow),
-# ורק אחרי שכל הבדיקות עברו (כלל 10 - הבעלים מאשר גרסה לפני עלייה).
+#   4. אם הבדיקה בסביבת הבדיקה עברה - קידום אוטומטי לאתר הרשמי (pension-planner) + בדיקת עשן;
+#      כשל ← חזרה אוטומטית. סביבת הבדיקה היא "חיץ" לכל שינוי (החלטת הבעלים, 11.11.2026 22:17).
+# הדמו, או פריסה חוזרת ידנית: הפעלה ידנית (Run workflow).
 #
 # סודות נדרשים: CLOUDFLARE_API_TOKEN (Pages: Edit), CLOUDFLARE_ACCOUNT_ID.
 
@@ -144,3 +145,51 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: bash .github/scripts/cf-rollback.sh "${{ steps.target.outputs.project }}"
+
+  promote:
+    name: קידום לאתר הרשמי
+    needs: deploy
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: הכנת תיקיית הפריסה (בלי אתר הדמו ובלי קבצים ישנים)
+        run: |
+          mkdir -p deploy-out
+          rsync -a --exclude 'demo-site/' --exclude 'CNAME' mataf/site/ deploy-out/
+
+      - name: העלאה לאתר הרשמי
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: deploy-out
+          command: pages deploy . --project-name=pension-planner --branch=main --commit-dirty=true
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: בדיקת עשן - השער עונה ונועל
+        env:
+          URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: |
+          echo "נפרס אל: $URL"
+          sleep 10
+          root=$(curl -s -o /dev/null -w '%{http_code}' "$URL/")
+          js=$(curl -s -o /dev/null -w '%{http_code}' "$URL/js/app.js")
+          echo "דף הבית: $root | קובץ קוד בלי כניסה: $js"
+          case "$root" in 5*|000) echo "השער לא עונה"; exit 1 ;; esac
+          if [ "$js" = "200" ] && curl -s "$URL/js/app.js" | grep -q "function"; then
+            echo "קובץ קוד נגיש בלי כניסה - השער לא נועל"; exit 1
+          fi
+          echo "תקין"
+
+      - name: חזרה אוטומטית לפריסה הקודמת (בדיקת העשן נכשלה)
+        if: failure() && steps.deploy.outcome == 'success'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bash .github/scripts/cf-rollback.sh pension-planner
