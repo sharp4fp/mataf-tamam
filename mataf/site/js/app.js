@@ -7,6 +7,7 @@ import { extractDoc } from './pdfdocs.js';
 import { marketCandidates, parentIdOfMatch, pensionFundIdOfMatch, analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
 import { loadPeerData, periodLabel, findOwnRow, compareTrack, TRANSFER_GATES, EXISTING_VS_FUTURE_NOTE, BASELINE_NOTE, PEERS_SOURCE_NOTE } from './peers.js';
 import { renderReport, renderBeforeAfter, eligibleKeysOf } from './report.js';
+import { renderTransferRules } from './transfer-rules.js';
 import { renderDiffBody, diffPortfolios, renderNifraimBody, parseNifraimText, matchNifraim } from './diffnifraim.js';
 import { renderLifeTab, renderHealthTab, insInit, insApply, emptyInsState } from './insurance.js';
 import { renderCalcTab, calcApply } from './calc.js';
@@ -1616,36 +1617,38 @@ function renderHoldingTarget(a, h) {
     if (state.eligible[key] === false) return `<div class="card target-card muted-card">${head(`ההמלצה ליעד ${T}`)}<div class="muted small">סומנה "ללא שינוי" בחלק רמת הסיכון - החשיפה (${pct(inc.eq)}) נשארת, והיעד מתחלק בין שאר ההחזקות.</div></div>`;
     const plan = currentTargetPlan();
     const per = plan && plan.per ? plan.per.find(p => p.key === key) : null;
-    if (per && per.proposal && plan.status === 'infeasible') return `<div class="card target-card">${head(`ההמלצה ליעד ${T} - לא בר-השגה; מכוון לקרוב ביותר ${pct(plan.closestT)}`)}${renderTargetProposal(per)}${renderMarketTable(a, h, key, per)}</div>`;
+    if (per && per.proposal && plan.status === 'infeasible') return `<div class="card target-card">${head(`ההמלצה ליעד ${T} - לא בר-השגה; מכוון לקרוב ביותר ${pct(plan.closestT)}`)}${renderTargetProposal(per)}${renderMarketTable(a, h, key, per)}${renderTransferRules(a.kind, esc)}</div>`;
     if (!per) return `<div class="card target-card muted-card">${head(`ההמלצה ליעד ${T}`)}<div class="muted small">${plan && plan.status === 'infeasible' ? 'היעד אינו בר-השגה בכלים הזמינים - פירוט בחלק רמת הסיכון.' : plan && plan.status === 'underdetermined' ? 'לא ניתן לקבוע תכנית יחידה (חלק מהתיק ללא בסיס חשיפה) - פירוט בחלק רמת הסיכון.' : 'אין הצעה להחזקה זו.'}</div></div>`;
-    return `<div class="card target-card">${head(`ההמלצה ליעד ${T} (לפי בקר רמת הסיכון)`)}${renderTargetProposal(per)}${renderMarketTable(a, h, key, per)}</div>`;
+    return `<div class="card target-card">${head(`ההמלצה ליעד ${T} (לפי בקר רמת הסיכון)`)}${renderTargetProposal(per)}${renderMarketTable(a, h, key, per)}${renderTransferRules(a.kind, esc)}</div>`;
 }
 
 // טבלת "מסלולים מתאימים מכל השוק" (M-037): מסלולים שפתיחותם להצטרפות אומתה, בחשיפה קרובה ליעד ההחזקה,
 // מדורגים בציון המאושר; בחירה ברדיו מקבעת את ההחזקה במסלול ושאר ההחזקות מתאזנות סביבה.
 function renderMarketTable(a, h, key, per) {
     if (a.kind === 'menahalim') return `<div class="muted small market-note">ביטוח מנהלים: לא מוצע ניוד מכל השוק כברירת מחדל - בפוליסה עשוי להיות מקדם קצבה מובטח שאובד בניוד. בדיקה פרטנית מול הפוליסה.</div>`;
-    if (a.kind !== 'pensia') return `<div class="muted small market-note">מסלולים מכל השוק: בגמל ובהשתלמות טרם אומתה פתיחות מסלולים להצטרפות (מוצעים רק מסלולים מאומתים) - נדרש אימות מול התקנונים ואתרי הגופים.</div>`;
+
     const pick = state.marketPick[key];
     // היעד להחזקה: בבחירה ידנית - יעד המערכת לפני הבחירה אינו ידוע, לכן מוצגים מועמדים סביב החשיפה שנבחרה
     const tgt = per.targetEq;
     const mc = marketCandidates(a.kind, h.match && h.match.group, tgt, clientAge());
     if (mc.disabled) return `<div class="muted small market-note">אין מסלולים מאומתים להצטרפות בסוג קרן זה.</div>`;
-    const curId = pensionFundIdOfMatch(h.match);
+    const curId = pensionFundIdOfMatch(h.match, a.kind);
     const rows = mc.items.map((r, i) => {
-        const cp = parentIdOfMatch(h.match);
+        const cp = parentIdOfMatch(h.match, a.kind);
         const same = cp != null && r.parentId === cp;
         const checked = pick === r.fundId || (pick == null && per.proposal && per.proposal.type === 'market' && per.proposal.track.fundId === r.fundId);
         return `<tr${checked ? ' class="top"' : ''}><td><label class="mkt-pick"><input type="radio" name="mkt-${esc(key)}" data-mkt-pick="${esc(key)}" value="${r.fundId}"${pick === r.fundId ? ' checked' : ''}> ${i + 1}</label></td>
             <td>${esc(r.name)}${r.fundId === curId ? ' <span class="muted small">(הנוכחי)</span>' : ''}</td><td>${pct(r.eq)}</td><td>${Math.round(r.score)}</td>
             <td>${r.jSharpe ?? '-'}</td><td>${r.jY3 != null ? r.jY3 + '%' : '-'}</td><td>${r.feeA ?? '-'}% / ${r.feeD ?? '-'}%</td>
-            <td>${same ? 'באותו גוף' : '<b>ניוד</b>'}${r.joinStatus === 'age' ? ' <span class="muted small">(תלוי גיל)</span>' : ''}</td></tr>`;
+            <td>${same ? 'באותו גוף' : '<b>ניוד</b>'}${r.joinStatus === 'age' ? ' <span class="muted small">(תלוי גיל)</span>' : ''}${r.joinUnverified ? ' <span class="tag-miss">פתיחות לא אומתה</span>' : ''}</td></tr>`;
     }).join('');
     return `<details class="alts market"${pick != null || (per.proposal && per.proposal.type === 'market') ? ' open' : ''}><summary>מסלולים מתאימים מכל השוק - חשיפה בין ${pct(Math.max(0, tgt - mc.band))} ל-${pct(Math.min(100, tgt + mc.band))} (${mc.total} מסלולים מאומתים)</summary>
         ${mc.items.length ? `<div class="alts-scroll"><table class="altstbl"><thead><tr><th>בחירה</th><th>מסלול</th><th>חשיפה</th><th>ציון</th><th>שארפ</th><th>תשואה 3 שנים</th><th>ד"נ צבירה/הפקדה</th><th>מעבר</th></tr></thead><tbody>${rows}</tbody></table></div>
         <div class="small">${pick != null ? `<button type="button" class="linkbtn" data-mkt-clear="${esc(key)}">ביטול הבחירה - חזרה להמלצת המערכת</button>` : 'בחירה בשורה מקבעת את ההחזקה במסלול הזה; שאר ההחזקות מתאזנות כדי לשמור על היעד הכולל.'}</div>`
         : `<div class="muted small">אין מסלולים מאומתים ברצועה זו.</div>`}
-        <div class="muted small">ציון: 40% שארפ, 30% תשואת 3 שנים, 10% איזון אקטוארי, 20% מדד שירות (אחוזון בתוך המסלולים שברצועה; דמי ניהול אינם בציון - ממוצע רשמי לידיעה). מוצגים רק מסלולים שפתיחותם להצטרפות אומתה מול תקנון/אתר הגוף (8.11.2026)${mc.missing ? `; ${mc.missing} מסלולים ברצועה הוחרגו בגלל נתון חסר בציון` : ''}.</div>
+        <div class="muted small">${mc.gemel
+            ? `ציון: שארפ רשמי 4/9, תשואת 3 שנים 3/9, מדד שירות 2/9 (המשקלים המאושרים בלי הרכיב האקטוארי, שאינו קיים בגמל; אחוזון בתוך המסלולים שברצועה; דמי ניהול לידיעה). <b>פתיחות המסלולים להצטרפות לא אומתה פרטנית</b> - מוצגים מסלולים שגמל-נט מסווג "כלל האוכלוסיה"; לאמת מול הגוף לפני הצעה ללקוח. בסיס חוקי: תקנות העברת כספים בין קופות גמל, ${a.kind === 'hishtalmut' ? 'תקנה 3(א)(4) - השתלמות להשתלמות, ותקנה 9(ג) - מעבירים את החשבון כולו' : a.kind === 'hashkaa' ? 'תקנה 3(א)(11א) - להשקעה להשקעה' : 'תקנה 3(א)(1) - תגמולים לתגמולים'}`
+            : 'ציון: 40% שארפ, 30% תשואת 3 שנים, 10% איזון אקטוארי, 20% מדד שירות (אחוזון בתוך המסלולים שברצועה; דמי ניהול אינם בציון - ממוצע רשמי לידיעה). מוצגים רק מסלולים שפתיחותם להצטרפות אומתה מול תקנון/אתר הגוף (8.11.2026). בסיס חוקי: תקנות העברת כספים, תקנה 2(א)(1) - קופה לקצבה לקופה לקצבה'}${mc.missing ? `; ${mc.missing} מסלולים ברצועה הוחרגו בגלל נתון חסר בציון` : ''}.</div>
     </details>`;
 }
 
@@ -1883,7 +1886,7 @@ export function renderTargetProposal(p) { // export: QA בלבד - הזרקת מ
     if (pr.type === 'market') {
         const t = pr.track;
         return `<div class="track-line"><span>${name} <span class="muted small">(${acct})</span></span><b>${pct(p.curEq)} ← ${pct(pr.achieved)}</b></div>
-            <div class="small">${pr.picked ? 'נבחר ידנית' : 'המסלול המדורג ראשון בשוק ליעד ההחזקה'}: "<b>${esc(t.name)}</b>" (${esc(t.parentCoName || '')}, חשיפה ${pct(t.eq)}) - ${pr.sameCompany ? 'באותו גוף, בלי ניוד בין גופים' : '<b>ניוד לגוף אחר</b>'}.</div>
+            <div class="small">${pr.picked ? 'נבחר ידנית' : 'המסלול המדורג ראשון בשוק ליעד ההחזקה'}: "<b>${esc(t.name)}</b>"${t.parentCoName ? ` (${esc(t.parentCoName)})` : ''}, חשיפה ${pct(t.eq)} - ${pr.sameCompany ? 'באותו גוף, בלי ניוד בין גופים' : '<b>ניוד לגוף אחר</b>'}.${t.joinUnverified ? ' <span class="tag-miss">פתיחות להצטרפות לא אומתה - לאמת מול הגוף</span>' : ''}${p.kind === 'hishtalmut' && !pr.sameCompany ? ' <span class="muted small">(השתלמות: מעבירים את החשבון כולו - תקנה 9(ג))</span>' : ''}</div>
             ${pr.sameCompany ? '' : `<div class="muted small">לפני ניוד בין גופים: לבדוק רציפות כיסוי ביטוחי (נכות ושאירים), תקופת אכשרה והחרגות מצב רפואי קודם בגוף הקולט, דמי הניהול שיוצעו בפועל, ועיתוי הניוד מול הפקדות שוטפות.</div>`}`;
     }
     if (pr.type === 'single' && pr.singleOnly) {

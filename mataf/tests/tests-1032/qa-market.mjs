@@ -57,8 +57,10 @@ await page.evaluate(() => document.querySelector('[data-mkt-clear]').click());
 await wait(400);
 c = await pensionCard();
 ok(c && !c.text.includes('נבחר ידנית'), 'clear-pick-restores-system-recommendation');
-// גמל/השתלמות - אין רשימה, הסבר על אימות חסר
-ok(await page.evaluate(() => [...document.querySelectorAll('.market-note')].some(n => n.textContent.includes('טרם אומתה פתיחות'))), 'gemel-explains-unverified');
+// גמל/השתלמות (החלטת הבעלים 14:48): מוצגים מסלולים מהשוק עם סימון "פתיחות לא אומתה" והבסיס החוקי (תקנה 3(א)(4) / 9(ג))
+ok(await page.evaluate(() => [...document.querySelectorAll('details.market')].some(d => d.textContent.includes('פתיחות המסלולים להצטרפות לא אומתה') && /3\(א\)\(4\)|3\(א\)\(1\)|11א/.test(d.textContent))), 'gemel-market-marked-unverified-with-legal-basis');
+// כל החזקה עם יעד מציגה לאן מותר להעביר לפי תקנות הניוד
+ok(await page.evaluate(() => document.querySelectorAll('details.transfer-rules').length >= 2 && [...document.querySelectorAll('details.transfer-rules')].every(d => d.textContent.includes('תקנה 4'))), 'transfer-rules-shown-per-holding');
 ok(errs.length === 0, 'no-page-errors', errs[0] || '');
 console.log(`market: PASS=${pass} FAIL=${fail}`);
 await browser.close();

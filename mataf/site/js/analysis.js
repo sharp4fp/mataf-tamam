@@ -924,7 +924,7 @@ export function plannerRestoreOf(pl, holdings) {
     // מאז 11.11.2026 false = "ללא שינוי" (החרגה מפורשת מהיעד) - נשמר בשחזור; קודם נזרק כי ברירת המחדל הייתה false
     if (pl.eligible && typeof pl.eligible === 'object' && !Array.isArray(pl.eligible)) for (const [k, v] of Object.entries(pl.eligible)) if (v === false && byKey.has(k)) out.eligible[k] = false;
     // בחירות מסלול מהשוק (M-037): רק למפתח קיים ולמסלול רשמי קיים
-    if (pl.marketPick && typeof pl.marketPick === 'object' && !Array.isArray(pl.marketPick)) for (const [k, id] of Object.entries(pl.marketPick)) if (byKey.has(k) && Number.isInteger(id) && marketRowById(id)) out.marketPick[k] = id;
+    if (pl.marketPick && typeof pl.marketPick === 'object' && !Array.isArray(pl.marketPick)) for (const [k, id] of Object.entries(pl.marketPick)) if (byKey.has(k) && Number.isInteger(id) && (marketRowById(id) || marketRowById(id, 'gemel'))) out.marketPick[k] = id;
     out.excluded = boolMap(pl.excluded);
     if (pl.confirmed && typeof pl.confirmed === 'object' && !Array.isArray(pl.confirmed)) {
         for (const [k, id] of Object.entries(pl.confirmed)) {
@@ -972,19 +972,31 @@ export function plannerSelectionsOf(pl) {
 // מוצעים רק מסלולים שפתיחותם להצטרפות אומתה (JOINABILITY, בקשת הלקוח 08/11/2026). כיום מאומתים רק מסלולי
 // קרנות פנסיה חדשות; בגמל/השתלמות אין עדיין אימות - מוחזר unverifiedKind ולא רשימה. ביטוח מנהלים לא מוצע לניוד
 // כברירת מחדל (מקדם מובטח בפוליסה עלול לאבד ערך).
+// יעד ניוד לפי סוג מוצר באותו סוג (תקנות העברת כספים 2008): השתלמות->השתלמות (3(א)(4), החשבון כולו - 9(ג));
+// תגמולים->תגמולים (3(א)(1)); להשקעה->להשקעה (3(א)(11א)). מרכזית לפיצויים וחיסכון לילד - לא מוצעים כיעד.
+const MARKET_GEMEL_CLS = { hishtalmut: 'קרנות השתלמות', tagmulim: 'תגמולים ואישית לפיצויים', hashkaa: 'קופת גמל להשקעה' };
 function marketPoolOf(kind, group, clientAge) {
     if (kind === 'menahalim') return { disabled: 'menahalim', rows: [] };
-    if (kind !== 'pensia') return { disabled: 'unverified_kind', rows: [] };
-    const wantCls = group === 'klalit' ? 'קרנות כלליות' : 'קרנות חדשות';
     const join = window.JOINABILITY || {};
-    const rows = Object.values(OFFICIAL_PENSION).filter(r => {
-        if (r.cls !== wantCls || r.eq === null || /למקבלי קצבה/.test(r.name || '')) return false;
-        const j = join[r.fundId];
-        if (!j || j.s === 'closed') return false;
-        if (j.s === 'age') return clientAge != null && (j.ageMin == null || clientAge >= j.ageMin) && (j.ageMax == null || clientAge <= j.ageMax);
-        return true;
-    });
-    return { disabled: rows.length ? null : 'none_verified', rows };
+    if (kind === 'pensia') {
+        const wantCls = group === 'klalit' ? 'קרנות כלליות' : 'קרנות חדשות';
+        const rows = Object.values(OFFICIAL_PENSION).filter(r => {
+            if (r.cls !== wantCls || r.eq === null || /למקבלי קצבה/.test(r.name || '')) return false;
+            const j = join[r.fundId];
+            if (!j || j.s === 'closed') return false;
+            if (j.s === 'age') return clientAge != null && (j.ageMin == null || clientAge >= j.ageMin) && (j.ageMax == null || clientAge <= j.ageMax);
+            return true;
+        });
+        return { disabled: rows.length ? null : 'none_verified', rows };
+    }
+    const cls = MARKET_GEMEL_CLS[kind];
+    if (!cls) return { disabled: 'unsupported_kind', rows: [] };
+    // גמל/השתלמות: פתיחות להצטרפות לא אומתה פרטנית (M-041). מוצגים מסלולים פתוחים לכלל האוכלוסיה לפי גמל-נט, מסומנים "לא אומת"
+    // (החלטת הבעלים 11.11.2026 14:48). מוחרגים: בניהול אישי, הלכה/שריעה (תנאים מיוחדים), למקבלי קצבה, סגור ידוע.
+    const rows = Object.values(OFFICIAL_GEMEL).filter(r => r.cls === cls && r.eq !== null && (!r.pop || /כלל האוכלוסיה/.test(r.pop))
+        && !/בניהול אישי|הלכה|שריעה|למקבלי קצבה/.test(r.name || '') && !(join[r.fundId] && join[r.fundId].s === 'closed'))
+        .map(r => ({ ...r, joinUnverified: !join[r.fundId] }));
+    return { disabled: rows.length ? null : 'none', rows, gemel: true };
 }
 export function marketRange(kind, group, clientAge) {
     const { rows } = marketPoolOf(kind, group, clientAge);
@@ -998,6 +1010,20 @@ export function marketCandidates(kind, group, targetEq, clientAge = null, band =
     let b = band;
     let inBand = pool.rows.filter(r => Math.abs(r.eq - targetEq) <= b);
     if (inBand.length < 3 && b < 10) { b = 10; inBand = pool.rows.filter(r => Math.abs(r.eq - targetEq) <= b); }
+    if (pool.gemel) {
+        // גמל/השתלמות: שארפ רשמי 4/9, תשואת 3 שנים 3/9, מדד שירות גמל 2/9 (משקלי הציון המאושרים בלי הרכיב האקטוארי)
+        const SRVG = window.SERVICE25_GEMEL || {};
+        const coh = [], miss = [];
+        for (const r of inBand) { const sv = SRVG[r.parentId]; if (r.sharpe == null || r.y3 == null || sv == null) { miss.push(r); continue; } coh.push({ ...r, jSharpe: r.sharpe, jY3: r.y3, srv: sv }); }
+        if (coh.length) {
+            const pctl = vals => { const n = vals.length; if (n <= 1) return new Array(n).fill(50); const out = new Array(n).fill(null), order = vals.map((v, i) => [v, i]).sort((x, y) => x[0] - y[0]); for (let i = 0; i < n;) { let j = i; while (j + 1 < n && order[j + 1][0] === order[i][0]) j++; const mid = (i + j) / 2 + 1; for (let k = i; k <= j; k++) out[order[k][1]] = 100 * (mid - 1) / (n - 1); i = j + 1; } return out; };
+            const sP = pctl(coh.map(x => x.jSharpe)), yP = pctl(coh.map(x => x.jY3));
+            const orgs = [...new Set(coh.map(x => x.parentId))], oP = pctl(orgs.map(o => coh.find(z => z.parentId === o).srv));
+            coh.forEach((x, i) => { x.score = (4 * sP[i] + 3 * yP[i] + 2 * oP[orgs.indexOf(x.parentId)]) / 9; });
+            coh.sort((x, y) => y.score - x.score || Math.abs(x.eq - targetEq) - Math.abs(y.eq - targetEq) || x.fundId - y.fundId);
+        }
+        return { disabled: null, gemel: true, items: coh.slice(0, limit), band: b, total: coh.length, missing: miss.length, cohortN: coh.length };
+    }
     const JUNE = window.JUNE26 || {}, ACT = window.ACT36M || {}, SRV = window.SERVICE25 || {};
     const cohort = [], missing = [];
     for (const r of inBand) {
@@ -1021,15 +1047,16 @@ export function marketCandidates(kind, group, targetEq, clientAge = null, band =
     }
     return { disabled: null, items: cohort.slice(0, limit), band: b, total: cohort.length, missing: missing.length, cohortN: cohort.length };
 }
-export function marketRowById(fundId) { return OFFICIAL_PENSION[fundId] || null; }
+export function marketRowById(fundId, kind = 'pensia') { return (kind === 'pensia' ? OFFICIAL_PENSION[fundId] : OFFICIAL_GEMEL[fundId]) || null; }
 // מזהה רשמי של מסלול פנסיה מתוך התאמה: קוד רשמי, או - בבחירה ידנית מרשימת המסלולים הרשמיים - שם רשמי זהה
-export function pensionFundIdOfMatch(match) {
+export function pensionFundIdOfMatch(match, kind = 'pensia') {
     if (!match) return null;
-    if (match.officialId != null && OFFICIAL_PENSION[match.officialId]) return +match.officialId;
-    if (match.row && match.row.name) { const r = Object.values(OFFICIAL_PENSION).find(x => x.name === match.row.name); if (r) return r.fundId; }
+    const T = kind === 'pensia' ? OFFICIAL_PENSION : OFFICIAL_GEMEL;
+    if (match.officialId != null && T[match.officialId]) return +match.officialId;
+    if (match.row && match.row.name) { const r = Object.values(T).find(x => x.name === match.row.name); if (r) return r.fundId; }
     return null;
 }
-export function parentIdOfMatch(match) { const id = pensionFundIdOfMatch(match); return id != null ? OFFICIAL_PENSION[id].parentId : null; }
+export function parentIdOfMatch(match, kind = 'pensia') { const id = pensionFundIdOfMatch(match, kind); const T = kind === 'pensia' ? OFFICIAL_PENSION : OFFICIAL_GEMEL; return id != null ? T[id].parentId : null; }
 
 export function solveTargetPlan(included, selectedKeys, T, clientAge = null, whole = null, geoPref = 'any', opts = {}) {
     const market = !!opts.market, picks = opts.picks || {};
@@ -1073,7 +1100,7 @@ export function solveTargetPlan(included, selectedKeys, T, clientAge = null, who
         const mr = market ? marketRange(x.kind, grp, clientAge) : null;
         if (mr) { lo = Math.min(lo, mr.lo); hi = Math.max(hi, mr.hi); if (note && !ctx.ok) note = null; }
         // בחירה ידנית: ההחזקה מקובעת בחשיפת המסלול שנבחר, ושאר ההחזקות מתאזנות סביבה
-        const pk = mr && picks[x.key] != null ? marketRowById(picks[x.key]) : null;
+        const pk = mr && picks[x.key] != null ? marketRowById(picks[x.key], x.kind) : null;
         if (pk) { lo = pk.eq; hi = pk.eq; }
         return { ...x, ctx, curEq: cur, lo, hi, inLo, inHi, note, marketOk: !!mr };
     });
@@ -1111,8 +1138,8 @@ export function solveTargetPlan(included, selectedKeys, T, clientAge = null, who
             for (const p of per) {
                 if (fixed.has(p.key)) { selAch += p.achievedEq * p.bal; continue; }
                 p.targetEq = Math.min(Math.max(xStar, p.lo), p.hi);
-                const pick = picks[p.key] != null ? marketRowById(picks[p.key]) : null;
-                const curParent = parentIdOfMatch(p.matched), curFund = pensionFundIdOfMatch(p.matched);
+                const pick = picks[p.key] != null ? marketRowById(picks[p.key], p.kind) : null;
+                const curParent = parentIdOfMatch(p.matched, p.kind), curFund = pensionFundIdOfMatch(p.matched, p.kind);
                 const sameCo = (r) => !!(r && curParent != null && r.parentId === curParent);
                 if (pick && p.marketOk && pick.fundId === curFund) {
                     p.proposal = { type: 'stay', topIsCurrent: true, picked: true };
