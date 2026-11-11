@@ -54,6 +54,25 @@ export const GUAR_LABELS = {
 
 const SPOUSE_SCENARIOS = new Set(['married', 'with_spouse', 'spouse30', 'spouse60', 'spouse100', 'with_survivors']);
 
+// שיעור הקצבה לבן/בת הזוג אחרי פטירת הפנסיונר (בחירה בבקשה לקצבה; ברירת מחדל 60%).
+// בכל התקנונים הטבלה הכללית "עם בן/בת זוג" חושבה ל-60% (הערות הנספחים: מנורה נספח ו', כלל, הפניקס, אלטשולר,
+// מור, מיטב, הראל, מגדל; אינפיניטי - 60% מהקצבה הבסיסית). שיעור אחר: רק כשהתקנון מפרסם לו טבלה (spouse30/spouse100);
+// אחרת המקדם נקבע ע"י אקטואר הקרן (למשל מנורה סעיף 48.3 והערת נספח ו': "ניתן לבחירה בין 30% ל-100%") - אין מספר בלי ציטוט.
+export const SURV_RATES = ['0', '30', '60', '100'];
+export const SURV_RATE_LABELS = { '0': '0% - ללא קצבה לבן/בת הזוג', '30': '30%', '60': '60% (ברירת מחדל)', '100': '100%' };
+export function scenarioForRate(data, rate) {
+    const have = new Set(scenariosOf(data));
+    const pick = (list) => list.find(x => have.has(x)) || null;
+    if (rate === '0') {
+        const sc = pick(['no_survivors', 'no_spouse', 'single']);
+        return sc ? { scenario: sc, note: sc === 'no_survivors' ? '' : 'לפי טבלת "ללא בן/בת זוג" בתקנון. לפנסיונר נשוי - רק בוויתור בכתב של בן/בת הזוג.' } : null;
+    }
+    if (rate === '30') return have.has('spouse30') ? { scenario: 'spouse30', note: '' } : null;
+    if (rate === '100') return have.has('spouse100') ? { scenario: 'spouse100', note: '' } : null;
+    const sc = pick(['spouse60', 'with_spouse', 'married', 'with_survivors']);
+    return sc ? { scenario: sc, note: '' } : null;
+}
+
 const cache = {};
 
 export async function loadCompany(key) {

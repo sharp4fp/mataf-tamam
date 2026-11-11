@@ -2,7 +2,7 @@ import { OFFICIAL_PENSION, OFFICIAL_GEMEL, OFFICIAL_INSURANCE } from './official
 import { readZip } from './zip.js';
 import { parseMaslakaXml, KIND_LABEL, normalizeIdNumber } from './maslaka.js';
 import { extract161, EMPTY_161, FIELD_LABELS, contradictions161 } from './pdf161.js';
-import { COMPANIES, SCENARIO_LABELS, GUAR_LABELS, loadCompany, scenariosOf, guaranteesOf, hasSpouse, inferCompany, mekademEstimate } from './mekadem.js';
+import { COMPANIES, SCENARIO_LABELS, GUAR_LABELS, loadCompany, scenariosOf, guaranteesOf, hasSpouse, inferCompany, mekademEstimate, SURV_RATES, SURV_RATE_LABELS, scenarioForRate } from './mekadem.js';
 import { extractDoc } from './pdfdocs.js';
 import { analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
 import { loadPeerData, periodLabel, findOwnRow, compareTrack, TRANSFER_GATES, EXISTING_VS_FUTURE_NOTE, BASELINE_NOTE, PEERS_SOURCE_NOTE } from './peers.js';
@@ -724,7 +724,12 @@ function renderMekadem() {
         }
     }
     const scenarios = data ? scenariosOf(data) : [];
-    if (data && !scenarios.includes(v.scenario)) v.scenario = scenarios[0];
+    // שיעור הקצבה לבן/בת הזוג קובע את טבלת התקנון (ברירת מחדל 60%). שיעור שהתקנון לא מפרסם לו טבלה - אין אומדן מספרי.
+    if (!SURV_RATES.includes(v.survRate)) v.survRate = '60';
+    const rateMap = data ? scenarioForRate(data, v.survRate) : null;
+    const rateMissing = data && !rateMap;
+    if (rateMap) v.scenario = rateMap.scenario;
+    else if (data && !scenarios.includes(v.scenario)) v.scenario = scenarios[0];
     const guars = data ? guaranteesOf(data, v.scenario) : [];
     if (data && !guars.includes(v.guarantee)) v.guarantee = guars[0];
     const spouse = data ? hasSpouse(v.scenario) : false;
@@ -736,9 +741,12 @@ function renderMekadem() {
         <div class="track-line"><span><b>מקדם קצבה לפי טבלאות התקנון הרשמיות - כל הגופים</b></span><span class="small muted">אומדן - לא ציטוט</span></div>
         <div class="mekgrid">
             <label>גוף מנהל<select id="mek-company">${companyOptions}</select></label>
-            ${!v.company ? '<div class="muted small">לא זוהה גוף מנהל יחיד מהתיק (או שזוהו כמה גופים) - בחרו גוף לצורך האומדן. לא נבחרה ברירת מחדל כדי לא לייחס טבלה של גוף אחר.</div>' : data ? `<label>מסלול שאירים<select id="mek-scenario">${scenarios.map(s => `<option value="${s}"${v.scenario === s ? ' selected' : ''}>${SCENARIO_LABELS[s] || s}</option>`).join('')}</select></label>
+            ${!v.company ? '<div class="muted small">לא זוהה גוף מנהל יחיד מהתיק (או שזוהו כמה גופים) - בחרו גוף לצורך האומדן. לא נבחרה ברירת מחדל כדי לא לייחס טבלה של גוף אחר.</div>' : data ? `<label>שיעור הקצבה לבן/בת הזוג אחרי פטירה<select id="mek-survrate">${SURV_RATES.map(r => `<option value="${r}"${v.survRate === r ? ' selected' : ''}>${SURV_RATE_LABELS[r]}${scenarioForRate(data, r) ? '' : ' - אין טבלה בתקנון'}</option>`).join('')}</select></label>
             <label>תקופת הבטחה<select id="mek-guar">${guars.map(g => `<option value="${g}"${v.guarantee === g ? ' selected' : ''}>${GUAR_LABELS[g] || g}</option>`).join('')}</select></label>` : '<div class="muted small">טוען טבלאות...</div>'}
         </div>
+        ${rateMissing ? `<div class="callout note-c"><b>לשיעור ${v.survRate}% אין טבלה בתקנון של ${esc(data.meta.label)}.</b> התקנון מאפשר לבחור שיעור (בדרך כלל 30%-100%), אבל המקדם לשיעור שאינו 60% נקבע ע"י אקטואר הקרן ואינו מפורסם - נדרש ציטוט מהקרן. לא מוצג אומדן מספרי. ההשוואה לגופים שמפרסמים טבלה לשיעור זה - בטבלת הגופים שמתחת לתוצאה.</div>`
+            : rateMap && rateMap.note ? `<div class="muted small">${esc(rateMap.note)}</div>` : ''}
+        ${data && !rateMissing ? `<div class="muted small">ככל ששיעור הקצבה לבן/בת הזוג גבוה יותר, הקצבה של הפנסיונר עצמו נמוכה יותר (ולהפך). ההשוואה בין השיעורים שהתקנון מפרסם מוצגת עם התוצאה.</div>` : ''}
         ${v.company ? `<div class="muted small" id="mek-company-src">${v.companyBy === 'user' ? 'הגוף נבחר ידנית על-ידי המשתמש (מתאפס בהחלפת קובץ מסלקה).' : 'הגוף זוהה מיצרן חשבון הפנסיה בתיק; ניתן לשנות.'}</div>` : ''}
         ${metaNote}
         ${v.company && data ? `
@@ -746,7 +754,7 @@ function renderMekadem() {
             <label>יתרה צבורה (₪)<input id="mek-balance" type="number" min="0" placeholder="1000000" value="${gv('balance')}"></label>
             <label>מין<select id="mek-gender"><option value="m"${v.gender !== 'f' ? ' selected' : ''}>זכר</option><option value="f"${v.gender === 'f' ? ' selected' : ''}>נקבה</option></select></label>
             <label>שנת לידה<input id="mek-by" type="number" placeholder="1963" value="${gv('birthYear')}"></label>
-            <label>גיל פרישה<input id="mek-age" type="number" min="60" max="90" placeholder="67" value="${gv('age')}"></label>
+            <label>גיל פרישה<input id="mek-age" type="number" min="60" max="90" placeholder="${v.gender === 'f' ? 'חובה לאישה ילידת לפני 1970' : 'ריק = 67'}" value="${gv('age')}"></label>
             ${spouse ? `<label>שנת לידה בן/בת זוג<input id="mek-sby" type="number" placeholder="1966" value="${gv('spouseBirthYear')}"></label>` : ''}
         </div>
         <button type="button" class="mini" data-mek-calc>חשב אומדן</button>` : ''}
@@ -2525,10 +2533,16 @@ document.addEventListener('DOMContentLoaded', () => {
             render();
             return;
         }
-        if (t.id === 'mek-scenario') {
-            state.mekIn.scenario = t.value;
+        if (t.id === 'mek-survrate') {
+            state.mekIn.survRate = t.value;
             const d = state.mekData[state.mekIn.company];
-            if (d) state.mekIn.guarantee = guaranteesOf(d, t.value)[0];
+            const m = d ? scenarioForRate(d, t.value) : null;
+            if (m) {
+                state.mekIn.scenario = m.scenario;
+                const gs = guaranteesOf(d, m.scenario);
+                if (!gs.includes(state.mekIn.guarantee)) state.mekIn.guarantee = gs[0];
+            }
+            state.mekResult = ''; state.mekLast = null; state.mekAlts = []; state.mekRates = [];
             render();
             return;
         }
@@ -2762,6 +2776,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (t.dataset.mekCalc !== undefined) {
             const val = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
             state.mekIn = { ...state.mekIn, balance: val('mek-balance'), gender: val('mek-gender'), birthYear: val('mek-by'), age: val('mek-age'), spouseBirthYear: val('mek-sby'), guarantee: state.mekIn.guarantee };
+            // גיל פרישה ריק: גבר 67; אישה ילידת 1970 ואילך 65 (חוק גיל פרישה, תיקון 7 - ס"ח 2933 עמ' 174).
+            // אישה ילידת לפני 1970 - הגיל תלוי בחודש הלידה, ולכן נדרשת הזנה (לא מנחשים). הערך שנקבע נכתב לשדה וגלוי.
+            if (!String(state.mekIn.age || '').trim()) {
+                const by = +state.mekIn.birthYear;
+                const def = state.mekIn.gender === 'f' ? (by >= 1970 ? 65 : null) : 67;
+                if (def === null) { state.mekResult = `<div class="mekres err">הזינו גיל פרישה. לאישה ילידת לפני 1970 גיל הפרישה תלוי בחודש הלידה (62-65), ולכן אין ברירת מחדל.</div>`; state.mekLast = null; state.mekAlts = []; render(); return; }
+                state.mekIn.age = String(def);
+            }
+            {
+                const d0 = state.mekData[state.mekIn.company];
+                if (d0 && !scenarioForRate(d0, state.mekIn.survRate || '60')) {
+                    state.mekResult = `<div class="mekres err">לשיעור ${esc(state.mekIn.survRate)}% לבן/בת הזוג אין טבלה בתקנון של גוף זה - נדרש ציטוט מהקרן. אפשר לבחור שיעור שיש לו טבלה.</div>`;
+                    state.mekLast = null; state.mekAlts = []; state.mekRates = []; render(); return;
+                }
+            }
             void (async () => {
                 try {
                     const r = await mekademEstimate({
@@ -2786,6 +2815,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         const notes = [...(r.adjNote ? [r.adjNote] : []), ...r.notes, ...r.caveats];
                         state.mekResult = `<div class="mekres"><b>מקדם משוער: ${r.k}</b>${pension ? ` · קצבה חודשית משוערת: <b>₪${pension.toLocaleString('he-IL')}</b>` : ''}${notes.length ? `<ul class="small">${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}</div>`;
                         state.mekLast = { k: r.k, pension, balance: bal, company: state.mekIn.company, scenario: state.mekIn.scenario, guarantee: state.mekIn.guarantee, age: +state.mekIn.age };
+                        // השוואת שיעורי הקצבה לבן/בת הזוג באותו גוף ובאותה תקופת הבטחה - רק שיעורים שהתקנון מפרסם להם טבלה
+                        try {
+                            const d = await loadCompany(state.mekIn.company);
+                            const rows = [];
+                            for (const rate of SURV_RATES) {
+                                const m = scenarioForRate(d, rate);
+                                if (!m) { rows.push({ rate, missing: 'אין טבלה בתקנון - נקבע ע"י אקטואר הקרן' }); continue; }
+                                if (!guaranteesOf(d, m.scenario).includes(state.mekIn.guarantee)) { rows.push({ rate, missing: 'אין טבלה לתקופת ההבטחה שנבחרה' }); continue; }
+                                const rr = rate === state.mekIn.survRate ? r : await mekademEstimate({ company: state.mekIn.company, scenario: m.scenario, guarantee: state.mekIn.guarantee, gender: state.mekIn.gender, birthYear: +state.mekIn.birthYear, age: +state.mekIn.age, spouseBirthYear: state.mekIn.spouseBirthYear ? +state.mekIn.spouseBirthYear : null });
+                                if (rr.error) rows.push({ rate, missing: rr.error });
+                                else if (rr.baseOnly) rows.push({ rate, missing: 'אין התאמה מאומתת להפרש הגילאים' });
+                                else rows.push({ rate, k: rr.k, pension: bal ? Math.round(bal / rr.k) : null });
+                            }
+                            state.mekRates = rows;
+                            const base = rows.find(x => x.rate === state.mekIn.survRate);
+                            state.mekResult += `<div class="alts-scroll"><table class="altstbl"><thead><tr><th>שיעור לבן/בת הזוג</th><th>מקדם</th><th>קצבה חודשית לפנסיונר</th><th>קצבה לבן/בת הזוג אחרי פטירה</th></tr></thead><tbody>${rows.map(x => x.missing
+                                ? `<tr><td>${x.rate}%</td><td colspan="3" class="muted small">${esc(x.missing)}</td></tr>`
+                                : `<tr${x.rate === state.mekIn.survRate ? ' class="top"' : ''}><td><b>${x.rate}%</b>${x.rate === state.mekIn.survRate ? ' (נבחר)' : ''}</td><td>${x.k}</td><td>${x.pension ? '₪' + x.pension.toLocaleString('he-IL') + (base && base.pension && x.rate !== state.mekIn.survRate ? ` <span class="muted small">(${x.pension >= base.pension ? '+' : '-'}₪${Math.abs(x.pension - base.pension).toLocaleString('he-IL')})</span>` : '') : '-'}</td><td>${x.pension ? '₪' + Math.round(x.pension * (+x.rate) / 100).toLocaleString('he-IL') : '-'}</td></tr>`).join('')}</tbody></table></div><div class="muted small">מקור: טבלאות התקנון של הגוף (${esc(d.meta.annex || '')}). אותה יתרה, גיל ותקופת הבטחה; משתנה רק שיעור הקצבה לבן/בת הזוג.</div>`;
+                        } catch (e4) { state.mekRates = []; }
                         // השוואת תרחישים מול חלופות זכאיות: אותם קלטים מול עד 4 גופים מחלופות מדורגות (אותו מנדט, זכאות מאומתת).
                         state.mekAlts = [];
                         if (view && pension > 0) {
@@ -2810,8 +2858,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                     if (wanted.length >= 4) break;
                                 }
                                 for (const w of wanted) {
+                                    let scW = state.mekIn.scenario;
+                                    try { const dW = await loadCompany(w.key); const mW = scenarioForRate(dW, state.mekIn.survRate || '60'); if (mW) scW = mW.scenario; else { const comp0 = COMPANIES.find(c => c.key === w.key); state.mekAlts.push({ key: w.key, label: comp0 ? comp0.label : w.key, track: w.track, error: `לשיעור ${state.mekIn.survRate}% לבן/בת הזוג אין טבלה בתקנון של גוף זה`, avail: '' }); continue; } } catch (e5) { /* ממשיכים עם המפתח הקיים */ }
                                     const rr = await mekademEstimate({
-                                        company: w.key, scenario: state.mekIn.scenario, guarantee: state.mekIn.guarantee,
+                                        company: w.key, scenario: scW, guarantee: state.mekIn.guarantee,
                                         gender: state.mekIn.gender, birthYear: +state.mekIn.birthYear, age: +state.mekIn.age,
                                         spouseBirthYear: state.mekIn.spouseBirthYear ? +state.mekIn.spouseBirthYear : null,
                                     });

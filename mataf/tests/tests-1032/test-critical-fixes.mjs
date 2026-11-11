@@ -37,5 +37,15 @@ ok(!/slackGrant\s*\*\s*FACTOR\s*\/\s*HORIZON/.test(app), 'm004-no-horizon-diviso
 // M-003 גם בקיבוע: השדה החדש וחישוב היחס
 ok(/grantRatio32\(grantYears\)/.test(app) && /data-kib="grantYears"/.test(app), 'm003-kibua-uses-ratio-and-field');
 
+// שיעור קצבה לבן/בת הזוג (בקשת הבעלים 11.11): 60% = הטבלה הכללית; שיעור בלי טבלה בתקנון - null (אין מספר)
+const MK = await import(B + '/mekadem.js');
+const menora = await MK.loadCompany('menora'), clal = await MK.loadCompany('clal');
+ok(MK.scenarioForRate(menora, '60').scenario === 'with_spouse', 'surv-menora-60-generic-table');
+ok(MK.scenarioForRate(menora, '30') === null && MK.scenarioForRate(menora, '100') === null, 'surv-menora-30-100-no-table');
+ok(MK.scenarioForRate(menora, '0').scenario === 'no_spouse', 'surv-menora-0-no-spouse-table');
+ok(['30', '60', '100'].every(r => MK.scenarioForRate(clal, r).scenario === 'spouse' + r), 'surv-clal-all-published');
+const e60 = await MK.mekademEstimate({ company: 'clal', scenario: 'spouse60', guarantee: 'none', gender: 'm', birthYear: 1965, age: 67, spouseBirthYear: 1968 });
+const e100 = await MK.mekademEstimate({ company: 'clal', scenario: 'spouse100', guarantee: 'none', gender: 'm', birthYear: 1965, age: 67, spouseBirthYear: 1968 });
+ok(e100.k > e60.k, 'surv-higher-rate-higher-factor-lower-pension', `${e60.k} vs ${e100.k}`);
 console.log(`critical-fixes: PASS=${pass} FAIL=${fail}`);
 process.exit(fail ? 1 : 0);
