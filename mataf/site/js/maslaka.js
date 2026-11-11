@@ -44,7 +44,10 @@ function classify(plan, sugMutzar) {
 export function normalizeIdNumber(s) {
     const d = String(s || '').replace(/\D/g, '');
     if (!d || /^0+$/.test(d)) return '';
-    return d.length < 9 ? d.padStart(9, '0') : d;
+    // אפסים מובילים אינם חלק מהזהות: המסלקה מרפדת ל-15 ספרות (000000317260826), טופס 161 ל-9 או בלי אפסים.
+    // מסירים את כולם ומרפדים ל-9 - כך 317260826, 0317260826 ו-000000317260826 הם אותו אדם.
+    const core = d.replace(/^0+/, '');
+    return core.length < 9 ? core.padStart(9, '0') : core;
 }
 
 export const KIND_LABEL = {

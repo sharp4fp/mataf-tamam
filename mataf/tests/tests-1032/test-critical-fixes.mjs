@@ -11,6 +11,10 @@ const ok = (cond, name) => { if (cond) { pass++; console.log('PASS ' + name); } 
 // M-001: ת"ז עם אפס מוביל - אותו אדם בין המסלקה (18) לטופס 161 (000000018)
 ok(normalizeIdNumber('000000018') === normalizeIdNumber('18'), 'm001-leading-zero-same-person');
 ok(normalizeIdNumber('18') === '000000018', 'm001-pads-to-9');
+// באג שהבעלים מצא 11.11: המסלקה מרפדת ל-15 ספרות
+ok(normalizeIdNumber('000000317260826') === normalizeIdNumber('317260826'), 'm001-maslaka-15-digit-padding-same-person');
+ok(normalizeIdNumber('000000317260826') === '317260826', 'm001-15-digit-normalized-to-9');
+ok(normalizeIdNumber('0000000000000018') === normalizeIdNumber('18'), 'm001-long-padding-short-id');
 ok(normalizeIdNumber('012-345-678') === '012345678', 'm001-strips-non-digits');
 ok(normalizeIdNumber('') === '' && normalizeIdNumber('0000') === '', 'm001-empty-or-zero-is-absent');
 ok(normalizeIdNumber('123456782') !== normalizeIdNumber('123456783'), 'm001-different-ids-differ');
