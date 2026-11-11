@@ -149,7 +149,7 @@ function targetPlanSection(state, view, portfolio) {
         unknownAssumption: state.unknownAssumption ?? null,
     };
     const geoPref = state.geoPref || 'any';
-    const plan = solveTargetPlan(inc, new Set(selKeys), state.targetEq, baClientAge(portfolio), whole, geoPref);
+    const plan = solveTargetPlan(inc, new Set(selKeys), state.targetEq, baClientAge(portfolio), whole, geoPref, { market: true, picks: state.marketPick || {} });
     const T = state.targetEq;
     const geoNoteRep = geoPref !== 'any' ? ` כיוון גיאוגרפי מועדף שנבחר בכלי: "${GEO_LABEL[geoPref]}" (סיווג לפי מנדט בשם המסלול בלבד - אין שדה רשמי לחלוקת מניות ארץ/חו"ל; מסלולים מסווגים בכיוון ההפוך הודרו, ומסלולים לא-מסווגים אינם מבטיחים את הכיוון).` : '';
     const methodNote = `היעד חל על כל התיק. החזקות שלא נבחרו קפואות; הנבחרות מתכווננות לחשיפת יעד משותפת בכפוף לטווח הזמין בכל קרן (יישור-פערים מכני ושקוף - לא אופטימיזציה מתמטית של שארפ התיק). החזקות עם אומדן מחלקה נספרות בערך האומדן המסומן (*). התמונה לפי ${REF_DATE}; החשיפה בפועל משתנה עם השוק וההפקדות - המחשה מותנית, לא התחייבות לחשיפה עתידית ולא הוראת פעולה.`;
@@ -173,6 +173,7 @@ function targetPlanSection(state, view, portfolio) {
             const pr = p.proposal;
             let action;
             if (!pr || pr.type === 'stay') action = p.note ? rEsc(p.note) : (pr && pr.cappedAt ? `נשאר כפי שהוא - חלק היעד שהוקצה מחוץ לטווח המסלולים המאומתים (${rPct(pr.rangeLo)}-${rPct(pr.rangeHi)}), ולכן לא הושג` : 'נשאר כפי שהוא');
+            else if (pr.type === 'market') action = `${pr.sameCompany ? 'מעבר מלא' : 'ניוד לגוף אחר'} ל"${rEsc(pr.track.name)}" (${rEsc(pr.track.parentCoName || '')}, חשיפה ${rPct(pr.track.eq)})${pr.picked ? ' - נבחר ידנית מטבלת השוק' : ' - המדורג ראשון בשוק ליעד ההחזקה'}${pr.sameCompany ? '' : '. לפני ניוד: לבדוק רציפות כיסוי ביטוחי, תקופת אכשרה ודמי ניהול בגוף הקולט'}`;
             else if (pr.type === 'single') action = `מעבר מלא ל"${rEsc(pr.track.name)}" (חשיפה ${rPct(pr.track.eq)})`;
             else if (pr.type === 'mix') {
                 const wh = Math.round(pr.wHigh * 1000) / 10, wl = Math.round(pr.wLow * 1000) / 10;

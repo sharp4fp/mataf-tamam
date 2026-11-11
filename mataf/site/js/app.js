@@ -4,7 +4,7 @@ import { parseMaslakaXml, KIND_LABEL, normalizeIdNumber } from './maslaka.js';
 import { extract161, EMPTY_161, FIELD_LABELS, contradictions161 } from './pdf161.js';
 import { COMPANIES, SCENARIO_LABELS, GUAR_LABELS, loadCompany, scenariosOf, guaranteesOf, hasSpouse, inferCompany, mekademEstimate, SURV_RATES, SURV_RATE_LABELS, scenarioForRate } from './mekadem.js';
 import { extractDoc } from './pdfdocs.js';
-import { analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
+import { marketCandidates, parentIdOfMatch, pensionFundIdOfMatch, analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
 import { loadPeerData, periodLabel, findOwnRow, compareTrack, TRANSFER_GATES, EXISTING_VS_FUTURE_NOTE, BASELINE_NOTE, PEERS_SOURCE_NOTE } from './peers.js';
 import { renderReport, renderBeforeAfter, eligibleKeysOf } from './report.js';
 import { renderDiffBody, diffPortfolios, renderNifraimBody, parseNifraimText, matchNifraim } from './diffnifraim.js';
@@ -84,6 +84,7 @@ const state = {
     targetEq: null,
     geoPref: 'any',
     eligible: {},
+    marketPick: {}, // M-037: בחירת מסלול מהשוק לכל החזקה (מפתח -> fundId)
     goals: { horizon: '', liquidity: 'בינוני', inheritance: false, consolidate: false, keepExemption: false, capitalFirst: false },
     confirmed: {},
     selections: {},
@@ -255,7 +256,7 @@ async function loadEncryptedPortfolio() {
         state.selections = plannerSelectionsOf(safeObj(manifest.planner)); // בחירות ידניות משוחזרות קודם - הן חלק מהניתוח עצמו; טביעת האצבע נבדקת ב-recompute
         recompute(); // view טרי מהצינורות ששוחזרו - מפתחות/זהויות נמדדים מול הניתוח הנוכחי, לא מול מצב סטלה
         const restored = plannerRestoreOf(safeObj(manifest.planner), (view && view.holdings) || []);
-        state.eligible = restored.eligible; state.excluded = restored.excluded; state.confirmed = restored.confirmed;
+        state.eligible = restored.eligible; state.excluded = restored.excluded; state.confirmed = restored.confirmed; state.marketPick = restored.marketPick || {};
         state.targetEq = restored.targetEq; state.geoPref = restored.geoPref; state.unknownAssumption = restored.unknownAssumption;
         planCache = { sig: null, plan: null };
         // שער קשירת לקוח גם על נתונים משוחזרים: קובץ שמירה (מדור קודם או ששונה חיצונית) עלול לשאת
@@ -1581,9 +1582,9 @@ function currentTargetPlan() {
     const selKeys = eligibleKeysOf(inc, state.eligible);
     if (!selKeys.length) return null;
     const whole = wholePlanContext();
-    const sig = state.targetEq + '|' + selKeys.slice().sort().join(',') + '|' + inc.map(x => x.key + ':' + x.bal + ':' + x.eq).join(',') + '|' + whole.estFrozen.map(e => e.bal + ':' + e.eq).join(',') + '|' + whole.noBasisVal + '|' + (whole.frozenKnown || []).map(e => e.bal + ':' + e.eq).join(',') + '|' + (whole.unknownAssumption ?? '') + '|' + (state.geoPref || 'any');
+    const sig = JSON.stringify(state.marketPick || {}) + '|' + state.targetEq + '|' + selKeys.slice().sort().join(',') + '|' + inc.map(x => x.key + ':' + x.bal + ':' + x.eq).join(',') + '|' + whole.estFrozen.map(e => e.bal + ':' + e.eq).join(',') + '|' + whole.noBasisVal + '|' + (whole.frozenKnown || []).map(e => e.bal + ':' + e.eq).join(',') + '|' + (whole.unknownAssumption ?? '') + '|' + (state.geoPref || 'any');
     if (planCache.sig === sig) return planCache.plan;
-    const plan = solveTargetPlan(inc, new Set(selKeys), state.targetEq, clientAge(), whole, state.geoPref || 'any');
+    const plan = solveTargetPlan(inc, new Set(selKeys), state.targetEq, clientAge(), whole, state.geoPref || 'any', { market: true, picks: state.marketPick || {} });
     planCache = { sig, plan };
     return plan;
 }
@@ -1616,20 +1617,48 @@ function renderHoldingTarget(a, h) {
     const plan = currentTargetPlan();
     const per = plan && plan.per ? plan.per.find(p => p.key === key) : null;
     if (!per) return `<div class="card target-card muted-card">${head(`ההמלצה ליעד ${T}`)}<div class="muted small">${plan && plan.status === 'infeasible' ? 'היעד אינו בר-השגה בכלים הזמינים - פירוט בחלק רמת הסיכון.' : plan && plan.status === 'underdetermined' ? 'לא ניתן לקבוע תכנית יחידה (חלק מהתיק ללא בסיס חשיפה) - פירוט בחלק רמת הסיכון.' : 'אין הצעה להחזקה זו.'}</div></div>`;
-    return `<div class="card target-card">${head(`ההמלצה ליעד ${T} (לפי בקר רמת הסיכון)`)}${renderTargetProposal(per)}</div>`;
+    return `<div class="card target-card">${head(`ההמלצה ליעד ${T} (לפי בקר רמת הסיכון)`)}${renderTargetProposal(per)}${renderMarketTable(a, h, key, per)}</div>`;
+}
+
+// טבלת "מסלולים מתאימים מכל השוק" (M-037): מסלולים שפתיחותם להצטרפות אומתה, בחשיפה קרובה ליעד ההחזקה,
+// מדורגים בציון המאושר; בחירה ברדיו מקבעת את ההחזקה במסלול ושאר ההחזקות מתאזנות סביבה.
+function renderMarketTable(a, h, key, per) {
+    if (a.kind === 'menahalim') return `<div class="muted small market-note">ביטוח מנהלים: לא מוצע ניוד מכל השוק כברירת מחדל - בפוליסה עשוי להיות מקדם קצבה מובטח שאובד בניוד. בדיקה פרטנית מול הפוליסה.</div>`;
+    if (a.kind !== 'pensia') return `<div class="muted small market-note">מסלולים מכל השוק: בגמל ובהשתלמות טרם אומתה פתיחות מסלולים להצטרפות (מוצעים רק מסלולים מאומתים) - נדרש אימות מול התקנונים ואתרי הגופים.</div>`;
+    const pick = state.marketPick[key];
+    // היעד להחזקה: בבחירה ידנית - יעד המערכת לפני הבחירה אינו ידוע, לכן מוצגים מועמדים סביב החשיפה שנבחרה
+    const tgt = per.targetEq;
+    const mc = marketCandidates(a.kind, h.match && h.match.group, tgt, clientAge());
+    if (mc.disabled) return `<div class="muted small market-note">אין מסלולים מאומתים להצטרפות בסוג קרן זה.</div>`;
+    const curId = pensionFundIdOfMatch(h.match);
+    const rows = mc.items.map((r, i) => {
+        const cp = parentIdOfMatch(h.match);
+        const same = cp != null && r.parentId === cp;
+        const checked = pick === r.fundId || (pick == null && per.proposal && per.proposal.type === 'market' && per.proposal.track.fundId === r.fundId);
+        return `<tr${checked ? ' class="top"' : ''}><td><label class="mkt-pick"><input type="radio" name="mkt-${esc(key)}" data-mkt-pick="${esc(key)}" value="${r.fundId}"${pick === r.fundId ? ' checked' : ''}> ${i + 1}</label></td>
+            <td>${esc(r.name)}${r.fundId === curId ? ' <span class="muted small">(הנוכחי)</span>' : ''}</td><td>${pct(r.eq)}</td><td>${Math.round(r.score)}</td>
+            <td>${r.jSharpe ?? '-'}</td><td>${r.jY3 != null ? r.jY3 + '%' : '-'}</td><td>${r.feeA ?? '-'}% / ${r.feeD ?? '-'}%</td>
+            <td>${same ? 'באותו גוף' : '<b>ניוד</b>'}${r.joinStatus === 'age' ? ' <span class="muted small">(תלוי גיל)</span>' : ''}</td></tr>`;
+    }).join('');
+    return `<details class="alts market"${pick != null || (per.proposal && per.proposal.type === 'market') ? ' open' : ''}><summary>מסלולים מתאימים מכל השוק - חשיפה בין ${pct(Math.max(0, tgt - mc.band))} ל-${pct(Math.min(100, tgt + mc.band))} (${mc.total} מסלולים מאומתים)</summary>
+        ${mc.items.length ? `<div class="alts-scroll"><table class="altstbl"><thead><tr><th>בחירה</th><th>מסלול</th><th>חשיפה</th><th>ציון</th><th>שארפ</th><th>תשואה 3 שנים</th><th>ד"נ צבירה/הפקדה</th><th>מעבר</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <div class="small">${pick != null ? `<button type="button" class="linkbtn" data-mkt-clear="${esc(key)}">ביטול הבחירה - חזרה להמלצת המערכת</button>` : 'בחירה בשורה מקבעת את ההחזקה במסלול הזה; שאר ההחזקות מתאזנות כדי לשמור על היעד הכולל.'}</div>`
+        : `<div class="muted small">אין מסלולים מאומתים ברצועה זו.</div>`}
+        <div class="muted small">ציון: 40% שארפ, 30% תשואת 3 שנים, 10% איזון אקטוארי, 20% מדד שירות (אחוזון בתוך המסלולים שברצועה; דמי ניהול אינם בציון - ממוצע רשמי לידיעה). מוצגים רק מסלולים שפתיחותם להצטרפות אומתה מול תקנון/אתר הגוף (8.11.2026)${mc.missing ? `; ${mc.missing} מסלולים ברצועה הוחרגו בגלל נתון חסר בציון` : ''}.</div>
+    </details>`;
 }
 
 // סרגל היעד בראש תיק הנכסים: אותו בקר כמו בחלק רמת הסיכון + סיכום ההמלצות
 function targetSummaryText() {
     const plan = currentTargetPlan();
-    if (!plan || plan.status !== 'ok') return plan && plan.status === 'infeasible' ? `היעד מחוץ לטווח שאפשר להשיג בקרנות המוחזקות (${pct(plan.loAll)} - ${pct(plan.hiAll)}). אפשר להזיז לתוך הטווח, או לבדוק מעבר בין גופים בטבלאות החלופות.` : plan && plan.status === 'underdetermined' ? 'לא ניתן לקבוע תכנית יחידה - חלק מהתיק ללא בסיס חשיפה.' : 'אין החזקות שמשתתפות ביעד.';
+    if (!plan || plan.status !== 'ok') return plan && plan.status === 'infeasible' ? `היעד מחוץ לטווח שאפשר להשיג (${pct(plan.loAll)} - ${pct(plan.hiAll)}), כולל מסלולי פנסיה מאומתים מכל השוק. אפשר להזיז לתוך הטווח.` : plan && plan.status === 'underdetermined' ? 'לא ניתן לקבוע תכנית יחידה - חלק מהתיק ללא בסיס חשיפה.' : 'אין החזקות שמשתתפות ביעד.';
     let changes = 0, moved = 0;
     for (const p of plan.per) {
         const pr = p.proposal;
-        if (!pr || !['single', 'mix'].includes(pr.type)) continue;
+        if (!pr || !['single', 'mix', 'market'].includes(pr.type)) continue;
         changes++;
         const bal = p.h.track.balance || 0;
-        moved += pr.type === 'single' ? bal : pr.high && pr.high.isCurrent ? bal * pr.wLow : pr.low && pr.low.isCurrent ? bal * pr.wHigh : bal;
+        moved += pr.type === 'single' || pr.type === 'market' ? bal : pr.high && pr.high.isCurrent ? bal * pr.wLow : pr.low && pr.low.isCurrent ? bal * pr.wHigh : bal;
     }
     return `חשיפה מושגת ${pct(plan.achievedWholeEst)}* · ${changes ? `${changes} ${changes === 1 ? 'שינוי מוצע' : 'שינויים מוצעים'} · כ-${fmt(Math.round(moved / 1000) * 1000)} ₪ משנים מסלול` : 'אין צורך בשינוי'}`;
 }
@@ -1827,10 +1856,16 @@ export function renderTargetProposal(p) { // export: QA בלבד - הזרקת מ
     const pr = p.proposal;
     if (!pr || pr.type === 'stay') {
         const capNote = pr && pr.cappedAt ? ` <span class="tag-miss">חלק היעד שהוקצה להחזקה זו (${pct(p.targetEq)}) ${pr.cappedAt === 'max' ? 'מעל' : 'מתחת'} לטווח המסלולים המאומתים בקרן/קופה (${pct(pr.rangeLo)}-${pct(pr.rangeHi)}). ההחזקה נשארת במסלול הנוכחי בחשיפתה בפועל (${pct(p.curEq)}), והיעד המוקצה אינו מושג - הפער משתקף בסיכום התכנית.</span>` : '';
-        const stayTxt = capNote ? 'נשאר במסלול הנוכחי - לא בגלל שהיעד הושג, אלא כי אין מסלול מאומת מתאים מעבר לטווח.' : 'נשאר במסלול הנוכחי - החשיפה הקיימת כבר עומדת בחלק היעד שהוקצה להחזקה זו.';
+        const stayTxt = pr && pr.topIsCurrent ? (pr.picked ? 'נבחר המסלול הנוכחי - נשאר.' : 'נשאר במסלול הנוכחי - הוא המדורג ראשון בשוק ברצועת היעד של ההחזקה.') : capNote ? 'נשאר במסלול הנוכחי - לא בגלל שהיעד הושג, אלא כי אין מסלול מאומת מתאים מעבר לטווח.' : 'נשאר במסלול הנוכחי - החשיפה הקיימת כבר עומדת בחלק היעד שהוקצה להחזקה זו.';
         return `<div class="track-line"><span>${name} <span class="muted small">(${acct})</span></span><b>${pct(p.curEq)}</b></div><div class="muted small">${stayTxt}${capNote}</div>`;
     }
     if (pr.type === 'unverified_fund' || pr.type === 'unavailable') return `<div class="track-line"><span>${name} <span class="muted small">(${acct})</span></span><b>${pct(p.curEq)}</b></div><div class="muted small">${esc(pr.reason)} ההחזקה נשארת כפי שהיא.</div>`;
+    if (pr.type === 'market') {
+        const t = pr.track;
+        return `<div class="track-line"><span>${name} <span class="muted small">(${acct})</span></span><b>${pct(p.curEq)} ← ${pct(pr.achieved)}</b></div>
+            <div class="small">${pr.picked ? 'נבחר ידנית' : 'המסלול המדורג ראשון בשוק ליעד ההחזקה'}: "<b>${esc(t.name)}</b>" (${esc(t.parentCoName || '')}, חשיפה ${pct(t.eq)}) - ${pr.sameCompany ? 'באותו גוף, בלי ניוד בין גופים' : '<b>ניוד לגוף אחר</b>'}.</div>
+            ${pr.sameCompany ? '' : `<div class="muted small">לפני ניוד בין גופים: לבדוק רציפות כיסוי ביטוחי (נכות ושאירים), תקופת אכשרה והחרגות מצב רפואי קודם בגוף הקולט, דמי הניהול שיוצעו בפועל, ועיתוי הניוד מול הפקדות שוטפות.</div>`}`;
+    }
     if (pr.type === 'single') {
         const cap = pr.cappedAt === 'max' ? ` <span class="tag-miss">היעד מעל טווח הקרן (${pct(pr.rangeLo)}-${pct(pr.rangeHi)}) - מוצג המקסימום הזמין</span>` : pr.cappedAt === 'min' ? ` <span class="tag-miss">היעד מתחת לטווח הקרן (${pct(pr.rangeLo)}-${pct(pr.rangeHi)}) - מוצג המינימום הזמין</span>` : '';
         return `<div class="track-line"><span>${name} <span class="muted small">(${acct})</span></span><b>${pct(p.curEq)} ← ${pct(pr.achieved)}</b></div>
@@ -2418,7 +2453,7 @@ async function onMaslaka(files) {
     state.portfolio = p; state.reports = rep; state.demo = false; state.busy = false;
     // איפוס מלא של מצב תלוי-תיק בעת החלפת קובץ (09/11/2026): אישורי זהות, בחירות ידניות, החרגות מהממוצע,
     // זכאויות שילוב, יעד/העדפת גיאוגרפיה ובחירת תחילת קצבה - כולם קשורים לחשבונות ולמסלולים של הקובץ הקודם.
-    state.confirmed = {}; state.selections = {}; state.excluded = {}; state.targetEq = null; state.geoPref = 'any'; state.eligible = {}; state.unknownAssumption = null;
+    state.confirmed = {}; state.selections = {}; state.excluded = {}; state.targetEq = null; state.geoPref = 'any'; state.eligible = {}; state.unknownAssumption = null; state.marketPick = {};
     state.pensionStartSel = null; state.manualDropNote = ''; state.uploadError = '';
     // כרטיס המקדם (תכנון פרישה) קשור ללקוח/לקובץ: גוף מנהל (מזוהה או שנבחר ידנית), תרחיש, הבטחה, יתרה,
     // אומדן אחרון וחלופות מתאפסים בהחלפת קובץ - כדי שלקוח/קובץ חדש לא יירש מנהל או תוצאה של הקודם.
@@ -2527,6 +2562,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (t.id === 'enc-input') { encState.file = t.files && t.files[0] ? t.files[0] : null; return; }
         if (t.dataset.benSrc !== undefined) { state.beneficiaries[+t.dataset.benSrc].source = t.value; composeFamilyValue(); render(); return; }
         if (t.id === 'eq-slider' || t.dataset.eqSlider !== undefined) { state.targetEq = parseInt(t.value); render(); return; }
+        if (t.dataset.mktPick !== undefined) { state.marketPick = { ...state.marketPick, [t.dataset.mktPick]: parseInt(t.value) }; render(); return; }
         if (t.id === 'mek-company') {
             state.mekIn.company = t.value; state.mekIn.companyBy = t.value ? 'user' : undefined;
             state.mekResult = '';
@@ -2644,6 +2680,7 @@ document.addEventListener('DOMContentLoaded', () => {
     root.addEventListener('click', (e) => {
         const t = e.target.closest('button');
         if (!t) return;
+        if (t.dataset.mktClear !== undefined) { const m = { ...state.marketPick }; delete m[t.dataset.mktClear]; state.marketPick = m; render(); return; }
         if (t.dataset.gotoAcc) { const id = t.dataset.gotoAcc; state.open[id] = true; render(); const el = document.getElementById('acc-' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
         if (t.dataset.selectClear !== undefined) { const k = t.dataset.selectClear; delete state.selections[k]; delete state.confirmed[k]; delete state.eligible[k]; render(); return; }
         if (t.dataset.acc) {

@@ -675,3 +675,9 @@ body { background: var(--ivory); background-attachment: scroll; color: var(--ink
 .target-card.muted-card { border-inline-start-color: #c9ced6; }
 button.linkbtn { background: none; border: 0; padding: 0; color: var(--navy); text-decoration: underline; cursor: pointer; font: inherit; }
 input[type=range] { accent-color: var(--navy); }
+/* מסלולים מכל השוק (M-037) */
+details.alts.market { margin-top: 10px; }
+.mkt-pick { display: inline-flex; gap: 4px; align-items: center; cursor: pointer; white-space: nowrap; }
+.market-note { margin-top: 8px; }
+details.alts.market .altstbl th:first-child, details.alts.market .altstbl td:first-child { width: 1%; min-width: 0; white-space: nowrap; }
+details.alts.market .altstbl td:nth-child(2) { min-width: 180px; }

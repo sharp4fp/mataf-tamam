@@ -47,5 +47,17 @@ ok(['30', '60', '100'].every(r => MK.scenarioForRate(clal, r).scenario === 'spou
 const e60 = await MK.mekademEstimate({ company: 'clal', scenario: 'spouse60', guarantee: 'none', gender: 'm', birthYear: 1965, age: 67, spouseBirthYear: 1968 });
 const e100 = await MK.mekademEstimate({ company: 'clal', scenario: 'spouse100', guarantee: 'none', gender: 'm', birthYear: 1965, age: 67, spouseBirthYear: 1968 });
 ok(e100.k > e60.k, 'surv-higher-rate-higher-factor-lower-pension', `${e60.k} vs ${e100.k}`);
+// שמירה/שחזור (11.11): החרגה (eligible=false) ובחירת מסלול מהשוק נשמרות
+{
+    const A = await import(B + '/analysis.js');
+    const hold = [{ account: { account: 'A1' }, track: { code: 'T1', name: 'x' }, match: { officialId: null } }];
+    const key = A.trackKeyOf('A1', hold[0].track);
+    const anyFund = Object.values((await import(B + '/official.js')).OFFICIAL_PENSION)[0].fundId;
+    const snap = A.plannerSnapshotOf({ targetEq: 60, geoPref: 'any', unknownAssumption: null, eligible: { [key]: false }, excluded: {}, confirmed: {}, selections: {}, marketPick: { [key]: anyFund } });
+    const back = A.plannerRestoreOf(JSON.parse(JSON.stringify(snap)), hold);
+    ok(back.eligible[key] === false, 'persist-exclusion-false-survives');
+    ok(back.marketPick[key] === anyFund, 'persist-market-pick-survives');
+    ok(Object.keys(A.plannerRestoreOf({ ...snap, marketPick: { [key]: 99999999 } }, hold).marketPick).length === 0, 'persist-unknown-fund-dropped');
+}
 console.log(`critical-fixes: PASS=${pass} FAIL=${fail}`);
 process.exit(fail ? 1 : 0);

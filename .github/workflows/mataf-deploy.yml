@@ -81,6 +81,7 @@ jobs:
           node tests-1032/qa-161-confirm.mjs
           node tests-1032/qa-retirement-steps.mjs
           node tests-1032/qa-target-link.mjs
+          node tests-1032/qa-market.mjs
 
   deploy:
     name: פריסה
