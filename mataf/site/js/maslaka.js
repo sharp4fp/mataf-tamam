@@ -39,6 +39,14 @@ function classify(plan, sugMutzar) {
     return 'other';
 }
 
+// מספר זהות ישראלי: 9 ספרות עם אפסים מובילים. המסלקה, טופס 161 וקובץ קודם עשויים לכתוב אותו
+// עם או בלי אפסים מובילים - כל השוואה והצגה עוברות דרך הנרמול הזה (M-001, 11.11.2026).
+export function normalizeIdNumber(s) {
+    const d = String(s || '').replace(/\D/g, '');
+    if (!d || /^0+$/.test(d)) return '';
+    return d.length < 9 ? d.padStart(9, '0') : d;
+}
+
 export const KIND_LABEL = {
     pensia: 'קרן פנסיה', hishtalmut: 'קרן השתלמות', tagmulim: 'קופת גמל',
     hashkaa: 'גמל להשקעה', menahalim: 'ביטוח מנהלים (סיווג לפי קוד 1 - לא אומת)',
@@ -219,7 +227,7 @@ export function parseMaslakaXml(fileName, text, into, report) {
         for (const el of Array.from(doc.getElementsByTagName('YeshutLakoach'))) {
             const first = txt(el, 'SHEM-PRATI');
             if (!first || /מוקד|^-$/.test(first)) continue;
-            const id = (txt(el, 'MISPAR-ZIHUY-LAKOACH') || '').replace(/^0+(?!$)/, '');
+            const id = normalizeIdNumber(txt(el, 'MISPAR-ZIHUY-LAKOACH'));
             const rawBirth = txt(el, 'TAARICH-LEYDA') || txt(el, 'TAARICH-LEIDA') || '';
             into.client = {
                 name: `${first} ${txt(el, 'SHEM-MISHPACHA')}`.trim(),

@@ -5,6 +5,7 @@
 const escH = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const fmtN = (n) => (n === null || n === undefined || !isFinite(n)) ? null : Math.round(n).toLocaleString('he-IL');
 import { dedupeAccounts } from './analysis.js';
+import { normalizeIdNumber } from './maslaka.js';
 
 const NOINFO = 'לא התקבל מידע';
 
@@ -81,7 +82,7 @@ export function diffPortfolios(prev, curr) {
     const currRej = [...new Set([...(curr.rejectedImports || []), ...((curr.accounts || []).rejectedVersions || []), ...ddC.rejected])];
     prev = { ...prev, accounts: ddP.accounts, rejectedPrev: prevRej };
     curr = { ...curr, accounts: ddC.accounts, rejectedImports: currRej };
-    const idOf = (p) => p && p.client && p.client.id ? digitsOnly(p.client.id) : '';
+    const idOf = (p) => p && p.client && p.client.id ? normalizeIdNumber(p.client.id) : '';
     const nameOf = (p) => (p && (p.clientName || (p.client && p.client.name)) || '').trim();
     let identityWarning = null;
     const pid = idOf(prev), cid = idOf(curr);

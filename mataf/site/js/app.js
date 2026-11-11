@@ -1,10 +1,10 @@
 import { OFFICIAL_PENSION, OFFICIAL_GEMEL, OFFICIAL_INSURANCE } from './official.js';
 import { readZip } from './zip.js';
-import { parseMaslakaXml, KIND_LABEL } from './maslaka.js';
+import { parseMaslakaXml, KIND_LABEL, normalizeIdNumber } from './maslaka.js';
 import { extract161, EMPTY_161, FIELD_LABELS, contradictions161 } from './pdf161.js';
 import { COMPANIES, SCENARIO_LABELS, GUAR_LABELS, loadCompany, scenariosOf, guaranteesOf, hasSpouse, inferCompany, mekademEstimate } from './mekadem.js';
 import { extractDoc } from './pdfdocs.js';
-import { analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
+import { analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
 import { loadPeerData, periodLabel, findOwnRow, compareTrack, TRANSFER_GATES, EXISTING_VS_FUTURE_NOTE, BASELINE_NOTE, PEERS_SOURCE_NOTE } from './peers.js';
 import { renderReport, renderBeforeAfter } from './report.js';
 import { renderDiffBody, diffPortfolios, renderNifraimBody, parseNifraimText, matchNifraim } from './diffnifraim.js';
@@ -63,7 +63,7 @@ const state = {
     reports: [],
     busy: false,
     f161: { ...EMPTY_161, grants: [] },
-    kibua: { eligDate: '', payers: '1', grantExempt: '', grantYear: '', grantIndexed: '', sim2026: '', hivunPast: '', hivunPlan: '', empHistory: '' },
+    kibua: { eligDate: '', payers: '1', grantExempt: '', grantYears: '', grantYear: '', grantIndexed: '', sim2026: '', hivunPast: '', hivunPlan: '', empHistory: '' },
     alloc: { objective: '', horizon: '' },
     riskgoals: { balance: '', equity: '', equitySrc: '', income: '', resources: '', liq: '', liqDate: '', willing: '', behavior: '', goals: [{ desc: '', amount: '', date: '', importance: '', flex: '', alloc: '' }, { desc: '', amount: '', date: '', importance: '', flex: '', alloc: '' }, { desc: '', amount: '', date: '', importance: '', flex: '', alloc: '' }] },
     f161Found: {},
@@ -1028,13 +1028,20 @@ function kibuaCalc(k) {
     // שער מידוד: אין מנוע מדד במערכת - נדרש סכום ממודד מוצהר
     if (grant > 0 && k.grantIndexed !== 'yes') return { blocked: 'indexed' };
     const hivP = num(k.hivunPast), hivF = num(k.hivunPlan);
-    const uGrant = grant * 1.35;
+    // M-003: מענק בגין יותר מ-32 שנות עבודה נלקח רק ביחס ל-32 השנים שקדמו לגיל הזכאות - מענק × 32/שנות עבודה × 1.35
+    // (מדריך 161ד 2026, עמ' 6-7, דוגמה 1: 550,000 × 32/40 × 1.35 = 594,000). שנות העבודה: מהשדה, אחרת מטופס 161.
+    const gy = rawNum(k.grantYears);
+    const f161Years = parseWorkYears(state.f161 && state.f161.workYears);
+    const grantYears = gy !== null && gy > 0 ? gy : (f161Years || null);
+    const grantYearsFrom = gy !== null && gy > 0 ? 'field' : (f161Years ? 'f161' : null);
+    const ratio32 = grantRatio32(grantYears);
+    const uGrant = grant * ratio32 * 1.35;
     const used = uGrant + hivP + hivF;
     const usedPct = Math.min(100, used / BASKET * 100);
     const remain = Math.max(0, BASKET - used);
     const monthly = remain / 180;
     const rate = monthly / MAZKE * 100;
-    return { ok: true, eligYear, grant, uGrant, hivP, hivF, used, usedPct, pctRaw: used / BASKET * 100, remain, monthly, rate };
+    return { ok: true, eligYear, grant, uGrant, ratio32, grantYears, grantYearsFrom, hivP, hivF, used, usedPct, pctRaw: used / BASKET * 100, remain, monthly, rate };
 }
 function kibuaResultHtml() {
     const k = state.kibua;
@@ -1048,10 +1055,15 @@ function kibuaResultHtml() {
     if (c.blocked === 'indexed') {
         return '<div class="note small"><b>החישוב נעצר:</b> הוזן סכום מענקים ללא הצהרת מידוד. נוסחת הקיזוז דורשת סכום <b>ממודד</b> לתחילת שנת הזכאות, והמערכת אינה מבצעת מידוד. הזינו את הסכום הממודד כפי שמופיע באישורי המעסיק/הקופה ובחרו "הסכום ממודד" בשדה המידוד - אחרת לא יוצג חישוב מספרי של יתרת הזכויות.</div>';
     }
-    const { grant, uGrant, hivP, hivF, used, usedPct, pctRaw, remain, monthly, rate, eligYear } = c;
+    const { grant, uGrant, ratio32, grantYears, grantYearsFrom, hivP, hivF, used, usedPct, pctRaw, remain, monthly, rate, eligYear } = c;
+    const ratioLabel = grant > 0
+        ? (ratio32 < 1
+            ? ` (× 32/${+grantYears.toFixed(2)} × 1.35 - שנות עבודה ${grantYearsFrom === 'f161' ? 'מטופס 161' : 'כפי שהוזנו'})`
+            : (grantYears ? ' (× 1.35; עד 32 שנות עבודה - אין הקטנה יחסית)' : ' (× 1.35; שנות העבודה לא ידועות - אם מעל 32, הפגיעה קטנה יותר)'))
+        : ' (× 1.35)';
     const simNote = (eligYear && eligYear !== 2026) ? '<div class="note small">הדמיית 2026 מפורשת: החישוב להלן משתמש בקבועי 2026 בלבד ואינו תקף לשנת הזכאות ' + eligYear + '.</div>' : '';
     return simNote + `<div class="kibres">
-        <div class="track-line"><span>פגיעה בגין מענקים פטורים ממודדים (× 1.35)</span><b>₪${Math.round(uGrant).toLocaleString('he-IL')}</b></div>
+        <div class="track-line"><span>פגיעה בגין מענקים פטורים ממודדים${ratioLabel}</span><b>₪${Math.round(uGrant).toLocaleString('he-IL')}</b></div>
         <div class="track-line"><span>פגיעה בגין היוון קצבה פטור שבוצע בעבר</span><b>₪${Math.round(hivP).toLocaleString('he-IL')}</b></div>
         <div class="track-line"><span>פגיעה בגין היוון מתוכנן (בחירה עתידית של הלקוח בטופס הרשמי - ההדמיה אינה המלצה)</span><b>₪${Math.round(hivF).toLocaleString('he-IL')}</b></div>
         <div class="track-line"><span>פגיעה משוערת בסל הפטור - סה"כ</span><b>₪${Math.round(used).toLocaleString('he-IL')} (${usedPct.toFixed(1)}%)</b></div>
@@ -1113,7 +1125,8 @@ function renderKibua() {
             <label>היסטוריית מעסיקים ב-32 השנים שלפני גיל הזכאות (הצהרת הלקוח - קובעת אילו מסמכים נדרשים)<select data-kib="empHistory"><option value=""${k.empHistory === '' ? ' selected' : ''}>לא נבחר - לא ידוע אם היו מעסיקים קודמים</option><option value="only"${k.empHistory === 'only' ? ' selected' : ''}>מקום עבודה יחיד - לא היו מענקי פרישה ממעסיקים קודמים</option><option value="additional"${k.empHistory === 'additional' ? ' selected' : ''}>היו מעסיקים/מענקים נוספים - יש לכלול גם אותם בסכום המענקים</option></select></label>
             <label>חודש הגעה לגיל זכאות (גיל פרישה או קצבה ראשונה, המאוחר)<input type="month" data-kib="eligDate" value="${esc(k.eligDate)}"></label>
             <label>מספר משלמי קצבה צפויים (סל פטור אחד משותף לכולם)<input type="number" min="1" max="10" step="1" data-kib="payers" value="${esc(k.payers)}"></label>
-            <label>מענקי פרישה פטורים ממס ב-32 השנים שלפני גיל הזכאות (₪, סכום מצטבר)<input type="number" min="0" step="1000" data-kib="grantExempt" value="${esc(k.grantExempt)}"></label>
+            <label>מענקי פרישה פטורים ממס שהתקבלו (₪, סכום מצטבר - כמודפס באישורים; ההקטנה ל-32 שנים מחושבת למטה)<input type="number" min="0" step="1000" data-kib="grantExempt" value="${esc(k.grantExempt)}"></label>
+            <label>שנות העבודה שבגינן שולמו המענקים (ריק = לפי טופס 161${parseWorkYears(state.f161 && state.f161.workYears) ? ': ' + parseWorkYears(state.f161.workYears) : ''}; מעל 32 - הפגיעה מוקטנת ביחס 32/שנים)<input type="number" min="0" max="60" step="0.01" data-kib="grantYears" value="${esc(k.grantYears)}"></label>
             <label>האם סכום המענקים ממודד לתחילת שנת הזכאות? (המערכת אינה ממדדת - בלי הצהרה לא יחושב)<select data-kib="grantIndexed"><option value=""${k.grantIndexed === '' ? ' selected' : ''}>לא נבחר</option><option value="yes"${k.grantIndexed === 'yes' ? ' selected' : ''}>כן - הסכום ממודד (מתוך אישורי המעסיק/הקופה)</option><option value="no"${k.grantIndexed === 'no' ? ' selected' : ''}>לא - סכום נומינלי; המידוד ייעשה מול מקור רשמי</option></select></label>
             <label>שנת קבלת המענקים (לתיעוד בלבד מול פקיד השומה)<input type="number" min="1980" max="2026" step="1" data-kib="grantYear" value="${esc(k.grantYear)}"></label>
             <label>היוון קצבה פטור שבוצע בעבר (₪, לפי מסמך המשלם)<input type="number" min="0" step="1000" data-kib="hivunPast" value="${esc(k.hivunPast)}"></label>
@@ -1221,7 +1234,7 @@ function allocScenariosHtml() {
     const slackGrant = Math.min(c.grant, Math.max(0, capFull - Math.min(pension, capFull)) * BASKET_DIVISOR / FACTOR);
     if (slackGrant > 100 && c.grant - slackGrant > 100) {
         scenarios.push({
-            key: 'C', name: 'משיכה הונית פטורה חלקית - רק מה שהקצבה אינה מנצלת', cash: slackGrant, cap: capFull - slackGrant * FACTOR / HORIZON,
+            key: 'C', name: 'משיכה הונית פטורה חלקית - רק מה שהקצבה אינה מנצלת', cash: slackGrant, cap: capFull - slackGrant * FACTOR / BASKET_DIVISOR,
             explain: 'הקצבה הצפויה נמוכה מהפטור החודשי המלא, ולכן חלק מסל הפטור לא היה מתממש בכלל. מושכים רק את החלק העודף הזה, כך שהפטור שנותר עדיין מכסה את כל הקצבה והמס עליה אינו עולה במודל. נזילות: בינונית - כסף פנוי עכשיו בלי עלות מס.'
         });
     }
@@ -2185,7 +2198,7 @@ async function onNifFiles(files) {
 // אחד חסר -> לא פתור (חוסר מזהה אינו ראיה לאותו לקוח). בסתירה או בחוסר פתרון, קלטים/מסמכים של
 // לקוח קודם מופרדים למצב "ממתין" (נשמרים וניתנים לשחזור, אינם נכנסים לחישוב ואינם נשמרים כנתוני התיק החדש).
 function clientBindStatus(aId, bId) {
-    const a = (aId || '').replace(/\D/g, ''), b = (bId || '').replace(/\D/g, '');
+    const a = normalizeIdNumber(aId), b = normalizeIdNumber(bId);
     if (a && b) return a === b ? 'same' : 'mismatch';
     return 'unresolved';
 }
@@ -2209,7 +2222,7 @@ function segregateClientInputs(reason, prevClient) {
         f161File: hasF161Data && rawVault.f161 ? { name: rawVault.f161.name, bytes: rawVault.f161.bytes } : null,
     };
     state.netin = { kibuaMain: '0', kibuaSpouse: '0', certRateMain: '', certRateSpouse: '', simMain: '', simSpouse: '', pointsMain: '2.25', otherMain: '0', grossSpouse: '0', pointsSpouse: '2.75', otherSpouse: '0', eligMain: false, eligSpouse: false, survClass: '', survAssumeOk: false };
-    state.kibua = { eligDate: '', payers: '1', grantExempt: '', grantYear: '', grantIndexed: '', sim2026: '', hivunPast: '', hivunPlan: '', empHistory: '' };
+    state.kibua = { eligDate: '', payers: '1', grantExempt: '', grantYears: '', grantYear: '', grantIndexed: '', sim2026: '', hivunPast: '', hivunPlan: '', empHistory: '' };
     state.alloc = { objective: '', horizon: '' }; state.goals = { horizon: '', liquidity: 'בינוני', inheritance: false, consolidate: false, keepExemption: false, capitalFirst: false };
     state.mekIn = {}; state.mekResult = ''; state.mekLast = null; state.mekAlts = []; state.mekManual = '';
     state.life = emptyInsState(); state.health = emptyInsState(); state.calc = {};
