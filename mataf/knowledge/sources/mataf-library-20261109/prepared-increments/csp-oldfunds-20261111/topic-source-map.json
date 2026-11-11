@@ -1,0 +1,21 @@
+{
+ "as_of": "2026-11-11",
+ "base_index": "profession-index/v1.3-20261110 (לא שונה; זהו delta)",
+ "topics": [
+  {
+   "id": "P15.05",
+   "title": "פנסיה תקציבית, ותיקה, חדשה וביטוח מנהלים",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "knesset-recovery-plan-law-2003",
+     "section": "קרנות ותיקות שבהסדר",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "לא נבדק מול עמוד"
+    }
+   ]
+  }
+ ]
+}
