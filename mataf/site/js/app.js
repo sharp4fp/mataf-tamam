@@ -46,7 +46,9 @@ function demoPortfolio() {
         accounts: [
             mk('מנורה מבטחים פנסיה וגמל בע"מ', '100001', 'מנורה מבטחים פנסיה', 'pensia', [['מנורה מבטחים פנסיה - מסלול מניות', 420000]], 1.5, 0.08, '1'),
             mk('הפניקס פנסיה וגמל בע"מ', '100002', 'הפניקס השתלמות', 'hishtalmut', [['הפניקס השתלמות מניות', 180000]], 0, 0.6, '1'),
-            mk('מגדל חברה לבטוח בע"מ', '100003', 'מגדלור', 'menahalim', [['כללי', 95000]], 0.3, 1.1, '2'),
+            { ...mk('מגדל חברה לבטוח בע"מ', '100003', 'מגדלור', 'menahalim', [['כללי', 95000]], 0.3, 1.1, '2'),
+                // מקדם מובטח סינתטי (ממסלקה מדומה) - להדגמת השוואת המוצר לקצבה (M-045)
+                annuityFactor: { retireAge: 67, guaranteedFactor: 190, lifeGuarantee: true, lifeGuaranteeAtRetirement: true, yieldGuarantee: false, yieldGuaranteePeriod: false, lifeAffectsPension: false, yieldAffectsPension: true, track: '', limitYears: null, projectedSavings: 110000, pensionFromGuaranteed: 578.95 } },
         ],
     };
 }
@@ -1517,11 +1519,35 @@ function renderQuestionsStep() {
         ${fold('riskgoals', 'דף עבודה פנימי: התאמת סיכון למטרות', renderRiskGoals(), badgeRg())}`;
 }
 
+// M-045 שלב מקדים: מקדם הקצבה של כל פוליסה מהמסלקה (בלי ציטוט קצבה; החלטת הבעלים 11.11 18:57, 19:00)
+const yesNo = (v) => (v === true ? 'כן' : v === false ? 'לא' : '—');
+function renderGuaranteedFactors() {
+    const accs = ((state.portfolio && state.portfolio.accounts) || []).filter(a => a.annuityFactor);
+    if (!accs.length) return '';
+    const fundK = state.mekLast && state.mekLast.k ? state.mekLast.k : null;
+    const rows = accs.map(a => {
+        const f = a.annuityFactor;
+        const fundPension = fundK && f.projectedSavings && !f.capitalOnly ? f.projectedSavings / fundK : null;
+        return `<tr><td>${esc(a.plan || '')}<div class="muted small">${esc(a.yatzran || '')} · ${esc(KIND_LABEL[a.kind] || a.kind || '')}</div></td>
+            <td>${f.retireAge ?? '—'}</td>
+            <td>${f.guaranteedFactor !== null ? `<b>${f.guaranteedFactor}</b>` : '<span class="muted">אין מקדם מובטח</span>'}</td>
+            <td>${f.capitalOnly ? `<span class="muted">חלק הוני בלבד: ₪${fmt(f.capitalSavings || 0)} (לא לקצבה)</span>` : `${f.projectedSavings !== null ? '₪' + fmt(f.projectedSavings) : '—'}${f.capitalSavings ? `<div class="muted small">ועוד ₪${fmt(f.capitalSavings)} בחלק ההוני (לא לקצבה)</div>` : ''}`}</td>
+            <td>${f.pensionFromGuaranteed !== null ? '₪' + fmt(f.pensionFromGuaranteed) : '—'}</td>
+            <td>${fundPension !== null ? '₪' + fmt(fundPension) : '<span class="muted">חשבו מקדם בטבלה למעלה</span>'}</td>
+            <td>${yesNo(f.lifeGuarantee)}</td><td>${yesNo(f.yieldGuarantee)}</td></tr>`;
+    }).join('');
+    return fold('guaranteed', `המקדם בפוליסות לפי המסלקה (${accs.length})`, `<div class="muted small">המקדם, הצבירה הצפויה והדגלים נלקחו מקובץ המסלקה (בלוק "יתרה לפי גיל פרישה"). הקצבה = הצבירה הצפויה חלקי המקדם, ברוטו לפני מס.
+        עמודת "בקרן פנסיה" מחלקת את אותה צבירה במקדם שחושב בטבלת התקנון למעלה - השוואה לשאלה אם כדאי לנייד (תקנה 2(א)(1) לתקנות העברת כספים בין קופות גמל).</div>
+        <div class="alts-scroll"><table class="altstbl" data-guaranteed><thead><tr><th>פוליסה</th><th>גיל פרישה</th><th>מקדם מובטח</th><th>צבירה צפויה</th><th>קצבה לפי המקדם</th><th>בקרן פנסיה (אותה צבירה)</th><th>הבטחת תוחלת חיים</th><th>הבטחת תשואה</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <div class="note small">המקדם המובטח תקף לגיל הפרישה שבמסלקה. פרישה בגיל אחר עשויה לשנות אותו. מקדם מובטח הוא זכות שאובדת בניוד, ולכן לא מנייד פוליסה כזו בלי השוואה. ההשוואה אינה כוללת עדיין דמי ניהול בשלב הקצבה ותנאי שאירים (M-045, שלב 1).</div>`);
+}
+
 function renderPensionStep() {
     return `${renderMekadem()}
+        ${renderGuaranteedFactors()}
         ${renderFamilyScenarios()}
         ${renderIntakeIds(RS_IDS.pension)}
-        ${fold('quote', 'השוואה אופציונלית: ציטוט קצבה רשמי מהגוף המנהל', `<div class="muted small">אינו תנאי להמשך. ציטוט עדכני מהגוף המנהל (כולל מסלולי הבטחה, יתרות, פיצול הפקדות מול פיצויים והשוואת קצבת שאירים) מאפשר השוואה מדויקת של המקדם והקצבה מול האומדן מהטבלה, ונדרש לפני החלטה סופית על מסלול קצבה. תחזית הקרן במסלקה אינה ציטוט.</div>${renderDocUpload('quote')}`)}`;
+        ${fold('quote', 'לא נדרש: ציטוט קצבה מהגוף המנהל', `<div class="muted small">התכנון נעשה לפני הפרישה (למשל בגיל 66), ולכן ציטוט קצבה אינו נדרש: בביטוח מנהלים המקדם נלקח מהמסלקה, ובקרן פנסיה מטבלאות התקנון. אם בכל זאת יש ציטוט, אפשר להעלות אותו להשוואה.</div>${renderDocUpload('quote')}`)}`;
 }
 function badgePensionStep() {
     return state.mekLast && state.mekLast.pension ? `אומדן ₪${fmt(state.mekLast.pension)} לחודש` : 'חסר: מקדם ואומדן קצבה';

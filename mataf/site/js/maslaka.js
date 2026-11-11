@@ -56,6 +56,31 @@ export const KIND_LABEL = {
     risk: 'כיסוי ביטוחי', other: 'לא סווג',
 };
 
+const flag12 = (v) => (v === '1' ? true : v === '2' ? false : null);
+export function annuityFactorOf(ylg) {
+    const factor = num(txt(ylg, 'MEKADEM-MOVTACH-LEPRISHA'));
+    const out = {
+        retireAge: parseInt(txt(ylg, 'GIL-PRISHA')) || null,
+        guaranteedFactor: factor !== null && factor > 0 ? factor : null,
+        lifeGuarantee: flag12(txt(ylg, 'MEKADEM-HAVTACHST-TOCHELET')),
+        lifeGuaranteeAtRetirement: flag12(txt(ylg, 'MEKADEM-HAVTACHST-TOCHELETPRISHA')),
+        yieldGuarantee: flag12(txt(ylg, 'MEKADEM-HAVTACHAT-TSUA')),
+        yieldGuaranteePeriod: flag12(txt(ylg, 'MEKADEM-HAVTACHAT-TSUATKUFA')),
+        lifeAffectsPension: flag12(txt(ylg, 'TOCHELET-MASHPIA-KITZBA')),
+        yieldAffectsPension: flag12(txt(ylg, 'TSUA-MASHPIA-KITZBA')),
+        track: txt(ylg, 'SHEM-MASLOL') || '',
+        limitYears: num(txt(ylg, 'TKUFAT-HAGBALA-BESHANIM')),
+        projectedSavings: num(txt(ylg, 'TOTAL-CHISACHON-MITZTABER-TZAFUY')),
+        // SUG-KUPA בתוך הבלוק: 1 = קצבתי, 2 = הוני, 3 = השתלמות (נצפה בקבצים אמיתיים: קרן פנסיה 1, השתלמות 3)
+        sugKupa: txt(ylg, 'SUG-KUPA') || '',
+    };
+    // קצבה מהמקדם המובטח: הצבירה הצפויה לגיל הפרישה חלקי המקדם (קצבה חודשית ברוטו, לפני מס)
+    out.pensionFromGuaranteed = out.guaranteedFactor && out.projectedSavings
+        ? Math.round(out.projectedSavings / out.guaranteedFactor * 100) / 100 : null;
+    const any = out.guaranteedFactor !== null || [out.lifeGuarantee, out.yieldGuarantee, out.lifeAffectsPension, out.yieldAffectsPension].some(v => v !== null);
+    return any ? out : null;
+}
+
 function parseAccount(hop, yatzran, mutzarSug) {
     const plan = txt(hop, 'SHEM-TOCHNIT');
     // SUG-MUTZAR lives at the Mutzar/NetuneiMutzar level, passed in; fall back to any nested code.
@@ -116,6 +141,20 @@ function parseAccount(hop, yatzran, mutzarSug) {
             assumedYield: num(txt(ylg, 'ACHUZ-TSUA-BATACHAZIT')),
         };
         if (!forecast.age) forecast = null;
+    }
+    // מקדם הקצבה של הפוליסה (M-045, החלטת הבעלים 11.11 18:57): בביטוח מנהלים המקדם המובטח מגיע מהמסלקה
+    // (בלוק YitraLefiGilPrisha), ולא נדרש ציטוט קצבה. דגלים: 1 = כן, 2 = לא (המוסכמה של ממשק טרום ייעוץ,
+    // כמו YESH-TVIA ו-KAYAM-KISUY-BITUCHI-COLECTIVI-LEAMITIM). אימות מול קובץ השדות הרשמי - BACKLOG M-046.
+    // בפוליסה יכולים להיות כמה בלוקים - אחד לכל סוג קופה (קצבתי/הוני). המקדם שייך לחלק הקצבתי.
+    const factorBlocks = Array.from(hop.getElementsByTagName('YitraLefiGilPrisha')).map(annuityFactorOf).filter(Boolean);
+    const annuityFactor = factorBlocks.find(b => b.guaranteedFactor !== null)
+        || factorBlocks.find(b => b.sugKupa === '1') || factorBlocks[0] || null;
+    if (annuityFactor) {
+        // פוליסה שכל בלוקיה הוניים: אין חלק קצבתי - לא מציגים את הצבירה ההונית כבסיס לקצבה
+        annuityFactor.capitalOnly = annuityFactor.sugKupa === '2';
+        annuityFactor.capitalSavings = factorBlocks.filter(b => b.sugKupa === '2' && (b !== annuityFactor || annuityFactor.capitalOnly))
+            .reduce((n, b) => n + (b.projectedSavings || 0), 0) || null;
+        annuityFactor.blocks = factorBlocks.length;
     }
     // --- שדות נוספים לדוח המקוצר (מיפוי מול דוח לדוגמה; כל השדות מכתבי ה-XML עצמו, ללא חישוב) ---
     // דמי ניהול חוזיים לפי מבנה דמי הניהול: SUG-HOTZAA=1 מצבירה (שנתי), SUG-HOTZAA=2 מהפקדה (מפרט 009).
@@ -196,7 +235,7 @@ function parseAccount(hop, yatzran, mutzarSug) {
         lastDepositPeriod: lastDep ? txt(lastDep, 'TAARICH-HAFKADA-ACHARON') : '',
         lastDepositTotal: lastDep ? num(txt(lastDep, 'TOTAL-HAFKADA')) : null,
         tsuaNeto: tsuaVals.length ? tsuaVals[0] : null,
-        covers, forecast,
+        covers, forecast, annuityFactor,
         severanceBalance: sevVals.length ? sevVals.reduce((a, b) => a + b, 0) : null,
         kind: classify(plan, sugMutzar), totalBalance, prevYearEnd,
         feeContractDep, feeContractAcc, employer, salaryLatest, salaryMonth,
