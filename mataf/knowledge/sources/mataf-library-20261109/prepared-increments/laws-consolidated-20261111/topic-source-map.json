@@ -1,0 +1,267 @@
+{
+ "as_of": "2026-11-11",
+ "base_index": "profession-index/v1.3-20261110 (לא שונה; זהו delta)",
+ "previous_delta": "prepared-increments/official-sources-20261111b/topic-source-map.json",
+ "note": "pdf_pages = עמודי ה-PDF. \"W\" = נוסח משולב מויקיטקסט, לא מחייב.",
+ "topics": [
+  {
+   "id": "P20.02",
+   "title": "קצבה מזערית וסעיף23 לחוק קופות גמל; סכומים לפי שנה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "provident-funds-law-consolidated-wikisource",
+     "section": "סעיף 23(א)(1)(א), 23(א)(1)(ב)(3), 23(ה), 23(ו)",
+     "pdf_pages": [
+      12
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": "הסכום ל-2026 הוא הערת עורך בויקיטקסט; תואם לוח ניכויים 2026 עמ' 12"
+    },
+    {
+     "source_id": "knesset-provident-funds-amendment3-2008-sh2130",
+     "section": "התיקון שהוסיף \"סכום קצבה מזערי\" 3,850 ש\"ח",
+     "pdf_pages": [
+      4
+     ],
+     "verified_how": "image",
+     "limits": "\"סכום צבירה מזערי\" לא בעמוד זה"
+    }
+   ]
+  },
+  {
+   "id": "P20.01",
+   "title": "היוון קצבה מול משיכת הון: תנאים ומקור חוקי",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "provident-funds-law-consolidated-wikisource",
+     "section": "סעיף 23(א)(1)(א): היוון עד 25% ל-5 שנים כשהקצבה אינה עולה על המזערית",
+     "pdf_pages": [
+      9
+     ],
+     "verified_how": "text",
+     "limits": "נוסח מאתר מראה"
+    }
+   ]
+  },
+  {
+   "id": "P19.01",
+   "title": "גיל זכאות, סעיף9א, קצבה מזכה/מוכרת ושאירים",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "knesset-ito-amendment190-2012-sh2354",
+     "section": "סעיף 5 לתיקון (סעיף 9א לפקודה): תקרת הקצבה המזכה 8,190; מכפיל ההמרה להון 180",
+     "pdf_pages": [
+      3
+     ],
+     "verified_how": "image",
+     "limits": "סכומי 2012; הסכומים העדכניים בלוח הניכויים"
+    }
+   ]
+  },
+  {
+   "id": "P14.01",
+   "title": "גיל פרישה, גיל פרישת חובה, גיל זכאות",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "retirement-age-law-consolidated-wikisource",
+     "section": "סעיפים 3-8, התוספת",
+     "pdf_pages": [
+      1,
+      2,
+      4
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": "נוסח משולב עד ס\"ח 2933"
+    }
+   ]
+  },
+  {
+   "id": "P14.02",
+   "title": "טבלאות גיל לנשים לפי חודש ושנת לידה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "retirement-age-law-consolidated-wikisource",
+     "section": "התוספת חלק ב' (מאי 1947-1969) וחלק ג'",
+     "pdf_pages": [
+      4
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": "הטבלה מתחילה במאי 1947"
+    },
+    {
+     "source_id": "knesset-retirement-age-amendment3-2012",
+     "section": "תיקון 3 (2011): 1950 ← 1955",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": "הוחלף בתיקון 7"
+    }
+   ]
+  },
+  {
+   "id": "P05.03",
+   "title": "הפקדות עצמאי: חובת מינימום",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "economic-efficiency-law-2017-18-consolidated-wikisource",
+     "section": "פרק ב', סעיפים 3-4: 4.45% / 12.55%; פטורים",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": "פרסום מקורי: knesset-economic-efficiency-law-2017-18-sh2592 (לא נבדק עמוד הפרק)"
+    }
+   ]
+  },
+  {
+   "id": "P11.01",
+   "title": "שאירים בתקנון לעומת מוטבים בפוליסה ולעומת יורשים",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "insurance-contract-law-consolidated-wikisource",
+     "section": "סעיפים 11-13 (מוטב)",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    },
+    {
+     "source_id": "succession-law-consolidated-wikisource",
+     "section": "סעיף 147",
+     "pdf_pages": [
+      16
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P24.02",
+   "title": "ירושה, צוואה, מוטבים ושאירים",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "succession-law-consolidated-wikisource",
+     "section": "סעיף 147",
+     "pdf_pages": [
+      16
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P24.01",
+   "title": "חלוקת חיסכון פנסיוני בין בני זוג שנפרדו",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "pension-division-divorce-law-consolidated-wikisource",
+     "section": "כל החוק",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": "נבדק עמוד ההגדרות בלבד"
+    }
+   ]
+  },
+  {
+   "id": "P24.03",
+   "title": "ייפוי כוח מתמשך, אפוטרופוס",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "legal-capacity-guardianship-law-consolidated-wikisource",
+     "section": "פרק שני1 (סעיף 32א ואילך)",
+     "pdf_pages": [
+      4
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P15.05",
+   "title": "פנסיה תקציבית, ותיקה, חדשה וביטוח מנהלים: חישוב שונה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "civil-service-pensions-law-consolidated-wikisource",
+     "section": "סעיפים 9-12 (תקופת שירות)",
+     "pdf_pages": [
+      8
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": "נוסח משולב בלבד"
+    }
+   ]
+  },
+  {
+   "id": "P06.04",
+   "title": "פיגורים, חוסרים, טעויות שכר",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "btl-wage-protection-law",
+     "section": "סעיף 19א",
+     "pdf_pages": [
+      4
+     ],
+     "verified_how": "image",
+     "limits": "נוסח בל\"ל"
+    }
+   ]
+  },
+  {
+   "id": "P01.01",
+   "title": "רישיון סוכן פנסיוני, יועץ ומשווק",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "pension-advice-marketing-law-consolidated-wikisource",
+     "section": "סעיף 1 (הגדרות)",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    },
+    {
+     "source_id": "insurance-supervision-law-consolidated-wikisource",
+     "section": "סעיף 1 (הגדרות)",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  }
+ ]
+}

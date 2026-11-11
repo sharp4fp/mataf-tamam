@@ -1,0 +1,77 @@
+{
+ "as_of": "2026-11-11",
+ "base_index": "profession-index/v1.3-20261110 (לא שונה; זהו delta)",
+ "previous_delta": "prepared-increments/regulations-20261111/topic-source-map.json",
+ "note": "pdf_pages = עמודי ה-PDF. \"W\" = נוסח משולב מויקיטקסט, לא מחייב.",
+ "topics": [
+  {
+   "id": "P15.04",
+   "title": "מסלולי פנסיה, תקופות תשלום, הצמדה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "cma-codex-6-6-pension-funds",
+     "section": "שער 6 חלק 3",
+     "pdf_pages": [
+      3
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P05.01",
+   "title": "חובת ביטוח פנסיוני לשכיר",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "labor-extension-order-mandatory-pension-consolidated-2011",
+     "section": "נוסח משולב 2011",
+     "pdf_pages": [
+      1,
+      3
+     ],
+     "verified_how": "image",
+     "limits": "עדכון 2016 לא אותר"
+    }
+   ]
+  },
+  {
+   "id": "P03.04",
+   "title": "דוחות שנתיים לעמית",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "cma-codex-6-7-appendices",
+     "section": "נספח 6.7.1",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P23.05",
+   "title": "עובד מדינה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "csc-retirement-guide-ed11-2026-01",
+     "section": "מדריך - לא חקיקה",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  }
+ ]
+}

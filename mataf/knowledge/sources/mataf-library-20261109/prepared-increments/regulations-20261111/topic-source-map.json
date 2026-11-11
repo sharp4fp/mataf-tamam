@@ -1,0 +1,250 @@
+{
+ "as_of": "2026-11-11",
+ "base_index": "profession-index/v1.3-20261110 (לא שונה; זהו delta)",
+ "previous_delta": "prepared-increments/laws-consolidated-20261111/topic-source-map.json",
+ "note": "pdf_pages = עמודי ה-PDF. \"W\" = נוסח משולב מויקיטקסט, לא מחייב.",
+ "topics": [
+  {
+   "id": "P08.01",
+   "title": "דמי ניהול מהפקדה ומצבירה: תקרות",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "kt-7131-2012-management-fees-regs-original",
+     "section": "תקנה 2: 1.05% / 4% / 0.6%",
+     "pdf_pages": [
+      4
+     ],
+     "verified_how": "image",
+     "limits": ""
+    },
+    {
+     "source_id": "kt-9942-2022-management-fees-amendment",
+     "section": "0.5% למקבלי קצבת זקנה מ-1.2.2022",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image",
+     "limits": ""
+    },
+    {
+     "source_id": "management-fees-regs-2012-consolidated-wikisource",
+     "section": "נוסח משולב",
+     "pdf_pages": [
+      3
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P08.02",
+   "title": "הוצאות ישירות",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "gemel-direct-expenses-regs-consolidated-wikisource",
+     "section": "תקנה 2",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P20.04",
+   "title": "משיכה שלא כדין: שיעור מס",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "kt-1317-1962-sec87-and-pension-withholding-regs",
+     "section": "תקנות 2-4: 25% / 35%",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image (סריקה; טקסט OCR)",
+     "limits": "לוח הניכויים 2026 מוסיף \"הגבוה מבין 35% והשיעור השולי\" לקופה לקצבה - מקור לא אותר"
+    },
+    {
+     "source_id": "sec87-regs-1962-consolidated-wikisource",
+     "section": "נוסח משולב",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P21.02",
+   "title": "מבחן הכנסה מעבודה ושלא מעבודה; דין הכנסה מפנסיה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "btl-ni-regs-income-old-age-survivors-1976",
+     "section": "תקנה 1(ב): הכנסה פסיבית רק מעל כפליים לוח ט'; למעט קצבה מכוח חיקוק/הסכם קיבוצי/חוזה עבודה",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": "נוסח בל\"ל"
+    }
+   ]
+  },
+  {
+   "id": "P21.01",
+   "title": "תושבות, אכשרה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "btl-ni-regs-non-residents-1987",
+     "section": "זכויות לשאינם תושבים",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image",
+     "limits": "נוסח בל\"ל"
+    }
+   ]
+  },
+  {
+   "id": "P04.03",
+   "title": "ביטוח מנהלים: תנאי פוליסה, רכיבים והבטחות",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "insurance-contract-terms-regs-consolidated-wikisource",
+     "section": "תקנה 6א (דמי ניהול בפוליסה שאינה משתתפת)",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    },
+    {
+     "source_id": "life-insurance-indexation-regs-consolidated-wikisource",
+     "section": "הצמדה; תחולה מ-1.9.1982",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    },
+    {
+     "source_id": "life-insurer-separate-accounts-regs-consolidated-wikisource",
+     "section": "פוליסות משתתפות ברווחים",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    },
+    {
+     "source_id": "gemel-insurance-fund-16d6-regs-consolidated-wikisource",
+     "section": "קופת ביטוח",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P07.01",
+   "title": "מסלולי השקעה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "investment-rules-regs-2012-consolidated-wikisource",
+     "section": "הגדרות \"מסלול השקעה\"",
+     "pdf_pages": [
+      3
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P20.06",
+   "title": "קרן השתלמות, סכומים נמוכים: מועדי נזילות",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "gemel-study-fund-partial-withdrawal-regs-consolidated-wikisource",
+     "section": "",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    },
+    {
+     "source_id": "gemel-small-amounts-withdrawal-regs-consolidated-wikisource",
+     "section": "",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P05.04",
+   "title": "ניכוי וזיכוי בהפקדה: סעיפים45א/47",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "tax-deduction-pension-contributions-regs-consolidated-wikisource",
+     "section": "תקנה 2: 10.5% / 7.5%",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P22.02",
+   "title": "תיאום מס, דוח שנתי, ניכוי במקור",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "ממופה",
+   "mappings": [
+    {
+     "source_id": "tax-return-exemption-regs-consolidated-wikisource",
+     "section": "תקנות 2-3",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": "L-014: תקנה 3(א)(3)"
+    },
+    {
+     "source_id": "tax-withholding-salary-regs-consolidated-wikisource",
+     "section": "",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image (נוסח משולב מאתר מראה - לא מחייב)",
+     "limits": ""
+    }
+   ]
+  }
+ ]
+}
