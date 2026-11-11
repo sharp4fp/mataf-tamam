@@ -50,6 +50,14 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: אינדקס החיפוש של הספרייה (נבנה כאן, לא נשמר במאגר) ואימות חתימות
+        working-directory: mataf/knowledge/sources/mataf-library-20261109
+        run: |
+          python3 search.py --build
+          python3 search.py --verify | tee /tmp/verify.txt
+          grep -q '^OK:' /tmp/verify.txt || { echo "חתימות לא תואמות"; exit 1; }
+          python3 search.py "קיבוע זכויות" --limit 1 | tee /tmp/q.txt
+          grep -q '^Matches: [1-9]' /tmp/q.txt || { echo "החיפוש לא החזיר תוצאות"; exit 1; }
       - name: בנייה מהמאגר
         run: node mataf/library-site/build.mjs dist
       - name: בדיקות נתונים ושער
