@@ -38,6 +38,7 @@ const trackKeyOf = analysis.trackKeyOf;
 const plannerRestoreOf = analysis.plannerRestoreOf;
 const plannerSnapshotOf = analysis.plannerSnapshotOf;
 // scope איטרטיבי: מושך מהמקור כל פונקציית עזר שה-eval או הקריאה מפנים אליהן, עד התכנסות (עד 60 סבבים).
+const eligibleKeysOf = (await import(B + '/report.js')).eligibleKeysOf;
 const names = new Set(['renderTargetController', 'renderTargetProposal', 'geoTagOf', 'includedHoldings', 'confirmedRisk', 'wholePlanContext', 'currentTargetPlan']);
 let html = null;
 for (let round = 0; round < 60; round++) {

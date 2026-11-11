@@ -667,3 +667,11 @@ body { background: var(--ivory); background-attachment: scroll; color: var(--ink
 .key161 td { padding: 7px 10px; font-variant-numeric: tabular-nums; }
 .key161 tr + tr th, .key161 tr + tr td { border-top: 1px solid #e3e6ea; }
 @media (max-width: 640px) { .key161 th { width: auto; } .key161 td:last-child { display: block; padding-top: 0; } }
+/* יעד חשיפה בראש תיק הנכסים + המלצה לכל החזקה (11.11.2026) */
+.target-bar { border-inline-start: 4px solid var(--champ, #b8945a); margin: 10px 0 16px; }
+.target-bar input[type=range] { width: 100%; margin: 8px 0 4px; }
+.target-bar .eq-target-out { font-size: 1.25rem; }
+.target-card { border-inline-start: 4px solid var(--navy); }
+.target-card.muted-card { border-inline-start-color: #c9ced6; }
+button.linkbtn { background: none; border: 0; padding: 0; color: var(--navy); text-decoration: underline; cursor: pointer; font: inherit; }
+input[type=range] { accent-color: var(--navy); }

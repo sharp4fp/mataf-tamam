@@ -6,7 +6,7 @@ import { COMPANIES, SCENARIO_LABELS, GUAR_LABELS, loadCompany, scenariosOf, guar
 import { extractDoc } from './pdfdocs.js';
 import { analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
 import { loadPeerData, periodLabel, findOwnRow, compareTrack, TRANSFER_GATES, EXISTING_VS_FUTURE_NOTE, BASELINE_NOTE, PEERS_SOURCE_NOTE } from './peers.js';
-import { renderReport, renderBeforeAfter } from './report.js';
+import { renderReport, renderBeforeAfter, eligibleKeysOf } from './report.js';
 import { renderDiffBody, diffPortfolios, renderNifraimBody, parseNifraimText, matchNifraim } from './diffnifraim.js';
 import { renderLifeTab, renderHealthTab, insInit, insApply, emptyInsState } from './insurance.js';
 import { renderCalcTab, calcApply } from './calc.js';
@@ -1569,9 +1569,9 @@ function wholePlanContext() {
 
 function currentTargetPlan() {
     if (state.targetEq === null || state.targetEq === undefined) return null;
-    const selKeys = Object.keys(state.eligible).filter(k => state.eligible[k]);
-    if (!selKeys.length) return null;
     const inc = includedHoldings();
+    const selKeys = eligibleKeysOf(inc, state.eligible);
+    if (!selKeys.length) return null;
     const whole = wholePlanContext();
     const sig = state.targetEq + '|' + selKeys.slice().sort().join(',') + '|' + inc.map(x => x.key + ':' + x.bal + ':' + x.eq).join(',') + '|' + whole.estFrozen.map(e => e.bal + ':' + e.eq).join(',') + '|' + whole.noBasisVal + '|' + (whole.frozenKnown || []).map(e => e.bal + ':' + e.eq).join(',') + '|' + (whole.unknownAssumption ?? '') + '|' + (state.geoPref || 'any');
     if (planCache.sig === sig) return planCache.plan;
@@ -1592,25 +1592,95 @@ function clientAge() {
     return age;
 }
 
+// ההמלצה ליעד החשיפה הכולל עבור החזקה אחת (מוצגת בתיק הנכסים; מתעדכנת בזמן הזזת הבקר - refreshTargetLive)
+function renderHoldingTarget(a, h) {
+    if (!h || state.targetEq === null || state.targetEq === undefined) return '';
+    const key = trackKeyOf(a.account, h.track);
+    const T = pct(state.targetEq);
+    const inc = includedHoldings().find(x => x.key === key);
+    const head = (t) => `<div class="group-label">${t}</div>`;
+    if (!inc) {
+        return `<div class="card target-card muted-card">${head(`ההמלצה ליעד ${T}`)}<div class="muted small">${state.excluded[key] && h.equityPct !== null
+            ? `ההחזקה הוצאה מממוצע הסיכון בבחירתך. חשיפתה (${pct(h.equityPct)}) נשארת קפואה בחישוב התיק הכולל ואינה מקבלת המלצה.`
+            : `ההחזקה עוד לא מזוהה (חסר נתון חשיפה מאומת), ולכן אינה משתתפת ביעד. ${h.estimate ? 'בחישוב הכולל משמש אומדן מסומן בכוכבית. ' : ''}כדי לכלול אותה - זהו את המסלול בבחירה שלמעלה.`}</div></div>`;
+    }
+    if (state.eligible[key] === false) return `<div class="card target-card muted-card">${head(`ההמלצה ליעד ${T}`)}<div class="muted small">סומנה "ללא שינוי" בחלק רמת הסיכון - החשיפה (${pct(inc.eq)}) נשארת, והיעד מתחלק בין שאר ההחזקות.</div></div>`;
+    const plan = currentTargetPlan();
+    const per = plan && plan.per ? plan.per.find(p => p.key === key) : null;
+    if (!per) return `<div class="card target-card muted-card">${head(`ההמלצה ליעד ${T}`)}<div class="muted small">${plan && plan.status === 'infeasible' ? 'היעד אינו בר-השגה בכלים הזמינים - פירוט בחלק רמת הסיכון.' : plan && plan.status === 'underdetermined' ? 'לא ניתן לקבוע תכנית יחידה (חלק מהתיק ללא בסיס חשיפה) - פירוט בחלק רמת הסיכון.' : 'אין הצעה להחזקה זו.'}</div></div>`;
+    return `<div class="card target-card">${head(`ההמלצה ליעד ${T} (לפי בקר רמת הסיכון)`)}${renderTargetProposal(per)}</div>`;
+}
+
+// סרגל היעד בראש תיק הנכסים: אותו בקר כמו בחלק רמת הסיכון + סיכום ההמלצות
+function targetSummaryText() {
+    const plan = currentTargetPlan();
+    if (!plan || plan.status !== 'ok') return plan && plan.status === 'infeasible' ? `היעד מחוץ לטווח שאפשר להשיג בקרנות המוחזקות (${pct(plan.loAll)} - ${pct(plan.hiAll)}). אפשר להזיז לתוך הטווח, או לבדוק מעבר בין גופים בטבלאות החלופות.` : plan && plan.status === 'underdetermined' ? 'לא ניתן לקבוע תכנית יחידה - חלק מהתיק ללא בסיס חשיפה.' : 'אין החזקות שמשתתפות ביעד.';
+    let changes = 0, moved = 0;
+    for (const p of plan.per) {
+        const pr = p.proposal;
+        if (!pr || !['single', 'mix'].includes(pr.type)) continue;
+        changes++;
+        const bal = p.h.track.balance || 0;
+        moved += pr.type === 'single' ? bal : pr.high && pr.high.isCurrent ? bal * pr.wLow : pr.low && pr.low.isCurrent ? bal * pr.wHigh : bal;
+    }
+    return `חשיפה מושגת ${pct(plan.achievedWholeEst)}* · ${changes ? `${changes} ${changes === 1 ? 'שינוי מוצע' : 'שינויים מוצעים'} · כ-${fmt(Math.round(moved / 1000) * 1000)} ₪ משנים מסלול` : 'אין צורך בשינוי'}`;
+}
+function renderTargetBar() {
+    if (!view) return '';
+    const cr = confirmedRisk();
+    if (!cr) return `<div class="callout note-c target-bar"><b>יעד חשיפה מנייתית:</b> כדי לקבל המלצות לפי יעד, זהו לפחות מסלול אחד (בחירה מתוך הרשימה בהחזקה). ההחזקות המזוהות משתתפות אוטומטית.</div>`;
+    const T = state.targetEq ?? Math.round(cr.equity);
+    return `<div class="card target-bar">
+        <div class="track-line"><span><b>יעד חשיפה מנייתית לכל התיק</b> <span class="muted small">(מסונכרן עם חלק רמת הסיכון)</span></span><b class="eq-target-out">${pct(T)}</b></div>
+        <input type="range" min="0" max="100" value="${T}" data-eq-slider aria-label="יעד חשיפה מנייתית">
+        <div class="small" data-target-summary>${state.targetEq === null || state.targetEq === undefined ? 'הזיזו את הבקר - ההמלצה לכל החזקה תופיע מתחתיה.' : targetSummaryText()}</div>
+        <button type="button" class="linkbtn small" data-goto-acc="risk">לפירוט, להחרגת החזקות ולכיוון הגיאוגרפי - חלק רמת הסיכון ◂</button>
+    </div>`;
+}
+// עדכון חי בזמן גרירה: מחליפים רק את כרטיסי ההמלצה ואת שורות הסיכום, בלי רינדור מלא (שהיה שובר את הגרירה)
+function refreshTargetLive() {
+    document.querySelectorAll('.eq-target-out, #eq-target-label').forEach(el => { el.textContent = pct(state.targetEq); });
+    document.querySelectorAll('[data-eq-slider], #eq-slider').forEach(el => { if (document.activeElement !== el) el.value = state.targetEq; });
+    document.querySelectorAll('[data-target-summary]').forEach(el => { el.textContent = targetSummaryText(); });
+    if (!view) return;
+    const byKey = new Map(view.holdings.map(h => [trackKeyOf(h.account.account, h.track), h]));
+    document.querySelectorAll('[data-tblock]').forEach(el => {
+        const h = byKey.get(el.dataset.tblock);
+        if (h) el.innerHTML = renderHoldingTarget(h.account, h);
+    });
+}
+
 function renderAlternatives(a, h) {
-    const r = alternativesFor(a, h?.match, clientAge());
     const key = h ? trackKeyOf(a.account, h.track) : a.account + '|';
-    let targetBlock = '';
-    if (h && state.eligible[key]) {
+    const targetBlock = h ? `<div data-tblock="${esc(key)}">${renderHoldingTarget(a, h)}</div>` : '';
+    // כשיש הצעה למעבר מלא למסלול אחר - מוצגות קודם החלופות המקבילות למסלול המוצע (רצועת החשיפה של היעד),
+    // וההשוואה מול המסלול הנוכחי מקופלת מתחתיה
+    let targetAlts = '';
+    if (h && state.targetEq !== null && state.targetEq !== undefined && state.eligible[key] !== false) {
         const plan = currentTargetPlan();
         const per = plan && plan.per ? plan.per.find(p => p.key === key) : null;
-        targetBlock = per
-            ? `<div class="card"><div class="group-label">הצעה ליעד הכולל (סעיף רמת הסיכון)</div>${renderTargetProposal(per)}</div>`
-            : `<div class="card"><div class="group-label">הצעה ליעד הכולל</div><div class="muted small">${state.excluded[key] && h.equityPct !== null
-                ? `ההחזקה סומנה לשינוי, אך היא הוצאה מממוצע הסיכון בחירתך. חשיפתה הידועה (${pct(h.equityPct)}) נשארת קפואה בחשבון התיק הכולל; כל עוד היא מחוץ לממוצע אין לכוון אותה מספרית. ניתן להחזירה לממוצע ואז לכוון.`
-                : `ההחזקה סומנה לשינוי אך אינה נכללת בממוצע הסיכון (חסר נתון חשיפה מאומת), ולכן לא ניתן לכוון אותה מספרית. ${h.estimate ? 'מוצג אומדן מחלקה מסומן בכוכבית בלבד.' : ''}`}</div></div>`;
+        const pr = per && per.proposal;
+        if (pr && pr.type === 'single' && pr.track && pr.track.fundId != null) {
+            const m = { officialId: pr.track.fundId, row: pr.track, group: h.match && h.match.group };
+            targetAlts = renderAltTable(a, m, `חלופות למסלול המוצע "${esc(pr.track.name)}" (חשיפה ${pct(pr.track.eq)})`, true, true);
+        }
     }
+    const curAlts = renderAltTable(a, h ? h.match : null, targetAlts ? 'השוואה מול המסלול הנוכחי (לפני היעד)' : null, !targetAlts);
+    return targetBlock + targetAlts + curAlts;
+}
+
+function renderAltTable(a, match, title, open, isTarget = false) {
+    const REF = isTarget ? 'מהמוצע' : 'מהנוכחי';
+    const r = alternativesFor(a, match, clientAge());
+    const h = { match };
+    const targetBlock = '';
+    const openAttr = open ? ' open' : '';
     const kind = a.kind === 'menahalim' ? 'מסלולי ביטוח - השוואת מדדי מסלול' : KIND_LABEL[a.kind] || 'המוצר';
     if (!r.bucket) return `${targetBlock}<div class="alts small">חלופות להשוואה (${kind}): חסר זיהוי רשמי או נתון חשיפה. לא ניתן לאמת קבוצת השוואה; אין להסיק שאין חלופות.</div>`;
     const peers = r.comparisons || [];
-    if (!peers.length) return `${targetBlock}<details class="alts" open><summary>חלופות להשוואה (${kind})</summary><div class="small">${r.reason === 'unsupported_product' ? 'לסוג המוצר הזה טרם הוגדר מאגר השוואה מאומת.' : 'לא נמצאו במאגר מסלולים אחרים מאותו סוג מוצר, מנדט מעקב ורצועת חשיפה. אין להסיק שאין חלופות בשוק.'} נתון חסר אינו אפס.</div></details>`;
+    if (!peers.length) return `${targetBlock}<details class="alts"${openAttr}><summary>${title || `חלופות להשוואה (${kind})`}</summary><div class="small">${r.reason === 'unsupported_product' ? 'לסוג המוצר הזה טרם הוגדר מאגר השוואה מאומת.' : 'לא נמצאו במאגר מסלולים אחרים מאותו סוג מוצר, מנדט מעקב ורצועת חשיפה. אין להסיק שאין חלופות בשוק.'} נתון חסר אינו אפס.</div></details>`;
     const pensia = a.kind === 'pensia';
-    const labels = { higher:'גבוה מהנוכחי', equal:'זהה לנוכחי', lower:'נמוך מהנוכחי', unranked:'לא ניתן לדרג מול הנוכחי' };
+    const labels = { higher:'גבוה '+REF, equal:'זהה '+(isTarget?'למוצע':'לנוכחי'), lower:'נמוך '+REF, unranked:'לא ניתן לדרג מול '+(isTarget?'המוצע':'הנוכחי') };
     const componentLabels = {sharpe:'שארפ',return:'תשואה',service:'שירות'};
     const value = (v, suffix='') => v == null ? 'חסר' : esc(String(v)) + suffix;
     const topRanked = peers.find(x=>x.rankComplete) || null;
@@ -1623,9 +1693,9 @@ function renderAlternatives(a, h) {
         const score = isCurrent ? r.curScore : x.score;
         const partial = !pensia && x.partialScore;
         const missing = (x.missingComponents || []).map(k=>componentLabels[k]).join(', ');
-        const status = isCurrent ? 'המסלול הקיים' : labels[x.relation];
+        const status = isCurrent ? (isTarget ? 'המסלול המוצע' : 'המסלול הקיים') : labels[x.relation];
         const join = isCurrent ? '' : x.joinVerified ? 'הצטרפות אומתה במקור הקיים' : 'להשוואה בלבד: הצטרפות לא אומתה';
-        return `<tr${isCurrent ? ' class="top"' : x===topRanked ? ' class="lead"' : ''}><td><b>${esc(x.name)}</b><div class="muted small">מזהה ${x.fundId}${isCurrent?' · נוכחי':''}</div><div class="small">${status}</div>
+        return `<tr${isCurrent ? ' class="top"' : x===topRanked ? ' class="lead"' : ''}><td><b>${esc(x.name)}</b><div class="muted small">מזהה ${x.fundId}${isCurrent?(isTarget?' · מוצע':' · נוכחי'):''}</div><div class="small">${status}</div>
             <details class="alts-row-details"><summary>רכיבים והצטרפות</summary><div class="small">${pensia?'נתוני המסלול העדכניים 09/2026: שארפ '+value(x.sharpe)+', תשואה 3 שנים '+value(x.y3,'%')+'<br>':''}שירות 2025: ${value(srv)}${r.serviceProxy?' · מדד גמל של החברה כקירוב להשתלמות':''}${pensia ? '<br>איזון אקטוארי: '+value(act==null?null:Number(act.toFixed(2)), '%') : ''}<br>נכסי חו"ל (כל הנכסים, לא רק מניות): ${value(x.fo,'%')} · חשיפה למט"ח (שונה מנכסי חו"ל בשל גידור): ${value(x.fx,'%')}${join?'<br>':''}${join}${score==null?'<br>אין בסיס מלא לציון':''}${partial?'<br>ציון חלקי. חסר: '+missing+'. אין להשוות לציון המבוסס על רכיבים אחרים.':''}</div></details></td>
             <td>${score==null?'לא דורג':score.toFixed(1)}${partial && score!=null?'<div class="small partial-score">חלקי · חסר '+missing+'</div>':''}</td>
             <td>${value(pensia?jd?.s:x.sharpe)}</td><td>${value(pensia?jd?.y:x.y3,'%')}</td><td>${value(x.eq,'%')}</td>
@@ -1635,9 +1705,9 @@ function renderAlternatives(a, h) {
     const method = pensia
         ? `40% שארפ, 30% תשואה 3 שנים, 20% שירות ו-10% איזון אקטוארי. שארפ, תשואה ואקטוארי: ${r.window || window.SCORING_WINDOW}; שירות: 2025. הציון יחסי לקבוצת המסלולים הזכאים בעלי הנתונים המלאים. חסר באחד מרכיבי הדירוג מונע ציון.`
         : `יחס משקלים 40 שארפ, 30 תשואה 3 שנים, 20 שירות, מנורמל ל-100% ללא אקטוארי (44.44%, 33.33%, 22.22%). שארפ ותשואה: ${r.window}; שירות: מדד 2025 ברמת החברה${r.serviceProxy?' - מדד גמל של אותה חברה משמש קירוב להשתלמות':''}. הציון הוא אחוזון משוקלל יחסי באותו סוג מוצר, סיווג רשמי, מנדט ורצועת חשיפה; אינו בר השוואה בין טבלאות.${a.kind==='menahalim'?' בביטוח-נט הרשות משווה בין פוליסות מקבילות או דומות ומסווגת לפי תקופת הנפקת הפוליסה. באתר קבוצת ההשוואה מסוננת בנוסף לפי מנדט (כללי / עוקב מדד וכדומה) ורצועת חשיפה מנייתית בסובלנות 20 נקודות אחוז. זהו מסנן נוסף של האתר, לא הגדרה של הרשות, והרשות אינה מאשרת את הציון או את הסף. הצטרפות למוצרי ביטוח טרם אומתה מול מקור רשמי ולכן לא מוצגת הצעת חלופה להעברה, ההשוואה היא במדדי המסלול בלבד.':''} השירות מדורג בין חברות נפרדות, לא בין מסלולים. נתון חסר אינו אפס: משקליו אינם נכללים, הציון מסומן כחלקי. ציונים המבוססים על רכיבים שונים אינם בני השוואה, ולא מוצג יתרון מול הנוכחי כשבסיס הרכיבים שונה. ציונים מלאים מוצגים לפני חלקיים; הדמיית מעבר דורשת ציון מלא וגבוה יותר ואימות הצטרפות נפרד.`;
-    return `${targetBlock}<details class="alts" open><summary>חלופות להשוואה · ${peers.length} מתוך ${r.comparisonCount} מסלולים מקבילים (${kind})</summary>
+    return `${targetBlock}<details class="alts"${openAttr}><summary>${title ? `${title} · ${peers.length} מתוך ${r.comparisonCount}` : `חלופות להשוואה · ${peers.length} מתוך ${r.comparisonCount} מסלולים מקבילים (${kind})`}</summary>
         <div class="small">השוואה, לא המלצה להעברה. ציון יחסי 0–100 · נתון חסר אינו אפס${r.serviceProxy?' · שירות: מדד גמל כקירוב להשתלמות':''}.</div>
-        <div class="alts-scroll"><table class="altstbl"><thead><tr><th>מסלול ומצב</th><th>ציון</th><th>שארפ<br>${pensia?'06/2026':'09/2026'}</th><th>תשואה 3 שנים<br>עד ${pensia?'06/2026':'09/2026'}</th><th>חשיפה<br>09/2026</th><th>דמי ניהול*<br>09/2026</th></tr></thead><tbody><tr class="alts-sect alts-sect-cur"><td colspan="6">המסלול הנוכחי</td></tr>${row(current,true)}<tr class="alts-sect alts-sect-peers"><td colspan="6">מסלולים נוספים להשוואה</td></tr>${peers.map(x=>row(x)).join('')}</tbody></table></div>
+        <div class="alts-scroll"><table class="altstbl"><thead><tr><th>מסלול ומצב</th><th>ציון</th><th>שארפ<br>${pensia?'06/2026':'09/2026'}</th><th>תשואה 3 שנים<br>עד ${pensia?'06/2026':'09/2026'}</th><th>חשיפה<br>09/2026</th><th>דמי ניהול*<br>09/2026</th></tr></thead><tbody><tr class="alts-sect alts-sect-cur"><td colspan="6">${isTarget ? 'המסלול המוצע' : 'המסלול הנוכחי'}</td></tr>${row(current,true)}<tr class="alts-sect alts-sect-peers"><td colspan="6">מסלולים נוספים להשוואה</td></tr>${peers.map(x=>row(x)).join('')}</tbody></table></div>
         <div class="alts-scroll-hint">◂ גוללים את הטבלה הצידה ▸</div>
         <details class="alts-how"><summary>שיטת הציון, מקורות ומגבלות</summary><div class="muted small">${method}${neutral}<br>נתוני חשיפה ודמי ניהול: מאגרי האוצר 09/2026. דמי הניהול בטבלה הם ממוצעים רשמיים שנתיים, אינם הצעה אישית ואינם בציון. במסלקה: מצבירה ${value(a.feeAcc,'%')}, מהפקדה ${value(a.feeDeposit,'%')} (דיווח חודש המסלקה, אינו שיעור שנתי).<br>הצטרפות נבדקת בנפרד מהציון. אימותי המקור נבדקו 08/11/2026 ואינם אימות בזמן אמת; בביטוחי מנהלים אין להסיק פתיחות מנתוני גמל/פנסיה. אין שינוי אוטומטי של מסלול, כיסויים או זכויות. אין להשוות שארפ רשמי לשארפ המחושב בכלי.</div></details></details>`;
 }
@@ -1658,6 +1728,7 @@ function renderPortfolio() {
     const p = state.portfolio;
     return `
         <div class="group-label">תיק הנכסים</div>
+        ${renderTargetBar()}
         <h2>${esc(p.clientName || 'הלקוח')} - ${fmt(view.totalValue)} ₪${view.rejectedImports && view.rejectedImports.length ? ` <span class="tag-miss">⚠ יבוא חלקי - יש חשבונות שנדחו; הסכום המוצג אינו מלוא התיק</span>` : ''}</h2>
         ${visibleAccounts(p).map((a, i) => `<div class="card acct">
             <div class="card-head">
@@ -1788,7 +1859,7 @@ function renderTargetController() {
     }
     const cbList = inc.filter(x => !x.excludedFromAvg).map(x => {
         const h = x.h;
-        return `<label class="confirmlab"><input type="checkbox" data-eligible="${esc(x.key)}" ${state.eligible[x.key] ? 'checked' : ''}> ${esc(h.track.name)} <span class="muted small">(${esc(h.account.plan || '')}, ${esc(h.account.yatzran || '')})</span> - ${pct(x.eq)} מניות · ${fmt(x.bal)} ₪</label>`;
+        return `<label class="confirmlab"><input type="checkbox" data-eligible="${esc(x.key)}" ${state.eligible[x.key] !== false ? 'checked' : ''}> ${esc(h.track.name)} <span class="muted small">(${esc(h.account.plan || '')}, ${esc(h.account.yatzran || '')})</span> - ${pct(x.eq)} מניות · ${fmt(x.bal)} ₪</label>`;
     }).join('');
     const unidentNote = unident.length ? `<div class="muted small">${unident.length} מסלולים ללא נתון חשיפה מדויק (${fmt(unident.reduce((s, h) => s + h.track.balance, 0))} ₪) אינם ניתנים לבחירה: ${estH.length ? 'לחלקם מוצג אומדן מחלקה מסומן בכוכבית בתיק הנכסים, אך אומדן אינו בסיס לתכנון מעבר מדויק. ' : ''}אין לראות בחשיפתם אפס.</div>` : '';
     let planHtml = '';
@@ -1810,7 +1881,7 @@ function renderTargetController() {
     }
     return `
         <div class="sliderwrap">
-            <div class="small"><b>דרך אילו מוצרים ליישם את היעד?</b> ברירת המחדל: ללא שינוי באף מוצר. סמנו את ההחזקות שהמערכת רשאית להציע עבורן שינוי; היעד מתחלק ביניהן בלבד.</div>
+            <div class="small"><b>דרך אילו מוצרים ליישם את היעד?</b> כל ההחזקות המזוהות משתתפות. הסירו סימון כדי להשאיר החזקה ללא שינוי; היעד מתחלק בין המסומנות בלבד. ההמלצה לכל החזקה מוצגת גם בחלק "תיק הנכסים".</div>
             <div class="small" style="margin-top:6px"><b>כיוון גיאוגרפי מועדף לאפיק המניות:</b> <select data-geo-pref>
                 <option value="any" ${(state.geoPref || 'any') === 'any' ? 'selected' : ''}>ללא העדפה</option>
                 <option value="local" ${state.geoPref === 'local' ? 'selected' : ''}>שוק מקומי (ישראל)</option>
@@ -2447,7 +2518,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (t.id.startsWith('doc-input-')) { void onDoc(t.id.slice('doc-input-'.length), t.files); return; }
         if (t.id === 'enc-input') { encState.file = t.files && t.files[0] ? t.files[0] : null; return; }
         if (t.dataset.benSrc !== undefined) { state.beneficiaries[+t.dataset.benSrc].source = t.value; composeFamilyValue(); render(); return; }
-        if (t.id === 'eq-slider') { state.targetEq = parseInt(t.value); render(); return; }
+        if (t.id === 'eq-slider' || t.dataset.eqSlider !== undefined) { state.targetEq = parseInt(t.value); render(); return; }
         if (t.id === 'mek-company') {
             state.mekIn.company = t.value; state.mekIn.companyBy = t.value ? 'user' : undefined;
             state.mekResult = '';
@@ -2549,10 +2620,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const cur = state.intake[id] || { value: '', source: '' };
             state.intake[id] = { ...cur, [k]: t.value }; return;
         }
-        if (t.id === 'eq-slider') {
+        if (t.id === 'eq-slider' || t.dataset.eqSlider !== undefined) {
             state.targetEq = parseInt(t.value);
-            const lbl = document.getElementById('eq-target-label');
-            if (lbl) lbl.textContent = pct(state.targetEq);
+            refreshTargetLive();
             return;
         }
     });
@@ -2560,6 +2630,7 @@ document.addEventListener('DOMContentLoaded', () => {
     root.addEventListener('click', (e) => {
         const t = e.target.closest('button');
         if (!t) return;
+        if (t.dataset.gotoAcc) { const id = t.dataset.gotoAcc; state.open[id] = true; render(); const el = document.getElementById('acc-' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
         if (t.dataset.selectClear !== undefined) { const k = t.dataset.selectClear; delete state.selections[k]; delete state.confirmed[k]; delete state.eligible[k]; render(); return; }
         if (t.dataset.acc) {
             const id = t.dataset.acc;

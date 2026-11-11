@@ -122,12 +122,22 @@ export function buildReportModel(state, view) {
     return { p, accs, asOf, total, kindParts, rejected, prodParts, exposure, depRows, monthlyDepTotal, pensionRows, premiumTotal, disabilityTotal, survivorsTotal, deathTotal };
 }
 
+// ההחזקות שהמנוע רשאי להציע להן שינוי ליעד: כל ההחזקה המזוהה והנכללת בממוצע, אלא אם הוחרגה במפורש
+// (eligible[key] === false). שינוי ברירת מחדל 11.11.2026 בבקשת הבעלים - קודם היה "ללא שינוי עד סימון".
+export function eligibleKeysOf(inc, eligibleMap) {
+    const m = eligibleMap || {};
+    const keys = new Set(inc.filter(x => !x.excludedFromAvg && m[x.key] !== false).map(x => x.key));
+    // סימון מפורש נשמר (גם להחזקה שהוצאה מהממוצע) - לגילוי הנאות בדוח ולתאימות לתיקים שמורים
+    for (const k of Object.keys(m)) if (m[k] === true) keys.add(k);
+    return [...keys];
+}
+
 // סעיף יעד החשיפה הכולל בדוח - זהה בסמנטיקה לבקר בסעיף רמת הסיכון בממשק (אותו מנוע, אותן הוראות הצגה).
 function targetPlanSection(state, view, portfolio) {
     if (state.targetEq === null || state.targetEq === undefined) return '';
-    const selKeys = Object.keys(state.eligible || {}).filter(k => state.eligible[k]);
-    if (!selKeys.length) return '';
     const inc = includedHoldingsOf(view.holdings, state.confirmed || {}, state.excluded || {});
+    const selKeys = eligibleKeysOf(inc, state.eligible);
+    if (!selKeys.length) return '';
     if (!inc.length) return '';
     const unident = view.holdings.filter(h => h.equityPct === null);
     const incKeys = new Set(inc.map(x => x.key));

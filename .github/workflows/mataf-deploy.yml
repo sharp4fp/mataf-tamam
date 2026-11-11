@@ -80,6 +80,7 @@ jobs:
           node tests-1032/qa-maslaka-mixed.mjs
           node tests-1032/qa-161-confirm.mjs
           node tests-1032/qa-retirement-steps.mjs
+          node tests-1032/qa-target-link.mjs
 
   deploy:
     name: פריסה
