@@ -41,7 +41,10 @@ for (let it=0; it<N; it++) {
       sel += x.bal*ach; if (!isFinite(ach)) fail('ach NaN', c); }
     const sk = new Set(p.per.map(x=>x.key)); const frozenIncl = inc.filter(x=>!sk.has(x.key)).reduce((s,x)=>s+x.bal*x.eq,0);
     const whole = (sel + frozenIncl + W.frozenKnown.reduce((s,x)=>s+x.bal*x.eq,0) + W.estFrozen.reduce((s,x)=>s+x.bal*x.eq,0) + (W.unknownAssumption!=null?W.noBasisVal*W.unknownAssumption:0))/v.totalValue;
-    if (Math.abs(whole - T) > 0.05 && !p.per.some(x=>x.proposal&&x.proposal.cappedAt!=null)) fail('ok but whole!=T', {T, whole, claimed:p.achievedWholeEst, geo, c});
+    // מעבר מלא בלבד (singleOnly, 11.11.2026): קפיצה בדידה - היעד מושג בקירוב. אז נדרשת כנות: החשיפה המוצהרת = החישוב מחדש.
+    const discrete = p.per.some(x=>x.proposal&&x.proposal.singleOnly);
+    if (discrete && Math.abs(whole - p.achievedWholeEst) > 0.05) fail('discrete: claimed achieved != recomputed', {T, whole, claimed:p.achievedWholeEst, geo, c});
+    if (Math.abs(whole - T) > 0.05 && !discrete && !p.per.some(x=>x.proposal&&x.proposal.cappedAt!=null)) fail('ok but whole!=T', {T, whole, claimed:p.achievedWholeEst, geo, c});
     if (Math.abs(p.achievedWholeEst - whole) > 1e-6 && !p.per.some(x=>x.proposal&&x.proposal.cappedAt!=null)) fail('claimed!=recomputed', {T, whole, claimed:p.achievedWholeEst, c});
   }
   if (p.status==='infeasible' && p.loAll!=null && T>=p.loAll+1e-6 && T<=p.hiAll-1e-6) fail('infeasible inside own range', {T,lo:p.loAll,hi:p.hiAll,c});

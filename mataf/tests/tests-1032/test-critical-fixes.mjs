@@ -59,5 +59,20 @@ ok(e100.k > e60.k, 'surv-higher-rate-higher-factor-lower-pension', `${e60.k} vs 
     ok(back.marketPick[key] === anyFund, 'persist-market-pick-survives');
     ok(Object.keys(A.plannerRestoreOf({ ...snap, marketPick: { [key]: 99999999 } }, hold).marketPick).length === 0, 'persist-unknown-fund-dropped');
 }
+// מקרה הבעלים 11.11 (מזהי מסלולים ציבוריים בלבד): פנסיה מגדל (8801, 13572) + השתלמות מגדל S&P (14668), יעד 35%.
+// לפני התיקון: "מחוץ לטווח" בלי הצעה, כי ההשתלמות הוקפאה. אחרי: מעבר מלא בהשתלמות + איזון הפנסיה = 35%.
+{
+    const A = await import(B + '/analysis.js'); const O = await import(B + '/official.js');
+    await import(B + '/joinable-extra.js').catch(() => {}); await import(B + '/scoring-extra.js').catch(() => {});
+    const mk = (key, kind, id, bal, group) => { const T = kind === 'pensia' ? O.OFFICIAL_PENSION : O.OFFICIAL_GEMEL; const r = T[id]; return { key, kind, bal, eq: r.eq, matched: { officialId: id, row: { ...r }, group } }; };
+    const inc = [mk('p1', 'pensia', 8801, 13100, 'mekipa'), mk('p2', 'pensia', 13572, 25500, 'mekipa'), mk('h1', 'hishtalmut', 14668, 8500, 'hishtalmut')];
+    const plan = A.solveTargetPlan(inc, new Set(inc.map(x => x.key)), 35, 45, { totalValue: inc.reduce((s2, x) => s2 + x.bal, 0), estFrozen: [], noBasisVal: 0, frozenKnown: [], unknownAssumption: null }, 'any', { market: true, picks: {} });
+    ok(plan.status === 'ok', 'owner-case-35-feasible', plan.status + ' ' + plan.loAll + '-' + plan.hiAll);
+    ok(Math.abs(plan.achievedWholeEst - 35) < 0.5, 'owner-case-35-achieved', String(plan.achievedWholeEst));
+    const h = plan.per.find(x => x.key === 'h1');
+    ok(h && h.proposal && h.proposal.type === 'single' && h.proposal.singleOnly && h.proposal.track.eq < 40, 'owner-case-hishtalmut-full-switch-low-equity', h && JSON.stringify(h.proposal && { t: h.proposal.type, eq: h.proposal.track && h.proposal.track.eq }));
+    const far = A.solveTargetPlan(inc, new Set(inc.map(x => x.key)), 2, 45, { totalValue: inc.reduce((s2, x) => s2 + x.bal, 0), estFrozen: [], noBasisVal: 0, frozenKnown: [], unknownAssumption: null }, 'any', { market: true, picks: {} });
+    ok(far.status === 'infeasible' && far.closestT != null && far.per.every(x => x.proposal), 'unreachable-target-gives-closest-plan', far.status + ' ' + far.closestT);
+}
 console.log(`critical-fixes: PASS=${pass} FAIL=${fail}`);
 process.exit(fail ? 1 : 0);

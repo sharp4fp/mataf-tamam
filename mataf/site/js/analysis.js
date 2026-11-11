@@ -831,7 +831,8 @@ export function fundMixContext(matched, clientAge = null, kind = 'pensia') {
 // אין ולא יוצג ציון/שארפ משוקלל לשילוב - שילוב מסלולים אינו ממוצע של מדדי הביצוע שלהם.
 export function proposalForTarget(ctx, x, clientAge = null, geoPref = 'any', curEq = null) {
     if (!ctx.ok) return { type: 'unavailable', reason: ctx.reason === 'not_supported_product' ? 'שילוב בתוך מוצר זמין כרגע לקרנות פנסיה ולקופות גמל/השתלמות שאומתו מול תקנון בלבד.' : (ctx.reason === 'not_pension_fund' ? 'שילוב בתוך קרן זמין כרגע לקרנות פנסיה בלבד (אומת מול תקנון).' : 'חסר זיהוי רשמי של המסלול.') };
-    if (!ctx.mixVerified) return { type: 'unverified_fund', fund: ctx.row.parentCoName, reason: `תקנון ${ctx.row.parentCoName || 'הקרן/הקופה'} טרם נבדק לאישור החזקה בשני מסלולים במקביל - לא מוצג שילוב עד לאימות.` };
+    // תקנון שלא נבדק להחזקה במקביל: לא חוסמים - מוצע מעבר מלא למסלול אחד (בחירת מסלול השקעה היא זכות בסיסית של העמית;
+    // שילוב של שני מסלולים דורש אימות תקנון). ראו ההחלטה למטה אחרי סינון המסלולים.
     // העדפה גיאוגרפית לאפיק המניות: מסלולים מסווגים בכיוון ההפוך מודרים; מסלולים לא-מסווגים נשארים זמינים אך מתויגים ככאלה (לא כתואמים להעדפה).
     const tagged = ctx.tracks.map(r => ({ ...r, geo: equityGeoOf(r.name) }));
     const prefActive = geoPref === 'local' || geoPref === 'foreign';
@@ -866,6 +867,13 @@ export function proposalForTarget(ctx, x, clientAge = null, geoPref = 'any', cur
     const singleGeo = (track) => ({ geoMix: geoMixOf([{ geo: track.geo, w: 1 }]), geoUnmet: prefActive && track.geo.cls !== geoPref });
     // יעד שמוביל למסלול הנוכחי עצמו אינו 'מעבר מלא' - הוא הישארות (R3): מוחזר stay כדי שהתצוגה לא תציג העברה פיקטיבית.
     const singleRet = (track, extra = {}) => ({ type: track.isCurrent ? 'stay' : 'single', track, achieved: track.eq, geoNote: geoNoteFor([track]), ...singleGeo(track), ...extra });
+    if (!ctx.mixVerified) {
+        // מעבר מלא בלבד: המסלול הקרוב ביותר ליעד (כולל הישארות במסלול הנוכחי)
+        const best = [...sorted].sort((a, b) => Math.abs(a.eq - x) - Math.abs(b.eq - x) || (a.isCurrent ? -1 : 1))[0];
+        const capped = x < lo.eq ? { cappedAt: 'min', rangeLo: lo.eq, rangeHi: hi.eq } : x > hi.eq ? { cappedAt: 'max', rangeLo: lo.eq, rangeHi: hi.eq } : {};
+        return { type: best.isCurrent ? 'stay' : 'single', track: best, achieved: best.eq, singleOnly: true, fund: ctx.row.parentCoName,
+            geoNote: geoNoteFor([best]), ...singleGeo(best), ...capped };
+    }
     const exact = sorted.find(r => Math.abs(r.eq - x) < 0.01);
     if (exact) return singleRet(exact);
     if (x <= lo.eq) return singleRet(lo, { cappedAt: 'min', rangeLo: lo.eq, rangeHi: hi.eq });
@@ -1048,7 +1056,7 @@ export function solveTargetPlan(included, selectedKeys, T, clientAge = null, who
         const ctx = fundMixContext(x.matched, clientAge, x.kind);
         const cur = x.eq;
         let lo = cur, hi = cur, note = null;
-        if (ctx.ok && ctx.mixVerified && ctx.tracks.length) {
+        if (ctx.ok && ctx.tracks.length) {
             let pool = ctx.tracks;
             if (geoPref === 'local' || geoPref === 'foreign') {
                 pool = pool.filter(r => { const g = equityGeoOf(r.name).cls; return g === geoPref || g === 'unclassified'; });
@@ -1086,34 +1094,47 @@ export function solveTargetPlan(included, selectedKeys, T, clientAge = null, who
     const reqSel = (T * V - F) / S_bal;
     const feasible = T >= loAll - 1e-9 && T <= hiAll + 1e-9;
     let xStar = null, achievedWholeEst = null, wholeLo = null, wholeHi = null, gap = null;
-    if (feasible) {
-        let a = Math.min(...per.map(p => p.lo)), b = Math.max(...per.map(p => p.hi));
-        const f = x => per.reduce((s, p) => s + Math.min(Math.max(x, p.lo), p.hi) * p.bal, 0);
-        for (let i = 0; i < 80; i++) { const m = (a + b) / 2; if (f(m) < reqSel * S_bal) a = m; else b = m; }
-        xStar = (a + b) / 2;
+    // יעד מחוץ לטווח: התכנית נבנית לנקודה הקרובה ביותר בטווח (closest), כדי להראות את הדרך הקרובה ביותר ומה חוסם.
+    const Teff = feasible ? T : Math.min(Math.max(T, loAll), hiAll);
+    const reqEff = (Teff * V - F) / S_bal;
+    if (S_bal > 0) {
+        const fixed = new Set();
         let selAch = 0;
-        for (const p of per) {
-            p.targetEq = Math.min(Math.max(xStar, p.lo), p.hi);
-            const pick = picks[p.key] != null ? marketRowById(picks[p.key]) : null;
-            const curParent = parentIdOfMatch(p.matched), curFund = pensionFundIdOfMatch(p.matched);
-            const sameCo = (r) => !!(r && curParent != null && r.parentId === curParent);
-            if (pick && p.marketOk && pick.fundId === curFund) {
-                p.proposal = { type: 'stay', topIsCurrent: true, picked: true };
-            } else if (pick && p.marketOk) {
-                // בחירה ידנית של המשתמש מטבלת השוק - גוברת על הצעת המערכת
-                p.proposal = { type: 'market', track: pick, picked: true, achieved: pick.eq, sameCompany: sameCo(pick) };
-            } else if (p.marketOk && (p.targetEq < p.inLo - 0.005 || p.targetEq > p.inHi + 0.005)) {
-                // היעד מחוץ לטווח הקרן הנוכחית - המסלול המדורג ראשון בשוק ברצועת היעד
-                const mc = marketCandidates(p.kind, p.matched && p.matched.group, p.targetEq, clientAge);
-                const top = mc.items[0];
-                p.proposal = top && top.fundId === curFund ? { type: 'stay', topIsCurrent: true }
-                    : top ? { type: 'market', track: top, auto: true, achieved: top.eq, sameCompany: sameCo(top) }
-                    : { type: 'stay', cappedAt: p.targetEq > p.inHi ? 'max' : 'min', rangeLo: p.inLo, rangeHi: p.inHi };
-            } else {
-                p.proposal = Math.abs(p.targetEq - p.curEq) < 0.005 ? { type: 'stay' } : proposalForTarget(p.ctx, p.targetEq, clientAge, geoPref, p.curEq);
+        for (let round = 0; round < 4; round++) {
+            const loOf = p => fixed.has(p.key) ? p.achievedEq : p.lo, hiOf = p => fixed.has(p.key) ? p.achievedEq : p.hi;
+            let a = Math.min(...per.map(loOf)), b = Math.max(...per.map(hiOf));
+            const f = x => per.reduce((s, p) => s + Math.min(Math.max(x, loOf(p)), hiOf(p)) * p.bal, 0);
+            for (let i = 0; i < 80; i++) { const m = (a + b) / 2; if (f(m) < reqEff * S_bal) a = m; else b = m; }
+            xStar = (a + b) / 2;
+            selAch = 0;
+            let newly = false;
+            for (const p of per) {
+                if (fixed.has(p.key)) { selAch += p.achievedEq * p.bal; continue; }
+                p.targetEq = Math.min(Math.max(xStar, p.lo), p.hi);
+                const pick = picks[p.key] != null ? marketRowById(picks[p.key]) : null;
+                const curParent = parentIdOfMatch(p.matched), curFund = pensionFundIdOfMatch(p.matched);
+                const sameCo = (r) => !!(r && curParent != null && r.parentId === curParent);
+                if (pick && p.marketOk && pick.fundId === curFund) {
+                    p.proposal = { type: 'stay', topIsCurrent: true, picked: true };
+                } else if (pick && p.marketOk) {
+                    // בחירה ידנית של המשתמש מטבלת השוק - גוברת על הצעת המערכת
+                    p.proposal = { type: 'market', track: pick, picked: true, achieved: pick.eq, sameCompany: sameCo(pick) };
+                } else if (p.marketOk && (p.targetEq < p.inLo - 0.005 || p.targetEq > p.inHi + 0.005)) {
+                    // היעד מחוץ לטווח הקרן הנוכחית - המסלול המדורג ראשון בשוק ברצועת היעד
+                    const mc = marketCandidates(p.kind, p.matched && p.matched.group, p.targetEq, clientAge);
+                    const top = mc.items[0];
+                    p.proposal = top && top.fundId === curFund ? { type: 'stay', topIsCurrent: true }
+                        : top ? { type: 'market', track: top, auto: true, achieved: top.eq, sameCompany: sameCo(top) }
+                        : { type: 'stay', cappedAt: p.targetEq > p.inHi ? 'max' : 'min', rangeLo: p.inLo, rangeHi: p.inHi };
+                } else {
+                    p.proposal = Math.abs(p.targetEq - p.curEq) < 0.005 ? { type: 'stay' } : proposalForTarget(p.ctx, p.targetEq, clientAge, geoPref, p.curEq);
+                }
+                p.achievedEq = p.proposal.type === 'stay' ? p.curEq : (p.proposal.achieved ?? p.curEq);
+                selAch += p.achievedEq * p.bal;
+                // קפיצה בדידה (מעבר מלא בלבד / מסלול שוק) שמחטיאה את יעד ההחזקה: מקבעים אותה, ושאר ההחזקות מתאזנות בסבב הבא
+                if ((p.proposal.singleOnly || p.proposal.type === 'market') && Math.abs(p.achievedEq - p.targetEq) > 0.5) { fixed.add(p.key); newly = true; }
             }
-            p.achievedEq = p.proposal.type === 'stay' ? p.curEq : (p.proposal.achieved ?? p.curEq);
-            selAch += p.achievedEq * p.bal;
+            if (!newly) break;
         }
         achievedWholeEst = (F + selAch) / V;
         gap = T - achievedWholeEst;
@@ -1124,7 +1145,13 @@ export function solveTargetPlan(included, selectedKeys, T, clientAge = null, who
     }
     // מדד נתונים מאומתים בלבד (ללא אומדנים וללא תרחישים): החלק הזוהה כפי שהוא כיום (נכללים + ידועים שאינם נכללים).
     const officialOnly = (incVal + frozenKnownVal) > 0 ? { value: incVal + frozenKnownVal, eq: (included.reduce((s, x) => s + x.bal * x.eq, 0) + frozenKnownSum) / (incVal + frozenKnownVal) } : null;
-    return { status: feasible ? 'ok' : 'infeasible', V, S_bal, F, reqSel, loAll, hiAll, xStar, per, achievedWholeEst, wholeLo, wholeHi, gap, noBasisVal, estVal: estF.reduce((s, e) => s + e.bal, 0), officialOnly, unknownAssumption: uAssump };
+    // מה חוסם יעד מחוץ לטווח: החזקות קפואות (לא משתתפות) והחזקות שהגיעו לקצה הטווח שלהן
+    const blockers = feasible ? null : {
+        frozen: [...frozen.map(x => ({ key: x.key, bal: x.bal, eq: x.eq })), ...frozenKnown.map(x => ({ key: null, bal: x.bal, eq: x.eq }))],
+        estVal: estF.reduce((s2, e) => s2 + e.bal, 0), noBasisVal,
+        atLimit: per.filter(p => p.targetEq != null && (Math.abs(p.targetEq - p.lo) < 1e-6 || Math.abs(p.targetEq - p.hi) < 1e-6)).map(p => ({ key: p.key, bal: p.bal, limit: T < Teff ? p.lo : p.hi })),
+    };
+    return { status: feasible ? 'ok' : 'infeasible', closestT: feasible ? null : Teff, blockers, V, S_bal, F, reqSel, loAll, hiAll, xStar, per, achievedWholeEst, wholeLo, wholeHi, gap, noBasisVal, estVal: estF.reduce((s, e) => s + e.bal, 0), officialOnly, unknownAssumption: uAssump };
 }
 
 // אומדן מחלקה מצומצם (מוצר + מנדט) למסלול ללא נתון רשמי: חציון וטווח מינ/מקס של המחלקה.

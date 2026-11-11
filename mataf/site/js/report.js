@@ -156,7 +156,7 @@ function targetPlanSection(state, view, portfolio) {
     let body = '';
     if (plan.status === 'underdetermined') {
         body = `<div class="rep-note"><b>לא ניתן לקבוע תכנית יחידה ליעד ${rPct(T)}.</b> ${rFmt(plan.noBasisVal)} ₪ בתיק ללא כל בסיס לחשיפה, ולא הונח עבורם מספר. התכנית תלויה בחלק זה (תרחיש היפותטי חסום 0%-100%, אינו גבול מתמטי - חשיפה ממונפת עלולה לחרוג): אם הוא 0% מניות - על ההחזקות הנבחרות להגיע ל-${rPct(plan.b0.reqSel)} (טווח זמין בכל התיק ${rPct(plan.b0.loAll)}-${rPct(plan.b0.hiAll)}); אם הוא 100% - ל-${rPct(plan.b100.reqSel)} (טווח ${rPct(plan.b100.loAll)}-${rPct(plan.b100.hiAll)}). ניתן להזין הנחה מפורשת בכלי לקבלת תכנית מותנית, או להשלים זיהוי של אותן החזקות.</div>`;
-    } else if (plan.status === 'infeasible') {
+    } else if (plan.status === 'infeasible' && !(plan.per && plan.per.some(p => p.proposal))) {
         body = `<div class="rep-note"><b>היעד ${rPct(T)} לכל התיק אינו בר-השגה בכלים שנבחרו.</b> הטווח הזמין בכל התיק (אומדנים בערכם המסומן): ${rPct(plan.loAll)} - ${rPct(plan.hiAll)}. להרחבת הטווח: סימון החזקות נוספות בכלי, או חלופות מחוץ לקרנות המוחזקות (מעבר בין גופים, עם השלכות ניוד וזכויות).</div>`;
     }
     // גילוי נאות: החזקה שסומנה לשינוי אך הוצאה מהממוצע בחירת המשתמש אינה שורה בתכנית - נאמר במפורש (אינו 'חסר נתון').
@@ -164,7 +164,8 @@ function targetPlanSection(state, view, portfolio) {
     const exclChosen = selKeys.filter(k => !perKeys.has(k) && (state.excluded || {})[k])
         .map(k => { const h = view.holdings.find(x => trackKeyOf(x.account.account, x.track) === k); return h && h.equityPct !== null ? `${rEsc(h.track.name)} (${rEsc(h.account.plan || '')}, חשיפה ידועה ${rPct(h.equityPct)} - קפואה בחשבון הכולל)` : null; }).filter(Boolean);
     const exclNote = exclChosen.length ? `<div class="rep-note">החזקות שסומנו לשינוי אך הוצאו מממוצע הסיכון בחירת המשתמש ולכן אינן מכוונות מספרית: ${exclChosen.join('; ')}. ניתן להחזירן לממוצע ואז לכוון אותן.</div>` : '';
-    if (plan.status === 'ok') {
+    const closest = plan.status === 'infeasible' && plan.per && plan.per.some(p => p.proposal);
+    if (plan.status === 'ok' || closest) {
         const conditionalNote = plan.noBasisVal > 0
             ? `${rFmt(plan.noBasisVal)} ₪ בתיק ללא כל בסיס: התכנית מותנית בהנחת המשתמש כי חלק זה הוא ${rPct(plan.unknownAssumption)} מניות; ההנחה אינה נתון ואינה אומדן של המערכת. `
             : '';
@@ -174,7 +175,7 @@ function targetPlanSection(state, view, portfolio) {
             let action;
             if (!pr || pr.type === 'stay') action = p.note ? rEsc(p.note) : (pr && pr.cappedAt ? `נשאר כפי שהוא - חלק היעד שהוקצה מחוץ לטווח המסלולים המאומתים (${rPct(pr.rangeLo)}-${rPct(pr.rangeHi)}), ולכן לא הושג` : 'נשאר כפי שהוא');
             else if (pr.type === 'market') action = `${pr.sameCompany ? 'מעבר מלא' : 'ניוד לגוף אחר'} ל"${rEsc(pr.track.name)}" (${rEsc(pr.track.parentCoName || '')}, חשיפה ${rPct(pr.track.eq)})${pr.picked ? ' - נבחר ידנית מטבלת השוק' : ' - המדורג ראשון בשוק ליעד ההחזקה'}${pr.sameCompany ? '' : '. לפני ניוד: לבדוק רציפות כיסוי ביטוחי, תקופת אכשרה ודמי ניהול בגוף הקולט'}`;
-            else if (pr.type === 'single') action = `מעבר מלא ל"${rEsc(pr.track.name)}" (חשיפה ${rPct(pr.track.eq)})`;
+            else if (pr.type === 'single') action = `מעבר מלא ל"${rEsc(pr.track.name)}" (חשיפה ${rPct(pr.track.eq)})${pr.singleOnly ? ' - מעבר מלא בלבד (שילוב מסלולים בקופה זו לא אומת בתקנון)' : ''}`;
             else if (pr.type === 'mix') {
                 const wh = Math.round(pr.wHigh * 1000) / 10, wl = Math.round(pr.wLow * 1000) / 10;
                 action = `שילוב באותה קרן/קופה: ${wh}% "${rEsc(pr.high.name)}" (${rPct(pr.high.eq)}) + ${wl}% "${rEsc(pr.low.name)}" (${rPct(pr.low.eq)}). בסיס רגולטורי: ${rEsc(pr.takanon.clause)} (${rEsc(pr.takanon.src)})${pr.ageClause ? '. בחירת מסלול טווח-גיל לא תואם: ' + rEsc(pr.ageClause) : ''}${pr.geoNote ? '. ' + rEsc(pr.geoNote) : ''}`;
@@ -183,12 +184,12 @@ function targetPlanSection(state, view, portfolio) {
             return `<tr><td>${hName}</td><td>${rPct(p.curEq)} ← ${pr && pr.type !== 'stay' ? rPct(pr.achieved ?? p.curEq) : rPct(p.curEq)}</td><td>${action}</td></tr>`;
         }).join('');
         const anyChange = plan.per.some(p => p.proposal && p.proposal.type !== 'stay');
-        body = `<div class="rep-note"><b>מימוש היעד בכל התיק: ${rPct(plan.achievedWholeEst)}* (אומדן כולל${Math.abs(plan.gap) >= 0.05 ? `, פער ${plan.gap > 0 ? '-' : '+'}${rPct(Math.abs(plan.gap))}` : ''}).</b> אי-ודאות התוצאה הכוללת: ${rPct(plan.wholeLo)}-${rPct(plan.wholeHi)} (אומדנים בקצוות טווח המחלקה שלהם${plan.noBasisVal > 0 ? ', חלק ללא-בסיס 0%-100%' : ''} - תרחיש היפותטי חסום להמחשה בלבד, אינו גבול מתמטי; חשיפה ממונפת עלולה לחרוג מ-100%). ${conditionalNote}${geoNoteRep} ${plan.officialOnly ? `מדד נתונים מאומתים בלבד (ללא אומדנים): החלק הזוהה ${rPct(plan.officialOnly.value / view.totalValue * 100)} מהתיק, חשיפה נוכחית ${rPct(plan.officialOnly.eq)}. ` : ''}${methodNote}</div>
+        body = (closest ? `<div class="rep-note"><b>היעד ${rPct(T)} אינו בר-השגה</b> (טווח אפשרי ${rPct(plan.loAll)} - ${rPct(plan.hiAll)}); התכנית מכוונת לנקודה הקרובה ביותר, ${rPct(plan.closestT)}.</div>` : '') + `<div class="rep-note"><b>מימוש היעד בכל התיק: ${rPct(plan.achievedWholeEst)}* (אומדן כולל${Math.abs(plan.gap) >= 0.05 ? `, פער ${plan.gap > 0 ? '-' : '+'}${rPct(Math.abs(plan.gap))}` : ''}).</b> אי-ודאות התוצאה הכוללת: ${rPct(plan.wholeLo)}-${rPct(plan.wholeHi)} (אומדנים בקצוות טווח המחלקה שלהם${plan.noBasisVal > 0 ? ', חלק ללא-בסיס 0%-100%' : ''} - תרחיש היפותטי חסום להמחשה בלבד, אינו גבול מתמטי; חשיפה ממונפת עלולה לחרוג מ-100%). ${conditionalNote}${geoNoteRep} ${plan.officialOnly ? `מדד נתונים מאומתים בלבד (ללא אומדנים): החלק הזוהה ${rPct(plan.officialOnly.value / view.totalValue * 100)} מהתיק, חשיפה נוכחית ${rPct(plan.officialOnly.eq)}. ` : ''}${methodNote}</div>
         <table class="rep-tbl rep-tbl-small"><tr><th>החזקה נבחרת</th><th>חשיפה נוכחית ← מוצעת</th><th>פעולה מוצעת</th></tr>${propRows}</table>
         ${anyChange ? `<div class="rep-note">${rEsc(SEVERANCE_CAVEAT)}</div>` : ''}${exclNote}`;
     }
     if (!body && !exclNote) return '';
-    if (plan.status !== 'ok') body += exclNote;
+    if (plan.status !== 'ok' && !closest) body += exclNote;
     return `<h3 class="rep-h3">יעד חשיפה מנייתית כולל (הדמיה לפי בחירת המשתמש)</h3>${body}`;
 }
 

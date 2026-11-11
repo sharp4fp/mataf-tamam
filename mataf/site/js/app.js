@@ -1616,6 +1616,7 @@ function renderHoldingTarget(a, h) {
     if (state.eligible[key] === false) return `<div class="card target-card muted-card">${head(`ההמלצה ליעד ${T}`)}<div class="muted small">סומנה "ללא שינוי" בחלק רמת הסיכון - החשיפה (${pct(inc.eq)}) נשארת, והיעד מתחלק בין שאר ההחזקות.</div></div>`;
     const plan = currentTargetPlan();
     const per = plan && plan.per ? plan.per.find(p => p.key === key) : null;
+    if (per && per.proposal && plan.status === 'infeasible') return `<div class="card target-card">${head(`ההמלצה ליעד ${T} - לא בר-השגה; מכוון לקרוב ביותר ${pct(plan.closestT)}`)}${renderTargetProposal(per)}${renderMarketTable(a, h, key, per)}</div>`;
     if (!per) return `<div class="card target-card muted-card">${head(`ההמלצה ליעד ${T}`)}<div class="muted small">${plan && plan.status === 'infeasible' ? 'היעד אינו בר-השגה בכלים הזמינים - פירוט בחלק רמת הסיכון.' : plan && plan.status === 'underdetermined' ? 'לא ניתן לקבוע תכנית יחידה (חלק מהתיק ללא בסיס חשיפה) - פירוט בחלק רמת הסיכון.' : 'אין הצעה להחזקה זו.'}</div></div>`;
     return `<div class="card target-card">${head(`ההמלצה ליעד ${T} (לפי בקר רמת הסיכון)`)}${renderTargetProposal(per)}${renderMarketTable(a, h, key, per)}</div>`;
 }
@@ -1648,10 +1649,29 @@ function renderMarketTable(a, h, key, per) {
     </details>`;
 }
 
+// מה חוסם יעד מחוץ לטווח - בשפה פשוטה, עם שמות ההחזקות
+function blockersText(plan) {
+    const B = plan && plan.blockers; if (!B || !view) return '';
+    const nameOf = (key) => { const h = key && view.holdings.find(x => trackKeyOf(x.account.account, x.track) === key); return h ? `${h.track.name} (${h.account.plan || ''})` : 'החזקה שאינה משתתפת'; };
+    const parts = [];
+    for (const f of B.frozen) parts.push(`${nameOf(f.key)} - ${fmt(f.bal)} ₪ בחשיפה ${pct(f.eq)}, לא משתתפת (לא מזוהה, הוחרגה או סומנה "ללא שינוי")`);
+    for (const l of B.atLimit) parts.push(`${nameOf(l.key)} - הגיעה לקצה האפשרי (${pct(l.limit)})`);
+    if (B.estVal) parts.push(`${fmt(B.estVal)} ₪ בהחזקות עם חשיפה באומדן בלבד (קפואות)`);
+    if (B.noBasisVal) parts.push(`${fmt(B.noBasisVal)} ₪ בהחזקות ללא נתון חשיפה`);
+    return parts.length ? 'מה חוסם: ' + parts.join('; ') + '.' : '';
+}
+
 // סרגל היעד בראש תיק הנכסים: אותו בקר כמו בחלק רמת הסיכון + סיכום ההמלצות
 function targetSummaryText() {
     const plan = currentTargetPlan();
-    if (!plan || plan.status !== 'ok') return plan && plan.status === 'infeasible' ? `היעד מחוץ לטווח שאפשר להשיג (${pct(plan.loAll)} - ${pct(plan.hiAll)}), כולל מסלולי פנסיה מאומתים מכל השוק. אפשר להזיז לתוך הטווח.` : plan && plan.status === 'underdetermined' ? 'לא ניתן לקבוע תכנית יחידה - חלק מהתיק ללא בסיס חשיפה.' : 'אין החזקות שמשתתפות ביעד.';
+    if (plan && plan.status === 'infeasible' && plan.per && plan.per.some(p => p.proposal)) {
+        const base = targetSummaryCore(plan);
+        return `היעד ${pct(state.targetEq)} מחוץ לטווח האפשרי (${pct(plan.loAll)} - ${pct(plan.hiAll)}). ההמלצות מכוונות לנקודה הקרובה ביותר, ${pct(plan.closestT)}: ${base} ${blockersText(plan)}`;
+    }
+    if (!plan || plan.status !== 'ok') return plan && plan.status === 'infeasible' ? `היעד מחוץ לטווח שאפשר להשיג (${pct(plan.loAll)} - ${pct(plan.hiAll)}). ${blockersText(plan)}` : plan && plan.status === 'underdetermined' ? 'לא ניתן לקבוע תכנית יחידה - חלק מהתיק ללא בסיס חשיפה.' : 'אין החזקות שמשתתפות ביעד.';
+    return targetSummaryCore(plan);
+}
+function targetSummaryCore(plan) {
     let changes = 0, moved = 0;
     for (const p of plan.per) {
         const pr = p.proposal;
@@ -1866,6 +1886,11 @@ export function renderTargetProposal(p) { // export: QA בלבד - הזרקת מ
             <div class="small">${pr.picked ? 'נבחר ידנית' : 'המסלול המדורג ראשון בשוק ליעד ההחזקה'}: "<b>${esc(t.name)}</b>" (${esc(t.parentCoName || '')}, חשיפה ${pct(t.eq)}) - ${pr.sameCompany ? 'באותו גוף, בלי ניוד בין גופים' : '<b>ניוד לגוף אחר</b>'}.</div>
             ${pr.sameCompany ? '' : `<div class="muted small">לפני ניוד בין גופים: לבדוק רציפות כיסוי ביטוחי (נכות ושאירים), תקופת אכשרה והחרגות מצב רפואי קודם בגוף הקולט, דמי הניהול שיוצעו בפועל, ועיתוי הניוד מול הפקדות שוטפות.</div>`}`;
     }
+    if (pr.type === 'single' && pr.singleOnly) {
+        return `<div class="track-line"><span>${name} <span class="muted small">(${acct})</span></span><b>${pct(p.curEq)} ← ${pct(pr.achieved)}</b></div>
+            <div class="small">מעבר מלא למסלול "<b>${esc(pr.track.name)}</b>" באותה קופה (חשיפה ${pct(pr.track.eq)}, שארפ רשמי ${pr.track.sharpe ?? '-'}, תשואה 3 שנים ${pr.track.y3 ?? '-'}%) - המסלול הקרוב ביותר ליעד ההחזקה (${pct(p.targetEq)}).${pr.cappedAt ? ` <span class="tag-miss">זה הקצה האפשרי בקופה (${pct(pr.rangeLo)}-${pct(pr.rangeHi)})</span>` : ''}</div>
+            <div class="muted small">מוצע מעבר מלא בלבד: שילוב של שני מסלולים בקופה הזו טרם אומת מול התקנון.${p.kind === 'hishtalmut' ? ' בקרן השתלמות אסור להעביר חלק מהכספים לחשבון או לקרן אחרת (תקנות העברת כספים, תקנה 9(ג)).' : ''}</div>`;
+    }
     if (pr.type === 'single') {
         const cap = pr.cappedAt === 'max' ? ` <span class="tag-miss">היעד מעל טווח הקרן (${pct(pr.rangeLo)}-${pct(pr.rangeHi)}) - מוצג המקסימום הזמין</span>` : pr.cappedAt === 'min' ? ` <span class="tag-miss">היעד מתחת לטווח הקרן (${pct(pr.rangeLo)}-${pct(pr.rangeHi)}) - מוצג המינימום הזמין</span>` : '';
         return `<div class="track-line"><span>${name} <span class="muted small">(${acct})</span></span><b>${pct(p.curEq)} ← ${pct(pr.achieved)}</b></div>
@@ -1908,6 +1933,9 @@ function renderTargetController() {
     let planHtml = '';
     if (plan && plan.status === 'underdetermined') {
         planHtml = `<div class="callout note-c"><b>לא ניתן לקבוע תכנית יחידה ליעד ${pct(T)}.</b> בתיק ${fmt(plan.noBasisVal)} ₪ ללא כל בסיס לחשיפה, והמערכת אינה מניחה עבורם מספר. התכנית תלויה בחלק זה (תרחיש היפותטי חסום 0%-100%, אינו גבול מתמטי - חשיפה ממונפת עלולה לחרוג): אם הוא 0% מניות - על ההחזקות הנבחרות להגיע ל-${pct(plan.b0.reqSel)} (טווח זמין בכל התיק ${pct(plan.b0.loAll)}-${pct(plan.b0.hiAll)}); אם הוא 100% - ל-${pct(plan.b100.reqSel)} (טווח ${pct(plan.b100.loAll)}-${pct(plan.b100.hiAll)}). הזינו הנחה מפורשת לחלק הלא-ידוע בשדה שלמטה לקבלת תכנית מותנית, או השלימו זיהוי של אותן החזקות.</div>`;
+    } else if (plan && plan.status === 'infeasible' && plan.per && plan.per.some(p => p.proposal)) {
+        planHtml = `<div class="callout note-c"><b>היעד ${pct(T)} לכל התיק אינו בר-השגה.</b> הטווח האפשרי: ${pct(plan.loAll)} - ${pct(plan.hiAll)}. ההצעות מתחת מכוונות לנקודה הקרובה ביותר, ${pct(plan.closestT)} (חשיפה מושגת ${pct(plan.achievedWholeEst)}*). ${esc(blockersText(plan))}</div>
+            <div class="card">${plan.per.map(p => renderTargetProposal(p)).join('')}<div class="muted small">${SEVERANCE_CAVEAT}</div></div>`;
     } else if (plan && plan.status === 'infeasible') {
         planHtml = `<div class="callout note-c"><b>היעד ${pct(T)} לכל התיק אינו בר-השגה בכלים שנבחרו.</b> הטווח הזמין בכל התיק (אומדנים בערכם המסומן): ${pct(plan.loAll)} - ${pct(plan.hiAll)}. כדי להרחיב את הטווח: סמנו החזקות נוספות, או בדקו חלופות מחוץ לקרנות המוחזקות (מעבר בין גופים - השוואות קיימות בתיק הנכסים, עם השלכות ניוד וזכויות).</div>`;
     } else if (plan && plan.status === 'ok') {
