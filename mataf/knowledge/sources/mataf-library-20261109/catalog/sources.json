@@ -5160,7 +5160,7 @@
     "supersedes": null,
     "retention_scope": "Publicly accessible official publication retained for reference. No redistribution licence determination.",
     "effective_scope": "הוראה/חוזר/עמדה של הממונה על שוק ההון. לבדוק בקודקס הרגולציה אם הוטמע, תוקן או בוטל.",
-    "verification": "הורד בדפדפן המובנה של הבעלים (אישור הבעלים 11.11.2026, 14:53 ו-15:15). SHA-256 זהה בדפדפן ובעותק שהועבר.",
+    "verification": "הורד בדפדפן המובנה של הבעלים (אישור הבעלים 11.11.2026, 14:53 ו-15:15). SHA-256 זהה בדפדפן ובעותק שהועבר. עמ' 22, 70 נבדקו מול תמונת העמוד ב-11.11.2026.",
     "pdf_path": "prepared-increments/cma-circulars-20261111/cma-20160929-regulation-1075-2.pdf",
     "text_path": "prepared-increments/cma-circulars-20261111/cma-20160929-regulation-1075-2.txt",
     "text_method": "pdftotext -q -layout (poppler), pages separated by form feed",
@@ -5170,9 +5170,12 @@
     "sha256": "a5996aeee8eaaf2df13a1ef88f67767dbbdd704f802a59f0c4f1bcfed5df2a99",
     "source_class": "original_official",
     "source_class_he": "מקור מקורי רשמי",
-    "text_class": "derived_auto_unchecked",
-    "checked_pages": [],
-    "text_class_he": "טקסט עזר בחילוץ אוטומטי, לא נבדק מול העמוד; ה-PDF מחייב"
+    "text_class": "derived_auto_partial_checked",
+    "checked_pages": [
+      22,
+      70
+    ],
+    "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
   },
   {
     "id": "cma-20160929-regulation-1080-1",

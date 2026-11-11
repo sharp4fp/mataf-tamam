@@ -4,6 +4,24 @@
  "note": "pdf_pages = עמודי ה-PDF. verified_how: image = נבדק מול תמונת העמוד; retained = המקור שמור בלבד.",
  "topics": [
   {
+   "id": "P11.01",
+   "title": "שאירים בתקנון - מסלול ברירת המחדל",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "cma-20160929-regulation-1075-2",
+     "section": "סעיף 24(א)(1) ונספח ב' - מסלול 75% נכות ו-100% שאירים; לגברים מגיל 47 שיעור השאירים יורד עד 42.5% (מגיל 61)",
+     "pdf_pages": [
+      22,
+      70
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  },
+  {
    "id": "P08.02",
    "title": "עלות שנתית צפויה",
    "previous_status": "לפי v1.3 / delta קודם",
@@ -158,7 +176,7 @@
    "id": "P10.01",
    "title": "אובדן כושר עבודה",
    "previous_status": "לפי v1.3 / delta קודם",
-   "new_status": "מקור שמור",
+   "new_status": "סעיף נבדק",
    "mappings": [
     {
      "source_id": "cma-20160929-regulation-1080-1",
@@ -180,6 +198,15 @@
      "pdf_pages": [],
      "verified_how": "retained",
      "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-20160929-regulation-1075-2",
+     "section": "סעיף 24(א)(1): 75% נכות בכל גיל הצטרפות",
+     "pdf_pages": [
+      22
+     ],
+     "verified_how": "image",
+     "limits": ""
     }
    ]
   },
