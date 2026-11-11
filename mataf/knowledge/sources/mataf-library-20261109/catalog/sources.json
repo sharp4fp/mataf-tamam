@@ -3000,6 +3000,123 @@
     "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
   },
   {
+    "id": "ita-monthly-deductions-booklet-2020",
+    "title": "לוח עזר לחישוב מס הכנסה ממשכורת ושכר עבודה - 2020",
+    "url": "https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/luachyanoar.pdf",
+    "publisher": "רשות המסים בישראל (gov.il)",
+    "edition": "שנת המס 2020",
+    "retained_on": "2026-11-11",
+    "library_packaged_on": "2026-11-11",
+    "last_live_revalidation": null,
+    "increment_metadata": "prepared-increments/engine-data-20261111/README-HE.md",
+    "supersedes": null,
+    "retention_scope": "Publicly accessible official publication retained for reference. No redistribution licence determination.",
+    "effective_scope": "מדרגות מס (עמ' 3), נקודת זיכוי, מס יסף ותקרות לשנת 2020. מוזן ל-tax-brackets-2020-2026.json.",
+    "verification": "הורד בדפדפן המובנה של הבעלים (אישור הבעלים 11.11.2026, 14:53 ו-15:15). SHA-256 זהה בדפדפן ובעותק שהועבר. עמ' 3 נבדקו מול תמונת העמוד ב-11.11.2026.",
+    "pdf_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2020.pdf",
+    "text_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2020.txt",
+    "text_method": "pdftotext -q -layout (poppler), pages separated by form feed",
+    "text_pages": 28,
+    "pdf_pages": 28,
+    "empty_text_pages": [],
+    "sha256": "3f1b20ff8fb3f2d401c768b8a4f30d1b15d92283ca64c9dfff1ccd90c28e2b0a",
+    "source_class": "original_official",
+    "source_class_he": "מקור מקורי רשמי",
+    "text_class": "derived_auto_partial_checked",
+    "checked_pages": [
+      3
+    ],
+    "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
+  },
+  {
+    "id": "ita-monthly-deductions-booklet-2021",
+    "title": "לוח עזר לחישוב מס הכנסה ממשכורת ושכר עבודה - 2021",
+    "url": "https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/itc_itc_necuyim2021-1.pdf",
+    "publisher": "רשות המסים בישראל (gov.il)",
+    "edition": "שנת המס 2021",
+    "retained_on": "2026-11-11",
+    "library_packaged_on": "2026-11-11",
+    "last_live_revalidation": null,
+    "increment_metadata": "prepared-increments/engine-data-20261111/README-HE.md",
+    "supersedes": null,
+    "retention_scope": "Publicly accessible official publication retained for reference. No redistribution licence determination.",
+    "effective_scope": "מדרגות מס (עמ' 3), נקודת זיכוי, מס יסף ותקרות לשנת 2021. מוזן ל-tax-brackets-2020-2026.json.",
+    "verification": "הורד בדפדפן המובנה של הבעלים (אישור הבעלים 11.11.2026, 14:53 ו-15:15). SHA-256 זהה בדפדפן ובעותק שהועבר. עמ' 3 נבדקו מול תמונת העמוד ב-11.11.2026.",
+    "pdf_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2021.pdf",
+    "text_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2021.txt",
+    "text_method": "pdftotext -q -layout (poppler), pages separated by form feed",
+    "text_pages": 33,
+    "pdf_pages": 33,
+    "empty_text_pages": [],
+    "sha256": "9aa5634c17302c961a922270d39759ea771c68a47b456eda47033fc47d10d94c",
+    "source_class": "original_official",
+    "source_class_he": "מקור מקורי רשמי",
+    "text_class": "derived_auto_partial_checked",
+    "checked_pages": [
+      3
+    ],
+    "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
+  },
+  {
+    "id": "ita-monthly-deductions-booklet-2022",
+    "title": "לוח עזר לחישוב מס הכנסה ממשכורת ושכר עבודה - 2022",
+    "url": "https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2022.pdf",
+    "publisher": "רשות המסים בישראל (gov.il)",
+    "edition": "שנת המס 2022",
+    "retained_on": "2026-11-11",
+    "library_packaged_on": "2026-11-11",
+    "last_live_revalidation": null,
+    "increment_metadata": "prepared-increments/engine-data-20261111/README-HE.md",
+    "supersedes": null,
+    "retention_scope": "Publicly accessible official publication retained for reference. No redistribution licence determination.",
+    "effective_scope": "מדרגות מס (עמ' 3), נקודת זיכוי, מס יסף ותקרות לשנת 2022. מוזן ל-tax-brackets-2020-2026.json.",
+    "verification": "הורד בדפדפן המובנה של הבעלים (אישור הבעלים 11.11.2026, 14:53 ו-15:15). SHA-256 זהה בדפדפן ובעותק שהועבר. עמ' 3 נבדקו מול תמונת העמוד ב-11.11.2026.",
+    "pdf_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2022.pdf",
+    "text_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2022.txt",
+    "text_method": "pdftotext -q -layout (poppler), pages separated by form feed",
+    "text_pages": 26,
+    "pdf_pages": 26,
+    "empty_text_pages": [],
+    "sha256": "de17dd4f44077cc3a456be279e8e92f03bf25c859f4e29d39675dfb742fdab0d",
+    "source_class": "original_official",
+    "source_class_he": "מקור מקורי רשמי",
+    "text_class": "derived_auto_partial_checked",
+    "checked_pages": [
+      3
+    ],
+    "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
+  },
+  {
+    "id": "cbs-complete-life-tables-2018-2022",
+    "title": "לוחות תמותה שלמים של ישראל 2018-2022 (פרסום 1945)",
+    "url": "https://www.lifetable.de/File/GetDocument/data\\ISR\\ISR000020182022CU1.pdf",
+    "publisher": "הלשכה המרכזית לסטטיסטיקה; עותק מ-Human Life-Table Database (מכון מקס פלנק)",
+    "edition": "פרסום 1945, יולי 2024; עמוד 1 הוא דף כריכה של המאגר",
+    "retained_on": "2026-11-11",
+    "library_packaged_on": "2026-11-11",
+    "last_live_revalidation": null,
+    "increment_metadata": "prepared-increments/engine-data-20261111/README-HE.md",
+    "supersedes": null,
+    "retention_scope": "Publicly accessible official publication retained for reference. No redistribution licence determination.",
+    "effective_scope": "לוח 1: גברים (עמ' 3-4); לוח 2: נשים (עמ' 5-6). qx, lx ו-ex לכל גיל 0-110+. מוזן ל-life-expectancy-cbs.json. הלוח השלם העדכני ביותר שאותר; לא אותר באתר הלמ\"ס עצמו (הדפים נטענים דינמית).",
+    "verification": "הורד בדפדפן המובנה של הבעלים (אישור הבעלים 11.11.2026, 14:53 ו-15:15). SHA-256 זהה בדפדפן ובעותק שהועבר. עמ' 4, 6 נבדקו מול תמונת העמוד ב-11.11.2026.",
+    "pdf_path": "prepared-increments/engine-data-20261111/cbs-complete-life-tables-2018-2022-pub1945.pdf",
+    "text_path": "prepared-increments/engine-data-20261111/cbs-complete-life-tables-2018-2022-pub1945.txt",
+    "text_method": "pdftotext -q -layout (poppler), pages separated by form feed",
+    "text_pages": 6,
+    "pdf_pages": 6,
+    "empty_text_pages": [],
+    "sha256": "b47b87747d5f09f0c27ea062447031bd9f31bbbca2922281e9e8845fd43c5e43",
+    "source_class": "original_official",
+    "source_class_he": "מקור מקורי רשמי",
+    "text_class": "derived_auto_partial_checked",
+    "checked_pages": [
+      4,
+      6
+    ],
+    "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
+  },
+  {
     "id": "ita-circular-2002-19-reform-provident-funds",
     "title": "חוזר מס הכנסה 19/2002 - הרפורמה במס הכנסה: קופות גמל, קרנות השתלמות ופוליסות לביטוח חיים",
     "url": "https://www.gov.il/BlobFolder/policy/income-tax-professional-inst-19-2002/he/Policy_IncomeTaxInst_hoz19-2002.pdf",
@@ -4202,7 +4319,7 @@
   },
   {
     "id": "cma-20220328-notice-2022-1-9-1-1",
-    "title": "הוראות הפיקוח על שירותים פיננסיים (ביטוח) (תנאים בחוזה ביטוח לפוליסת בריאות בסיסית), התשפ\"ב - 2022 - קובץ 1 מתוך 2 (Basic-Health-Policy-28-03-2022pdf.pdf)",
+    "title": "הוראות הפיקוח על שירותים פיננסיים (ביטוח) (תנאים בחוזה ביטוח לפוליסת בריאות בסיסית), התשפ\"ב - 2022 - קובץ 1 מתוך 2 (Basic Health Policy 28 03 2022pdf)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2022-1-9-1/he/Basic-Health-Policy-28-03-2022pdf.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 28.3.2022; מזהה באתר: notice-2022-1-9-1",
@@ -4229,7 +4346,7 @@
   },
   {
     "id": "cma-20220328-notice-2022-1-9-1-2",
-    "title": "הוראות הפיקוח על שירותים פיננסיים (ביטוח) (תנאים בחוזה ביטוח לפוליסת בריאות בסיסית), התשפ\"ב - 2022 - קובץ 2 מתוך 2 (attached-letter-28-03-2022pdf.pdf)",
+    "title": "הוראות הפיקוח על שירותים פיננסיים (ביטוח) (תנאים בחוזה ביטוח לפוליסת בריאות בסיסית), התשפ\"ב - 2022 - קובץ 2 מתוך 2 (attached letter 28 03 2022pdf)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2022-1-9-1/he/attached-letter-28-03-2022pdf.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 28.3.2022; מזהה באתר: notice-2022-1-9-1",
@@ -4501,7 +4618,7 @@
   },
   {
     "id": "cma-20231204-notice-2023-039-1",
-    "title": "תיקון החוזר המאוחד - שער 6 פרק 3 - ביטוח סיעודי - קובץ 1 מתוך 2 (ltc_regulation_final04122023_pdf.pdf)",
+    "title": "תיקון החוזר המאוחד - שער 6 פרק 3 - ביטוח סיעודי - קובץ 1 מתוך 2 (ltc regulation final04122023 pdf)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2023-039/he/ltc_regulation_final04122023_pdf.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 4.12.2023; מזהה באתר: notice-2023-039",
@@ -4528,7 +4645,7 @@
   },
   {
     "id": "cma-20231204-notice-2023-039-2",
-    "title": "תיקון החוזר המאוחד - שער 6 פרק 3 - ביטוח סיעודי - קובץ 2 מתוך 2 (Ria_final04122023_pdf.pdf)",
+    "title": "תיקון החוזר המאוחד - שער 6 פרק 3 - ביטוח סיעודי - קובץ 2 מתוך 2 (Ria final04122023 pdf)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2023-039/he/Ria_final04122023_pdf.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 4.12.2023; מזהה באתר: notice-2023-039",
@@ -4582,7 +4699,7 @@
   },
   {
     "id": "cma-20240825-notice-2024-097-1",
-    "title": "הוראות לעניין בחירת קופת גמל – תיקון - קובץ 1 מתוך 3 (Regulations_regarding_the_selection_of_%20a_provident_fund-u)",
+    "title": "הוראות לעניין בחירת קופת גמל – תיקון - קובץ 1 מתוך 3 (Regulations regarding the selection of a provident fund updating (pdf))",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2024-097/he/Regulations_regarding_the_selection_of_%20a_provident_fund-updating%20_(pdf).pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 25.8.2024; מזהה באתר: notice-2024-097",
@@ -4609,7 +4726,7 @@
   },
   {
     "id": "cma-20240825-notice-2024-097-2",
-    "title": "הוראות לעניין בחירת קופת גמל – תיקון - קובץ 2 מתוך 3 (procedure_for_determining_selected_funds(pdf).pdf)",
+    "title": "הוראות לעניין בחירת קופת גמל – תיקון - קובץ 2 מתוך 3 (procedure for determining selected funds(pdf))",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2024-097/he/procedure_for_determining_selected_funds(pdf).pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 25.8.2024; מזהה באתר: notice-2024-097",
@@ -4636,7 +4753,7 @@
   },
   {
     "id": "cma-20240825-notice-2024-097-3",
-    "title": "הוראות לעניין בחירת קופת גמל – תיקון - קובץ 3 מתוך 3 (regulatory_effects_(ria)_amendment_of_regarding_the_selectio)",
+    "title": "הוראות לעניין בחירת קופת גמל – תיקון - קובץ 3 מתוך 3 (regulatory effects (ria) amendment of regarding the selection of a pro)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice-2024-097/he/regulatory_effects_(ria)_amendment_of_regarding_the_selection_of_a_provident_fund-amendment(pdf).pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 25.8.2024; מזהה באתר: notice-2024-097",
@@ -4744,7 +4861,7 @@
   },
   {
     "id": "cma-20251105-notice_2025_50-1",
-    "title": "הבהרה לעניין הליך משיכת כספים מקופת גמל – טיוטה - קובץ 1 מתוך 2 (clarification-draft-2025-2388-5-11-pdf.pdf)",
+    "title": "הבהרה לעניין הליך משיכת כספים מקופת גמל – טיוטה - קובץ 1 מתוך 2 (clarification draft 2025 2388 5 11 pdf)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice_2025_50/he/clarification-draft-2025-2388-5-11-pdf.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 5.11.2025; מזהה באתר: notice_2025_50",
@@ -4771,7 +4888,7 @@
   },
   {
     "id": "cma-20251105-notice_2025_50-2",
-    "title": "הבהרה לעניין הליך משיכת כספים מקופת גמל – טיוטה - קובץ 2 מתוך 2 (al-clarification-draft-5-11-pdf.pdf)",
+    "title": "הבהרה לעניין הליך משיכת כספים מקופת גמל – טיוטה - קובץ 2 מתוך 2 (al clarification draft 5 11 pdf)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/notice_2025_50/he/al-clarification-draft-5-11-pdf.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 5.11.2025; מזהה באתר: notice_2025_50",
@@ -4879,7 +4996,7 @@
   },
   {
     "id": "cma-20210613-reg_2021-9-8-1",
-    "title": "אופן הפקדת תשלומים לקופת גמל - עדכון 13.6.2021 - קובץ 1 מתוך 2 (%D7%90%D7%95%D7%A4%D7%9F%20%D7%94%D7%A4%D7%A7%D7%93%D7%AA%20)",
+    "title": "אופן הפקדת תשלומים לקופת גמל - עדכון 13.6.2021 - קובץ 1 מתוך 2 (אופן הפקדת תשלומים לקופת גמל עדכון עקוב אחרי שינויים)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/reg_2021-9-8/he/%D7%90%D7%95%D7%A4%D7%9F%20%D7%94%D7%A4%D7%A7%D7%93%D7%AA%20%D7%AA%D7%A9%D7%9C%D7%95%D7%9E%D7%99%D7%9D%20%D7%9C%D7%A7%D7%95%D7%A4%D7%AA%20%D7%92%D7%9E%D7%9C%20-%20%D7%A2%D7%93%D7%9B%D7%95%D7%9F%20-%20%D7%A2%D7%A7%D7%95%D7%91%20%D7%90%D7%97%D7%A8%D7%99%20%D7%A9%D7%99%D7%A0%D7%95%D7%99%D7%99%D7%9D.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 13.6.2021; מזהה באתר: reg_2021-9-8",
@@ -4906,7 +5023,7 @@
   },
   {
     "id": "cma-20210613-reg_2021-9-8-2",
-    "title": "אופן הפקדת תשלומים לקופת גמל - עדכון 13.6.2021 - קובץ 2 מתוך 2 (%D7%90%D7%95%D7%A4%D7%9F%20%D7%94%D7%A4%D7%A7%D7%93%D7%AA%20)",
+    "title": "אופן הפקדת תשלומים לקופת גמל - עדכון 13.6.2021 - קובץ 2 מתוך 2 (אופן הפקדת תשלומים לקופת גמל עדכון)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/reg_2021-9-8/he/%D7%90%D7%95%D7%A4%D7%9F%20%D7%94%D7%A4%D7%A7%D7%93%D7%AA%20%D7%AA%D7%A9%D7%9C%D7%95%D7%9E%D7%99%D7%9D%20%D7%9C%D7%A7%D7%95%D7%A4%D7%AA%20%D7%92%D7%9E%D7%9C%20-%20%D7%A2%D7%93%D7%9B%D7%95%D7%9F.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 13.6.2021; מזהה באתר: reg_2021-9-8",
@@ -4987,7 +5104,7 @@
   },
   {
     "id": "cma-20161106-regulation-1056-1",
-    "title": "קופת גמל להשקעה לחיסכון ארוך טווח לילד - קובץ 1 מתוך 2 (regulation_h2016-9-20.pdf)",
+    "title": "קופת גמל להשקעה לחיסכון ארוך טווח לילד - קובץ 1 מתוך 2 (regulation h2016 9 20)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1056/he/regulation_h2016-9-20.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 6.11.2016; מזהה באתר: regulation-1056",
@@ -5014,7 +5131,7 @@
   },
   {
     "id": "cma-20161106-regulation-1056-2",
-    "title": "קופת גמל להשקעה לחיסכון ארוך טווח לילד - קובץ 2 מתוך 2 (regulation_h2016-9-20a.pdf)",
+    "title": "קופת גמל להשקעה לחיסכון ארוך טווח לילד - קובץ 2 מתוך 2 (regulation h2016 9 20a)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1056/he/regulation_h2016-9-20a.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 6.11.2016; מזהה באתר: regulation-1056",
@@ -5041,7 +5158,7 @@
   },
   {
     "id": "cma-20160929-regulation-1071-1",
-    "title": "הצטרפות לקרן פנסיה או לקופת גמל - קובץ 1 מתוך 4 (regulation_h_2016-9-19-appendix1.pdf)",
+    "title": "הצטרפות לקרן פנסיה או לקופת גמל - קובץ 1 מתוך 4 (regulation h 2016 9 19 appendix1)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1071/he/regulation_h_2016-9-19-appendix1.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 29.9.2016; מזהה באתר: regulation-1071",
@@ -5068,7 +5185,7 @@
   },
   {
     "id": "cma-20160929-regulation-1071-2",
-    "title": "הצטרפות לקרן פנסיה או לקופת גמל - קובץ 2 מתוך 4 (regulation_h_2016-9-19-appendix3.pdf)",
+    "title": "הצטרפות לקרן פנסיה או לקופת גמל - קובץ 2 מתוך 4 (regulation h 2016 9 19 appendix3)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1071/he/regulation_h_2016-9-19-appendix3.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 29.9.2016; מזהה באתר: regulation-1071",
@@ -5095,7 +5212,7 @@
   },
   {
     "id": "cma-20160929-regulation-1071-3",
-    "title": "הצטרפות לקרן פנסיה או לקופת גמל - קובץ 3 מתוך 4 (regulation_h_2016-9-19.pdf)",
+    "title": "הצטרפות לקרן פנסיה או לקופת גמל - קובץ 3 מתוך 4 (regulation h 2016 9 19)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1071/he/regulation_h_2016-9-19.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 29.9.2016; מזהה באתר: regulation-1071",
@@ -5122,7 +5239,7 @@
   },
   {
     "id": "cma-20160929-regulation-1071-4",
-    "title": "הצטרפות לקרן פנסיה או לקופת גמל - קובץ 4 מתוך 4 (regulation_h_2016-9-19-appendix2.pdf)",
+    "title": "הצטרפות לקרן פנסיה או לקופת גמל - קובץ 4 מתוך 4 (regulation h 2016 9 19 appendix2)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1071/he/regulation_h_2016-9-19-appendix2.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 29.9.2016; מזהה באתר: regulation-1071",
@@ -5176,7 +5293,7 @@
   },
   {
     "id": "cma-20160929-regulation-1075-1",
-    "title": "הוראות לעניין זכויות וחובות עמיתים בתקנון קרן פנסיה חדשה מקיפה - קובץ 1 מתוך 2 (regulation_h_2016-3-4.pdf)",
+    "title": "הוראות לעניין זכויות וחובות עמיתים בתקנון קרן פנסיה חדשה מקיפה - קובץ 1 מתוך 2 (regulation h 2016 3 4)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1075/he/regulation_h_2016-3-4.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 29.9.2016; מזהה באתר: regulation-1075",
@@ -5203,7 +5320,7 @@
   },
   {
     "id": "cma-20160929-regulation-1075-2",
-    "title": "הוראות לעניין זכויות וחובות עמיתים בתקנון קרן פנסיה חדשה מקיפה - קובץ 2 מתוך 2 (regulation_h_2016-3-4-appendixb.pdf)",
+    "title": "הוראות לעניין זכויות וחובות עמיתים בתקנון קרן פנסיה חדשה מקיפה - קובץ 2 מתוך 2 (regulation h 2016 3 4 appendixb)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1075/he/regulation_h_2016-3-4-appendixb.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 29.9.2016; מזהה באתר: regulation-1075",
@@ -5368,7 +5485,7 @@
   },
   {
     "id": "cma-20160609-regulation-1112-1",
-    "title": "צירוף לביטוח - קובץ 1 מתוך 2 (regulation_h_2016-1-7-appendix.pdf)",
+    "title": "צירוף לביטוח - קובץ 1 מתוך 2 (regulation h 2016 1 7 appendix)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1112/he/regulation_h_2016-1-7-appendix.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 9.6.2016; מזהה באתר: regulation-1112",
@@ -5395,7 +5512,7 @@
   },
   {
     "id": "cma-20160609-regulation-1112-2",
-    "title": "צירוף לביטוח - קובץ 2 מתוך 2 (regulation_h_2016-1-7.pdf)",
+    "title": "צירוף לביטוח - קובץ 2 מתוך 2 (regulation h 2016 1 7)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1112/he/regulation_h_2016-1-7.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 9.6.2016; מזהה באתר: regulation-1112",
@@ -5422,7 +5539,7 @@
   },
   {
     "id": "cma-20160313-regulation-1120-1",
-    "title": "הוראות לעניין בחירת קופת גמל - קובץ 1 מתוך 2 (regulation_h_2016-9-6.pdf)",
+    "title": "הוראות לעניין בחירת קופת גמל - קובץ 1 מתוך 2 (regulation h 2016 9 6)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1120/he/regulation_h_2016-9-6.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 13.3.2016; מזהה באתר: regulation-1120",
@@ -5449,7 +5566,7 @@
   },
   {
     "id": "cma-20160313-regulation-1120-2",
-    "title": "הוראות לעניין בחירת קופת גמל - קובץ 2 מתוך 2 (regulation_h_2016-9-6_procedure.pdf)",
+    "title": "הוראות לעניין בחירת קופת גמל - קובץ 2 מתוך 2 (regulation h 2016 9 6 procedure)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1120/he/regulation_h_2016-9-6_procedure.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 13.3.2016; מזהה באתר: regulation-1120",
@@ -5476,7 +5593,7 @@
   },
   {
     "id": "cma-20160125-regulation-1138-1",
-    "title": "החוזר המאוחד - הוראות לעניין תכניות ופוליסות ביטוח בריאות - קובץ 1 מתוך 4 (regulation_h_hozermeuhad_briut_nilve.pdf)",
+    "title": "החוזר המאוחד - הוראות לעניין תכניות ופוליסות ביטוח בריאות - קובץ 1 מתוך 4 (regulation h hozermeuhad briut nilve)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1138/he/regulation_h_hozermeuhad_briut_nilve.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 25.1.2016; מזהה באתר: regulation-1138",
@@ -5503,7 +5620,7 @@
   },
   {
     "id": "cma-20160125-regulation-1138-2",
-    "title": "החוזר המאוחד - הוראות לעניין תכניות ופוליסות ביטוח בריאות - קובץ 2 מתוך 4 (regulation_h_hozermeuhad_briut_6-3.pdf)",
+    "title": "החוזר המאוחד - הוראות לעניין תכניות ופוליסות ביטוח בריאות - קובץ 2 מתוך 4 (regulation h hozermeuhad briut 6 3)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1138/he/regulation_h_hozermeuhad_briut_6-3.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 25.1.2016; מזהה באתר: regulation-1138",
@@ -5530,7 +5647,7 @@
   },
   {
     "id": "cma-20160125-regulation-1138-3",
-    "title": "החוזר המאוחד - הוראות לעניין תכניות ופוליסות ביטוח בריאות - קובץ 3 מתוך 4 (regulation_h_hozermeuhad_briut_appendixa.pdf)",
+    "title": "החוזר המאוחד - הוראות לעניין תכניות ופוליסות ביטוח בריאות - קובץ 3 מתוך 4 (regulation h hozermeuhad briut appendixa)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1138/he/regulation_h_hozermeuhad_briut_appendixa.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 25.1.2016; מזהה באתר: regulation-1138",
@@ -5557,7 +5674,7 @@
   },
   {
     "id": "cma-20160125-regulation-1138-4",
-    "title": "החוזר המאוחד - הוראות לעניין תכניות ופוליסות ביטוח בריאות - קובץ 4 מתוך 4 (regulation_h_hozermeuhad_briut_appendixb.pdf)",
+    "title": "החוזר המאוחד - הוראות לעניין תכניות ופוליסות ביטוח בריאות - קובץ 4 מתוך 4 (regulation h hozermeuhad briut appendixb)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1138/he/regulation_h_hozermeuhad_briut_appendixb.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 25.1.2016; מזהה באתר: regulation-1138",
@@ -5665,7 +5782,7 @@
   },
   {
     "id": "cma-20150916-regulation-1175-2",
-    "title": "מסלולי השקעה בקופות גמל - קובץ 1 מתוך 3 (regulation_2015-9-29a.pdf)",
+    "title": "מסלולי השקעה בקופות גמל - קובץ 1 מתוך 3 (regulation 2015 9 29a)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1175/he/regulation_2015-9-29a.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 16.9.2015; מזהה באתר: regulation-1175",
@@ -5692,7 +5809,7 @@
   },
   {
     "id": "cma-20150916-regulation-1175-3",
-    "title": "מסלולי השקעה בקופות גמל - קובץ 2 מתוך 3 (regulation_h_2015-9-7_c.pdf)",
+    "title": "מסלולי השקעה בקופות גמל - קובץ 2 מתוך 3 (regulation h 2015 9 7 c)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1175/he/regulation_h_2015-9-7_c.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 16.9.2015; מזהה באתר: regulation-1175",
@@ -5719,7 +5836,7 @@
   },
   {
     "id": "cma-20150916-regulation-1175-4",
-    "title": "מסלולי השקעה בקופות גמל - קובץ 3 מתוך 3 (regulation_2015-9-29.pdf)",
+    "title": "מסלולי השקעה בקופות גמל - קובץ 3 מתוך 3 (regulation 2015 9 29)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1175/he/regulation_2015-9-29.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 16.9.2015; מזהה באתר: regulation-1175",
@@ -6016,7 +6133,7 @@
   },
   {
     "id": "cma-20121129-regulation-1720-1",
-    "title": "מקדמי קצבה המגלמים הבטחת תוחלת חיים - קובץ 1 מתוך 2 (regulation_2012-1-5.pdf)",
+    "title": "מקדמי קצבה המגלמים הבטחת תוחלת חיים - קובץ 1 מתוך 2 (regulation 2012 1 5)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1720/he/regulation_2012-1-5.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 29.11.2012; מזהה באתר: regulation-1720",
@@ -6043,7 +6160,7 @@
   },
   {
     "id": "cma-20121129-regulation-1720-2",
-    "title": "מקדמי קצבה המגלמים הבטחת תוחלת חיים - קובץ 2 מתוך 2 (regulation_2012-1-5b.pdf)",
+    "title": "מקדמי קצבה המגלמים הבטחת תוחלת חיים - קובץ 2 מתוך 2 (regulation 2012 1 5b)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1720/he/regulation_2012-1-5b.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 29.11.2012; מזהה באתר: regulation-1720",
@@ -6097,7 +6214,7 @@
   },
   {
     "id": "cma-20110808-regulation-1752-1",
-    "title": "שירות ללקוחות גופים מוסדיים - קובץ 1 מתוך 2 (regulation_2011-9-07.pdf)",
+    "title": "שירות ללקוחות גופים מוסדיים - קובץ 1 מתוך 2 (regulation 2011 9 07)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1752/he/regulation_2011-9-07.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 8.8.2011; מזהה באתר: regulation-1752",
@@ -6124,7 +6241,7 @@
   },
   {
     "id": "cma-20110808-regulation-1752-2",
-    "title": "שירות ללקוחות גופים מוסדיים - קובץ 2 מתוך 2 (regulation_2011-9-07a.pdf)",
+    "title": "שירות ללקוחות גופים מוסדיים - קובץ 2 מתוך 2 (regulation 2011 9 07a)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-1752/he/regulation_2011-9-07a.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 8.8.2011; מזהה באתר: regulation-1752",
@@ -6448,7 +6565,7 @@
   },
   {
     "id": "cma-20200303-regulation-530-1",
-    "title": "העברת כספים בין קופות גמל – תיקון (העברת כספים מקופת גמל מרכזית לפיצויים – תיקון) - קובץ 1 מתוך 2 (regulation_h_2020-9-2.pdf)",
+    "title": "העברת כספים בין קופות גמל – תיקון (העברת כספים מקופת גמל מרכזית לפיצויים – תיקון) - קובץ 1 מתוך 2 (regulation h 2020 9 2)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-530/he/regulation_h_2020-9-2.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 3.3.2020; מזהה באתר: regulation-530",
@@ -6475,7 +6592,7 @@
   },
   {
     "id": "cma-20200303-regulation-530-2",
-    "title": "העברת כספים בין קופות גמל – תיקון (העברת כספים מקופת גמל מרכזית לפיצויים – תיקון) - קובץ 2 מתוך 2 (regulation_h_2020-9-2-clean.pdf)",
+    "title": "העברת כספים בין קופות גמל – תיקון (העברת כספים מקופת גמל מרכזית לפיצויים – תיקון) - קובץ 2 מתוך 2 (regulation h 2020 9 2 clean)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-530/he/regulation_h_2020-9-2-clean.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 3.3.2020; מזהה באתר: regulation-530",
@@ -6583,7 +6700,7 @@
   },
   {
     "id": "cma-20180826-regulation-700-1",
-    "title": "חוזר הנהגת תכניות ביטוח ותקנון קופת גמל - קובץ 1 מתוך 2 (regulation_h_2018-9-29.pdf)",
+    "title": "חוזר הנהגת תכניות ביטוח ותקנון קופת גמל - קובץ 1 מתוך 2 (regulation h 2018 9 29)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-700/he/regulation_h_2018-9-29.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 26.8.2018; מזהה באתר: regulation-700",
@@ -6610,7 +6727,7 @@
   },
   {
     "id": "cma-20180826-regulation-700-2",
-    "title": "חוזר הנהגת תכניות ביטוח ותקנון קופת גמל - קובץ 2 מתוך 2 (regulation_h_2018-9-29-appendixa.pdf)",
+    "title": "חוזר הנהגת תכניות ביטוח ותקנון קופת גמל - קובץ 2 מתוך 2 (regulation h 2018 9 29 appendixa)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-700/he/regulation_h_2018-9-29-appendixa.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 26.8.2018; מזהה באתר: regulation-700",
@@ -6637,7 +6754,7 @@
   },
   {
     "id": "cma-20180718-regulation-704-1",
-    "title": "מסמך הנמקה - תיקון - קובץ 1 מתוך 2 (regulation_h_2018-10-11.pdf)",
+    "title": "מסמך הנמקה - תיקון - קובץ 1 מתוך 2 (regulation h 2018 10 11)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-704/he/regulation_h_2018-10-11.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 18.7.2018; מזהה באתר: regulation-704",
@@ -6664,7 +6781,7 @@
   },
   {
     "id": "cma-20180718-regulation-704-2",
-    "title": "מסמך הנמקה - תיקון - קובץ 2 מתוך 2 (regulation_h_2018-10-11-changes.pdf)",
+    "title": "מסמך הנמקה - תיקון - קובץ 2 מתוך 2 (regulation h 2018 10 11 changes)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-704/he/regulation_h_2018-10-11-changes.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 18.7.2018; מזהה באתר: regulation-704",
@@ -6799,7 +6916,7 @@
   },
   {
     "id": "cma-20171001-regulation-986-1",
-    "title": "תיקון החוזר המאוחד לעניין מדידת התחייבויות – דרך חישוב מאזן אקטוארי ומקדמי תקנון של קרן פנסיה וקופת גמל מרכזית לקצבה - קובץ 1 מתוך 5 (regulation_h_2017-3-6-pp.pdf)",
+    "title": "תיקון החוזר המאוחד לעניין מדידת התחייבויות – דרך חישוב מאזן אקטוארי ומקדמי תקנון של קרן פנסיה וקופת גמל מרכזית לקצבה - קובץ 1 מתוך 5 (regulation h 2017 3 6 pp)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-986/he/regulation_h_2017-3-6-pp.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 1.10.2017; מזהה באתר: regulation-986",
@@ -6826,7 +6943,7 @@
   },
   {
     "id": "cma-20171001-regulation-986-2",
-    "title": "תיקון החוזר המאוחד לעניין מדידת התחייבויות – דרך חישוב מאזן אקטוארי ומקדמי תקנון של קרן פנסיה וקופת גמל מרכזית לקצבה - קובץ 2 מתוך 5 (regulation_h_2017-3-6.pdf)",
+    "title": "תיקון החוזר המאוחד לעניין מדידת התחייבויות – דרך חישוב מאזן אקטוארי ומקדמי תקנון של קרן פנסיה וקופת גמל מרכזית לקצבה - קובץ 2 מתוך 5 (regulation h 2017 3 6)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-986/he/regulation_h_2017-3-6.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 1.10.2017; מזהה באתר: regulation-986",
@@ -6853,7 +6970,7 @@
   },
   {
     "id": "cma-20171001-regulation-986-3",
-    "title": "תיקון החוזר המאוחד לעניין מדידת התחייבויות – דרך חישוב מאזן אקטוארי ומקדמי תקנון של קרן פנסיה וקופת גמל מרכזית לקצבה - קובץ 3 מתוך 5 (regulation_h_2017-3-6-appendix.pdf)",
+    "title": "תיקון החוזר המאוחד לעניין מדידת התחייבויות – דרך חישוב מאזן אקטוארי ומקדמי תקנון של קרן פנסיה וקופת גמל מרכזית לקצבה - קובץ 3 מתוך 5 (regulation h 2017 3 6 appendix)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-986/he/regulation_h_2017-3-6-appendix.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 1.10.2017; מזהה באתר: regulation-986",
@@ -6880,7 +6997,7 @@
   },
   {
     "id": "cma-20171001-regulation-986-4",
-    "title": "תיקון החוזר המאוחד לעניין מדידת התחייבויות – דרך חישוב מאזן אקטוארי ומקדמי תקנון של קרן פנסיה וקופת גמל מרכזית לקצבה - קובץ 4 מתוך 5 (regulation_h_2017-3-6-fixgate5.pdf)",
+    "title": "תיקון החוזר המאוחד לעניין מדידת התחייבויות – דרך חישוב מאזן אקטוארי ומקדמי תקנון של קרן פנסיה וקופת גמל מרכזית לקצבה - קובץ 4 מתוך 5 (regulation h 2017 3 6 fixgate5)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-986/he/regulation_h_2017-3-6-fixgate5.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 1.10.2017; מזהה באתר: regulation-986",
@@ -6907,7 +7024,7 @@
   },
   {
     "id": "cma-20171001-regulation-986-5",
-    "title": "תיקון החוזר המאוחד לעניין מדידת התחייבויות – דרך חישוב מאזן אקטוארי ומקדמי תקנון של קרן פנסיה וקופת גמל מרכזית לקצבה - קובץ 5 מתוך 5 (regulation_h_2017-3-6-fixgate5-appendix.pdf)",
+    "title": "תיקון החוזר המאוחד לעניין מדידת התחייבויות – דרך חישוב מאזן אקטוארי ומקדמי תקנון של קרן פנסיה וקופת גמל מרכזית לקצבה - קובץ 5 מתוך 5 (regulation h 2017 3 6 fixgate5 appendix)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-986/he/regulation_h_2017-3-6-fixgate5-appendix.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 1.10.2017; מזהה באתר: regulation-986",
@@ -6934,7 +7051,7 @@
   },
   {
     "id": "cma-20171001-regulation-988-1",
-    "title": "העברת כספים מקופת גמל מרכזית לפיצויים - קובץ 1 מתוך 2 (regulation_h_2017-9-16.pdf)",
+    "title": "העברת כספים מקופת גמל מרכזית לפיצויים - קובץ 1 מתוך 2 (regulation h 2017 9 16)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-988/he/regulation_h_2017-9-16.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 1.10.2017; מזהה באתר: regulation-988",
@@ -6961,7 +7078,7 @@
   },
   {
     "id": "cma-20171001-regulation-988-2",
-    "title": "העברת כספים מקופת גמל מרכזית לפיצויים - קובץ 2 מתוך 2 (regulation_h_2017-9-17.pdf)",
+    "title": "העברת כספים מקופת גמל מרכזית לפיצויים - קובץ 2 מתוך 2 (regulation h 2017 9 17)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/regulation-988/he/regulation_h_2017-9-17.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 1.10.2017; מזהה באתר: regulation-988",
@@ -7285,7 +7402,7 @@
   },
   {
     "id": "cma-20130827-w8046-1",
-    "title": "הכרעה עקרונית לעניין העלאת דמי ניהול ללא הודעה מוקדמת - קובץ 1 מתוך 5 (regulation_22013-4-1.pdf)",
+    "title": "הכרעה עקרונית לעניין העלאת דמי ניהול ללא הודעה מוקדמת - קובץ 1 מתוך 5 (regulation 22013 4 1)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/w8046/he/regulation_22013-4-1.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 27.8.2013; מזהה באתר: w8046",
@@ -7312,7 +7429,7 @@
   },
   {
     "id": "cma-20130827-w8046-2",
-    "title": "הכרעה עקרונית לעניין העלאת דמי ניהול ללא הודעה מוקדמת - קובץ 2 מתוך 5 (regulation_2013-4-3.pdf)",
+    "title": "הכרעה עקרונית לעניין העלאת דמי ניהול ללא הודעה מוקדמת - קובץ 2 מתוך 5 (regulation 2013 4 3)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/w8046/he/regulation_2013-4-3.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 27.8.2013; מזהה באתר: w8046",
@@ -7339,7 +7456,7 @@
   },
   {
     "id": "cma-20130827-w8046-3",
-    "title": "הכרעה עקרונית לעניין העלאת דמי ניהול ללא הודעה מוקדמת - קובץ 3 מתוך 5 (regulation_2013-4-1a.pdf)",
+    "title": "הכרעה עקרונית לעניין העלאת דמי ניהול ללא הודעה מוקדמת - קובץ 3 מתוך 5 (regulation 2013 4 1a)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/w8046/he/regulation_2013-4-1a.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 27.8.2013; מזהה באתר: w8046",
@@ -7366,7 +7483,7 @@
   },
   {
     "id": "cma-20130827-w8046-4",
-    "title": "הכרעה עקרונית לעניין העלאת דמי ניהול ללא הודעה מוקדמת - קובץ 4 מתוך 5 (regulation_2014-4-1_fix.pdf)",
+    "title": "הכרעה עקרונית לעניין העלאת דמי ניהול ללא הודעה מוקדמת - קובץ 4 מתוך 5 (regulation 2014 4 1 fix)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/w8046/he/regulation_2014-4-1_fix.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 27.8.2013; מזהה באתר: w8046",
@@ -7393,7 +7510,7 @@
   },
   {
     "id": "cma-20130827-w8046-5",
-    "title": "הכרעה עקרונית לעניין העלאת דמי ניהול ללא הודעה מוקדמת - קובץ 5 מתוך 5 (regulation_2013-4-2.pdf)",
+    "title": "הכרעה עקרונית לעניין העלאת דמי ניהול ללא הודעה מוקדמת - קובץ 5 מתוך 5 (regulation 2013 4 2)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/w8046/he/regulation_2013-4-2.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם 27.8.2013; מזהה באתר: w8046",
@@ -7501,7 +7618,7 @@
   },
   {
     "id": "cma-nodate-w9036-1",
-    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 1 מתוך 6 (regulation_2011-33.pdf)",
+    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 1 מתוך 6 (regulation 2011 33)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/w9036/he/regulation_2011-33.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם ; מזהה באתר: w9036",
@@ -7528,7 +7645,7 @@
   },
   {
     "id": "cma-nodate-w9036-2",
-    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 2 מתוך 6 (regulation_2011-33b.pdf)",
+    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 2 מתוך 6 (regulation 2011 33b)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/w9036/he/regulation_2011-33b.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם ; מזהה באתר: w9036",
@@ -7555,7 +7672,7 @@
   },
   {
     "id": "cma-nodate-w9036-3",
-    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 3 מתוך 6 (regulation_2011-33a.pdf)",
+    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 3 מתוך 6 (regulation 2011 33a)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/w9036/he/regulation_2011-33a.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם ; מזהה באתר: w9036",
@@ -7582,7 +7699,7 @@
   },
   {
     "id": "cma-nodate-w9036-4",
-    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 4 מתוך 6 (regulation_2011-33c.pdf)",
+    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 4 מתוך 6 (regulation 2011 33c)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/w9036/he/regulation_2011-33c.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם ; מזהה באתר: w9036",
@@ -7609,7 +7726,7 @@
   },
   {
     "id": "cma-nodate-w9036-5",
-    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 5 מתוך 6 (regulation_2011-33d.pdf)",
+    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 5 מתוך 6 (regulation 2011 33d)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/w9036/he/regulation_2011-33d.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם ; מזהה באתר: w9036",
@@ -7636,7 +7753,7 @@
   },
   {
     "id": "cma-nodate-w9036-6",
-    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 6 מתוך 6 (regulation_2011-33e.pdf)",
+    "title": "הכרעה עקרונית לעניין פיצוי בשל איחור במשיכה של כספים או בשל איחור בהעברה של כספים בין קופות גמל או בין מסלולי השקעה, חוזר הכרעות עקרוניות - פיצוי בגין איחור במשיכה או בהעברת כספים בקופות גמל - קובץ 6 מתוך 6 (regulation 2011 33e)",
     "url": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/w9036/he/regulation_2011-33e.pdf",
     "publisher": "רשות שוק ההון, ביטוח וחיסכון (gov.il)",
     "edition": "פורסם ; מזהה באתר: w9036",
@@ -8214,123 +8331,6 @@
     "text_class": "derived_auto_partial_checked",
     "checked_pages": [
       20
-    ],
-    "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
-  },
-  {
-    "id": "ita-monthly-deductions-booklet-2020",
-    "title": "לוח עזר לחישוב מס הכנסה ממשכורת ושכר עבודה - 2020",
-    "url": "https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/luachyanoar.pdf",
-    "publisher": "רשות המסים בישראל (gov.il)",
-    "edition": "שנת המס 2020",
-    "retained_on": "2026-11-11",
-    "library_packaged_on": "2026-11-11",
-    "last_live_revalidation": null,
-    "increment_metadata": "prepared-increments/engine-data-20261111/README-HE.md",
-    "supersedes": null,
-    "retention_scope": "Publicly accessible official publication retained for reference. No redistribution licence determination.",
-    "effective_scope": "מדרגות מס (עמ' 3), נקודת זיכוי, מס יסף ותקרות לשנת 2020. מוזן ל-tax-brackets-2020-2026.json.",
-    "verification": "הורד בדפדפן המובנה של הבעלים (אישור הבעלים 11.11.2026, 14:53 ו-15:15). SHA-256 זהה בדפדפן ובעותק שהועבר. עמ' 3 נבדקו מול תמונת העמוד ב-11.11.2026.",
-    "pdf_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2020.pdf",
-    "text_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2020.txt",
-    "text_method": "pdftotext -q -layout (poppler), pages separated by form feed",
-    "text_pages": 28,
-    "pdf_pages": 28,
-    "empty_text_pages": [],
-    "sha256": "3f1b20ff8fb3f2d401c768b8a4f30d1b15d92283ca64c9dfff1ccd90c28e2b0a",
-    "source_class": "original_official",
-    "source_class_he": "מקור מקורי רשמי",
-    "text_class": "derived_auto_partial_checked",
-    "checked_pages": [
-      3
-    ],
-    "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
-  },
-  {
-    "id": "ita-monthly-deductions-booklet-2021",
-    "title": "לוח עזר לחישוב מס הכנסה ממשכורת ושכר עבודה - 2021",
-    "url": "https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/itc_itc_necuyim2021-1.pdf",
-    "publisher": "רשות המסים בישראל (gov.il)",
-    "edition": "שנת המס 2021",
-    "retained_on": "2026-11-11",
-    "library_packaged_on": "2026-11-11",
-    "last_live_revalidation": null,
-    "increment_metadata": "prepared-increments/engine-data-20261111/README-HE.md",
-    "supersedes": null,
-    "retention_scope": "Publicly accessible official publication retained for reference. No redistribution licence determination.",
-    "effective_scope": "מדרגות מס (עמ' 3), נקודת זיכוי, מס יסף ותקרות לשנת 2021. מוזן ל-tax-brackets-2020-2026.json.",
-    "verification": "הורד בדפדפן המובנה של הבעלים (אישור הבעלים 11.11.2026, 14:53 ו-15:15). SHA-256 זהה בדפדפן ובעותק שהועבר. עמ' 3 נבדקו מול תמונת העמוד ב-11.11.2026.",
-    "pdf_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2021.pdf",
-    "text_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2021.txt",
-    "text_method": "pdftotext -q -layout (poppler), pages separated by form feed",
-    "text_pages": 33,
-    "pdf_pages": 33,
-    "empty_text_pages": [],
-    "sha256": "9aa5634c17302c961a922270d39759ea771c68a47b456eda47033fc47d10d94c",
-    "source_class": "original_official",
-    "source_class_he": "מקור מקורי רשמי",
-    "text_class": "derived_auto_partial_checked",
-    "checked_pages": [
-      3
-    ],
-    "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
-  },
-  {
-    "id": "ita-monthly-deductions-booklet-2022",
-    "title": "לוח עזר לחישוב מס הכנסה ממשכורת ושכר עבודה - 2022",
-    "url": "https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2022.pdf",
-    "publisher": "רשות המסים בישראל (gov.il)",
-    "edition": "שנת המס 2022",
-    "retained_on": "2026-11-11",
-    "library_packaged_on": "2026-11-11",
-    "last_live_revalidation": null,
-    "increment_metadata": "prepared-increments/engine-data-20261111/README-HE.md",
-    "supersedes": null,
-    "retention_scope": "Publicly accessible official publication retained for reference. No redistribution licence determination.",
-    "effective_scope": "מדרגות מס (עמ' 3), נקודת זיכוי, מס יסף ותקרות לשנת 2022. מוזן ל-tax-brackets-2020-2026.json.",
-    "verification": "הורד בדפדפן המובנה של הבעלים (אישור הבעלים 11.11.2026, 14:53 ו-15:15). SHA-256 זהה בדפדפן ובעותק שהועבר. עמ' 3 נבדקו מול תמונת העמוד ב-11.11.2026.",
-    "pdf_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2022.pdf",
-    "text_path": "prepared-increments/engine-data-20261111/ita-monthly-deductions-booklet-2022.txt",
-    "text_method": "pdftotext -q -layout (poppler), pages separated by form feed",
-    "text_pages": 26,
-    "pdf_pages": 26,
-    "empty_text_pages": [],
-    "sha256": "de17dd4f44077cc3a456be279e8e92f03bf25c859f4e29d39675dfb742fdab0d",
-    "source_class": "original_official",
-    "source_class_he": "מקור מקורי רשמי",
-    "text_class": "derived_auto_partial_checked",
-    "checked_pages": [
-      3
-    ],
-    "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
-  },
-  {
-    "id": "cbs-complete-life-tables-2018-2022",
-    "title": "לוחות תמותה שלמים של ישראל 2018-2022 (פרסום 1945)",
-    "url": "https://www.lifetable.de/File/GetDocument/data\\ISR\\ISR000020182022CU1.pdf",
-    "publisher": "הלשכה המרכזית לסטטיסטיקה; עותק מ-Human Life-Table Database (מכון מקס פלנק)",
-    "edition": "פרסום 1945, יולי 2024; עמוד 1 הוא דף כריכה של המאגר",
-    "retained_on": "2026-11-11",
-    "library_packaged_on": "2026-11-11",
-    "last_live_revalidation": null,
-    "increment_metadata": "prepared-increments/engine-data-20261111/README-HE.md",
-    "supersedes": null,
-    "retention_scope": "Publicly accessible official publication retained for reference. No redistribution licence determination.",
-    "effective_scope": "לוח 1: גברים (עמ' 3-4); לוח 2: נשים (עמ' 5-6). qx, lx ו-ex לכל גיל 0-110+. מוזן ל-life-expectancy-cbs.json. הלוח השלם העדכני ביותר שאותר; לא אותר באתר הלמ\"ס עצמו (הדפים נטענים דינמית).",
-    "verification": "הורד בדפדפן המובנה של הבעלים (אישור הבעלים 11.11.2026, 14:53 ו-15:15). SHA-256 זהה בדפדפן ובעותק שהועבר. עמ' 4, 6 נבדקו מול תמונת העמוד ב-11.11.2026.",
-    "pdf_path": "prepared-increments/engine-data-20261111/cbs-complete-life-tables-2018-2022-pub1945.pdf",
-    "text_path": "prepared-increments/engine-data-20261111/cbs-complete-life-tables-2018-2022-pub1945.txt",
-    "text_method": "pdftotext -q -layout (poppler), pages separated by form feed",
-    "text_pages": 6,
-    "pdf_pages": 6,
-    "empty_text_pages": [],
-    "sha256": "b47b87747d5f09f0c27ea062447031bd9f31bbbca2922281e9e8845fd43c5e43",
-    "source_class": "original_official",
-    "source_class_he": "מקור מקורי רשמי",
-    "text_class": "derived_auto_partial_checked",
-    "checked_pages": [
-      4,
-      6
     ],
     "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
   }
