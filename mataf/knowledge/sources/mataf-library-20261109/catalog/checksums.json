@@ -4,10 +4,10 @@
   "catalog/fund-corpus-index.csv": "2aae7e428d5ccced069debb660b64cd1443f33d6404ba838776b06fe4719a543",
   "catalog/fund-corpus-provenance.md": "c3d936c7130a13afbeff1b71adb16b4b166ece58bfee14accd7188cf080efcbd",
   "catalog/gaps.json": "aa70089aea7908f46c512bb9d2dbb8592b5418ac32a4aa71a172a96aaba3b395",
-  "catalog/sources.json": "2d11ed61cca98673fdd88187a4f1753aac64018123cd42863a91a8c282dddb9d",
+  "catalog/sources.json": "ccd7d44108bc508601f417fba31dcee387a8d289b25c79ab985721610bcc484e",
   "knowledge/retirement-v4.md": "ab20225cd845386f71181f20f77196719ece3e4f9f0a4a2a4e8a1f82bb49fc7e",
   "search.py": "9bc54bc9ae10f017c0641b1a4015d7553e5930c73a4d958d6d1abaa972519b6b",
-  "search.sqlite": "73cedcb0e71ccf8ea81b1633e6bcf44e4bb6ebc56ebf0a3a1ae57547be0eedca",
+  "search.sqlite": "80775b89170b34410d1b5a2eb656ce1be55b08d47c825ea6bfb29ed82dde7548",
   "sources/tax-161d-2026.pdf": "40eba7d3b5abded138edc9c0292ae5810fa740808afc30ea021c44f21d84d679",
   "sources/tax-161d-2026.txt": "79a78085a7ce93ae44634afe01be4593ca77138cc2fbfe86322f3f9ece10d2b9",
   "sources/tax-booklet-2026.pdf": "de6fee7208bdde4ec8b8731be95bcea2106aba449d949e5e646c2a0d5f2182a1",
@@ -286,7 +286,7 @@
   "prepared-increments/codex-orders-20261111/README-HE.md": "463aa73af53512f788590e9d2deb9bc26636aff97000909c09236d4a656d9fcb",
   "prepared-increments/codex-orders-20261111/topic-source-map.json": "1ffcd6bc62c036c2c20baee0fe1b92aac51426f6dd9d1d224168a917bb488bc2",
   "prepared-increments/legislation-inventory-20261111/README-HE.md": "2ef5787a957c7429a7c0ea411801cd389e1dc7f525edfec40a10cb03fda50935",
-  "prepared-increments/legislation-inventory-20261111/INVENTORY-HE.md": "ece310546d6d37fab9594a2d5737ee5a1392574f300d31d55b8205064492d2fd",
+  "prepared-increments/legislation-inventory-20261111/INVENTORY-HE.md": "8fe9842339e7a00fa66a79c009a2c24827c7100f25803654557e42d7864ae002",
   "prepared-increments/transfer-regs-2008-20261111/README-HE.md": "a763eba9b1f0540374a8579e68c73d72b3079b29dd67bee5a0e942ad0d1504df",
   "prepared-increments/transfer-regs-2008-20261111/consolidated-wikisource-rev2927205.pdf": "ff0bc8697c819cf8ce5e31df49e0542b1c8ea6f871e3e35bf39b9cbac27b6f45",
   "prepared-increments/transfer-regs-2008-20261111/consolidated-wikisource-rev2927205.txt": "ca8ddd7a6bc0186724a6f93a8ae8b5d8d34d744e3ff384eefa5b2d9364fe00cd",
@@ -1222,5 +1222,6 @@
   "prepared-increments/exec-gemel-20261111/cma-20191117-regulation-565-3.pdf": "f05509018c81c7dfac20e0205a21de643805478a9794e8786afd790ba1f4d2c0",
   "prepared-increments/exec-gemel-20261111/ita-circular-2002-20-savings-taxation.txt": "2f921ecfd44959569df2fd9d738a15e956abd3b5ce56e5baf343c20e28ba48b0",
   "prepared-increments/exec-gemel-20261111/cma-20160929-regulation-1070.pdf": "02c8a4d3d4743fbfdd4c9966b789496d3b27d4cbf97b3ae7df568325434e6f95",
-  "prepared-increments/legislation-inventory-20261111/CEILINGS-2026-HE.md": "08ee6efb0f7e54b1ee678c1309b588c9ff08f5c9af7dc1457d0eb59f7c17d8fc"
+  "prepared-increments/legislation-inventory-20261111/CEILINGS-2026-HE.md": "08ee6efb0f7e54b1ee678c1309b588c9ff08f5c9af7dc1457d0eb59f7c17d8fc",
+  "prepared-increments/legislation-inventory-20261111/INFO-REQUEST-DRAFT-HE.md": "a0f53720c32824ebeeae57e16b7d209f64563b8dec6c7afcd1caa678e9ed902b"
 }

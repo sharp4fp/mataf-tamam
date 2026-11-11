@@ -9,7 +9,7 @@
     "library_packaged_on": "2026-11-09",
     "last_live_revalidation": null,
     "effective_scope": "הנחיות ונתוני 2026; אין להסיק תחולה בכל מצב אישי",
-    "verification": "עותק מקור רשמי שנשמר; לא נוסח חקיקה מאוחד ולא אישור לכל חישוב",
+    "verification": "עותק מקור רשמי שנשמר; לא נוסח חקיקה מאוחד ולא אישור לכל חישוב עמ' 4 נבדקו מול תמונת העמוד ב-11.11.2026.",
     "pdf_path": "sources/tax-161d-2026.pdf",
     "text_path": "sources/tax-161d-2026.txt",
     "retention_scope": "Publicly accessible official guidance retained for reference; no third-party commercial database copied. No redistribution licence determination.",
@@ -18,7 +18,10 @@
     "source_class": "original_official",
     "source_class_he": "מקור מקורי רשמי",
     "text_class": "derived_auto",
-    "text_class_he": "טקסט עזר בחילוץ אוטומטי - לא נבדק מול העמוד; ה-PDF מחייב"
+    "text_class_he": "טקסט עזר בחילוץ אוטומטי - לא נבדק מול העמוד; ה-PDF מחייב",
+    "checked_pages": [
+      4
+    ]
   },
   {
     "id": "tax-booklet-2026",
@@ -524,7 +527,7 @@
     "library_packaged_on": "2026-11-10",
     "last_live_revalidation": "2026-11-10",
     "effective_scope": "הנחיה מנהלית / טופס; אין להסיק תחולה בכל מצב אישי",
-    "verification": "הורד מ-gov.il בדפדפן הבעלים באישורו (10.11.2026, 19:39); SHA-256 זהה בהורדה ובקובץ שהבעלים צירף. טקסט עזר בחילוץ אוטומטי (pdftotext -layout). אינו משנה את כללי פריסת מענקי פרישה.",
+    "verification": "הורד מ-gov.il בדפדפן הבעלים באישורו (10.11.2026, 19:39); SHA-256 זהה בהורדה ובקובץ שהבעלים צירף. טקסט עזר בחילוץ אוטומטי (pdftotext -layout). אינו משנה את כללי פריסת מענקי פרישה. עמ' 1 נבדקו מול תמונת העמוד ב-11.11.2026.",
     "pdf_path": "prepared-increments/priority1-findings-20261110/circular-2-2022-update-20240408.pdf",
     "text_path": "prepared-increments/priority1-findings-20261110/circular-2-2022-update-20240408.txt",
     "pdf_pages": 1,
@@ -535,7 +538,10 @@
     "source_class": "original_official",
     "source_class_he": "מקור מקורי רשמי",
     "text_class": "derived_auto",
-    "text_class_he": "טקסט עזר בחילוץ אוטומטי - לא נבדק מול העמוד; ה-PDF מחייב"
+    "text_class_he": "טקסט עזר בחילוץ אוטומטי - לא נבדק מול העמוד; ה-PDF מחייב",
+    "checked_pages": [
+      1
+    ]
   },
   {
     "id": "ito-form-116c",
@@ -570,7 +576,7 @@
     "library_packaged_on": "2026-11-10",
     "last_live_revalidation": "2026-11-10",
     "effective_scope": "הנחיה מנהלית / טופס; אין להסיק תחולה בכל מצב אישי",
-    "verification": "הורד מ-gov.il בדפדפן הבעלים באישורו (10.11.2026, 19:39); SHA-256 זהה בהורדה ובקובץ שהבעלים צירף. טקסט עזר בחילוץ אוטומטי (pdftotext -layout). זהה לטופס שפורסם באתר הספרייה (מסמך 13); הסבר נוסחת 150% בהערה הוא הסבר טופס בלבד.",
+    "verification": "הורד מ-gov.il בדפדפן הבעלים באישורו (10.11.2026, 19:39); SHA-256 זהה בהורדה ובקובץ שהבעלים צירף. טקסט עזר בחילוץ אוטומטי (pdftotext -layout). זהה לטופס שפורסם באתר הספרייה (מסמך 13); הסבר נוסחת 150% בהערה הוא הסבר טופס בלבד. עמ' 1 נבדקו מול תמונת העמוד ב-11.11.2026.",
     "pdf_path": "prepared-increments/priority1-findings-20261110/form-161c.pdf",
     "text_path": "prepared-increments/priority1-findings-20261110/form-161c.txt",
     "pdf_pages": 2,
@@ -581,7 +587,10 @@
     "source_class": "original_official",
     "source_class_he": "מקור מקורי רשמי",
     "text_class": "derived_auto",
-    "text_class_he": "טקסט עזר בחילוץ אוטומטי - לא נבדק מול העמוד; ה-PDF מחייב"
+    "text_class_he": "טקסט עזר בחילוץ אוטומטי - לא נבדק מול העמוד; ה-PDF מחייב",
+    "checked_pages": [
+      1
+    ]
   },
   {
     "id": "knesset-retirement-age-law-2004-original",
