@@ -4,10 +4,10 @@
   "catalog/fund-corpus-index.csv": "2aae7e428d5ccced069debb660b64cd1443f33d6404ba838776b06fe4719a543",
   "catalog/fund-corpus-provenance.md": "c3d936c7130a13afbeff1b71adb16b4b166ece58bfee14accd7188cf080efcbd",
   "catalog/gaps.json": "aa70089aea7908f46c512bb9d2dbb8592b5418ac32a4aa71a172a96aaba3b395",
-  "catalog/sources.json": "daaedd06db774dfa47dafef9296631dbcbca0c4253ea3c186f619a699bde46db",
+  "catalog/sources.json": "e4a8613e9529f916c6416d4958a892bf9832303c1332f020538437465cca599e",
   "knowledge/retirement-v4.md": "ab20225cd845386f71181f20f77196719ece3e4f9f0a4a2a4e8a1f82bb49fc7e",
   "search.py": "9bc54bc9ae10f017c0641b1a4015d7553e5930c73a4d958d6d1abaa972519b6b",
-  "search.sqlite": "bdf3bf210d6f60dd06207bb2f03de06b5433dcc631145175c77c48fb0b55b5a3",
+  "search.sqlite": "63ca30b2f46cb11c339875315ba517493050dba9fb902df268cbe7ac581103e0",
   "sources/tax-161d-2026.pdf": "40eba7d3b5abded138edc9c0292ae5810fa740808afc30ea021c44f21d84d679",
   "sources/tax-161d-2026.txt": "79a78085a7ce93ae44634afe01be4593ca77138cc2fbfe86322f3f9ece10d2b9",
   "sources/tax-booklet-2026.pdf": "de6fee7208bdde4ec8b8731be95bcea2106aba449d949e5e646c2a0d5f2182a1",
@@ -287,5 +287,7 @@
   "prepared-increments/codex-orders-20261111/topic-source-map.json": "1ffcd6bc62c036c2c20baee0fe1b92aac51426f6dd9d1d224168a917bb488bc2",
   "prepared-increments/legislation-inventory-20261111/README-HE.md": "bbc85083734952f8462e1109ea3a2bec374771a405a1d5063061525c8d7e17c1",
   "prepared-increments/legislation-inventory-20261111/INVENTORY-HE.md": "707c64b35275278b252429c5b7d8f36c47e06c2c0fe4451ddb1c825f147c6a3f",
-  "prepared-increments/transfer-regs-2008-20261111/README-HE.md": "aab92f93647fb70358371113c71e7bc7ee9187cc5d9380d1f3312926cc1462f6"
+  "prepared-increments/transfer-regs-2008-20261111/README-HE.md": "a763eba9b1f0540374a8579e68c73d72b3079b29dd67bee5a0e942ad0d1504df",
+  "prepared-increments/transfer-regs-2008-20261111/consolidated-wikisource-rev2927205.pdf": "ff0bc8697c819cf8ce5e31df49e0542b1c8ea6f871e3e35bf39b9cbac27b6f45",
+  "prepared-increments/transfer-regs-2008-20261111/consolidated-wikisource-rev2927205.txt": "ca8ddd7a6bc0186724a6f93a8ae8b5d8d34d744e3ff384eefa5b2d9364fe00cd"
 }
