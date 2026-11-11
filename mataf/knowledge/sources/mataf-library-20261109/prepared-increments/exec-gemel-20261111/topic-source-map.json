@@ -1,0 +1,41 @@
+{
+ "as_of": "2026-11-11",
+ "base_index": "profession-index/v1.3-20261110 (לא שונה; זהו delta)",
+ "note": "pdf_pages = עמודי ה-PDF.",
+ "topics": [
+  {
+   "id": "P04.06",
+   "title": "קופת גמל להשקעה, פוליסת חיסכון ומוצרים סמוכים",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "cma-20201208-reg_2020-7709",
+     "section": "הבהרה שה. 2020-7709 - העברה מקופת גמל להשקעה לקופת גמל לקצבה",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P04.03",
+   "title": "ביטוח מנהלים: שנת פתיחה, תנאי פוליסה, רכיבים והבטחות",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "cma-20160929-regulation-1070",
+     "section": "חוזר ביטוח 2016-1-13 - תכניות ביטוח חיים בדמי ביטוח קבועים",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": "ריסק, לא רכיב החיסכון"
+    }
+   ]
+  }
+ ]
+}

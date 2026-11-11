@@ -1,0 +1,3235 @@
+The Israeli Committee for the
+Determination of Embedded
+Rules and Guidance
+
+Embedded Value Rules
+and Guidance
+8 August 2007
+Table of Contents
+
+1.       BACKGROUND AND INTRODUCTION ............................................................... 1
+
+2.       DEFINITIONS ........................................................................................................ 6
+
+3.       COVERAGE .......................................................................................................... 8
+
+4.       ALLOWANCE FOR RISK ................................................................................... 10
+
+5.       VALUATION OF ASSETS AND ADJUSTED NET WORTH .............................. 12
+
+6.       REQUIRED CAPITAL AND THE COST OF CAPITAL...................................... 20
+
+7.       VALUE OF IN-FORCE BUSINESS..................................................................... 24
+
+8.       VALUE OF NEW BUSINESS.............................................................................. 32
+
+9.       FINANCIAL OPTIONS & GUARANTEES .......................................................... 38
+
+10.      ECONOMIC ASSUMPTIONS.............................................................................. 43
+
+11.      NON-ECONOMIC ASSUMPTIONS AND RISK .................................................. 46
+
+12.      MANAGEMENT ACTIONS AND DYNAMIC POLICYHOLDER BEHAVIOUR... 57
+
+13.      POLICY DATA .................................................................................................... 59
+
+14.      MATERIALITY LIMITS........................................................................................ 63
+
+15.      ANALYSIS OF EV PROFIT................................................................................. 65
+
+16.      SENSITIVITIES AND SCENARIO ANALYSES .................................................. 69
+
+17.      DISCLOSURE ..................................................................................................... 76
+
+APPENDIX A - GLOSSARY ........................................................................................... 83
+
+APPENDIX B – REFERENCES / RECOMMENDED READING .................................... 86
+
+
+
+
+      S:\THE ISRAELI INSURANCE ASSOCIATION\Act\Embedded Value Rules and Guidance\04Del\Final\EV Rules and Guidance -
+                                                                                                         Final_2.doc
+The Israeli Committee for the Determination of the Embedded Rules and Guidance              1
+
+
+
+1.          BACKGROUND AND INTRODUCTION
+1.1         Background to the rules and guidance
+
+On 9 May 2006 the Commissioner for Capital Markets, Insurance and Savings (the
+“Commissioner”) circulated insurance circular 2006-1-8. This circular states his intention
+to require the disclosure of embedded values (“EVs”) by Israeli life and health insurance
+companies in the Directors Report.
+
+In discussions, the Commissioner explained that the requirement for companies to publish
+embedded values is part of a wider process to establish a risk, capital and value
+framework within the Israeli insurance industry.
+
+The Commissioner set up an industry-wide working party (the "Committee") that is
+responsible for submitting the recommendation of rules and guidance for calculating EVs.
+The potential number of the members who may have an interest in the outcome is large.
+These include the Chief Actuaries of the insurance companies, Chief Financial Officers,
+Chief Risk Officers, Auditors and representatives from the insurance commissioner office
+and the Israeli Securities Authority.
+
+This document contains the Committee’s recommendation to the Commissioner, for EV
+rules and guidance for all companies to comply with. It has been prepared in conjunction
+with Tillinghast, the Committee’s consultants following detailed consultation. Neither the
+Committee nor Tillinghast accepts any duty of care to the users of these EV rules and
+guidance.
+
+The Committee is intending to continue its activities and may suggest additions or
+changes to these rules regarding issues which are still open or not yet addressed in
+this document.
+
+1.2         Background to embedded values
+
+The forerunner to embedded values was Jim Anderson’s 1959 methodology paper, which
+argued for a shareholder valuation and pricing method based on projecting future cash
+flows using best estimate assumptions, and discounting the emerging surpluses using a
+The Israeli Committee for the Determination of the Embedded Rules and Guidance               2
+
+
+
+risk discount rate reflecting the shareholders’ required rate of return and the degree of risk
+in the business being valued.
+
+In more recent years, the key developments in embedded values have been:
+
+   Increasing acceptance of EVs as the most robust measure of shareholder value for life
+    insurance business.
+
+   The construction of computer models, allowing companies to value large portfolios of
+    business within a relatively short time frame.
+
+   The development of analytical tools showing the drivers of the change in EVs over
+    time.
+
+   Public reporting of EVs. EV-based reporting has become widespread in Europe,
+    South Africa, Australia and Canada. It is gaining ground in Asia.
+
+   A gradual move towards defined standards. In the UK, the insurance trade body (the
+    ABI) developed EV guidance in the 1990s, and in 2004 the CFO Forum published the
+    European Embedded Value (“EEV”) Principles and Guidance.
+
+   The widespread use of EVs by company management to measure performance, and as
+    a basis of remuneration.
+
+1.3         The case for embedded values
+
+The main advantages of the EV method are as follows:
+
+   EV recognises shareholder value creation in the correct time period. In particular, it
+    recognises profit at the point of sale and the expected impact of experience changes as
+    the events occur.
+
+   EV methodology gives a robust basis for pricing new business that allows the
+    recognition of the Value of New Business (“VNB”) at the point of sale.
+
+   Analysis of the change in EV over a period gives insights into the drivers of operating
+    performance and the impact of management actions.
+
+   Analysis of the sensitivity of the EV to changes in assumptions helps to indicate the
+    materiality of the key risks the company is exposed to and focus the attention of
+The Israeli Committee for the Determination of the Embedded Rules and Guidance               3
+
+
+
+    management. The sensitivities can be used at a later stage as an input into economic
+    capital requirements.
+
+   The EV framework provides a full balance sheet value including both the net assets
+    and the value of in-force business (“VIF”). Unlike many other industries, the VIF can
+    be a significant component of the overall life insurance company value.
+
+   For EV reporting, disclosure of the methodology and assumptions, as well as
+    sensitivity information, helps analysts to form their own views of the value of a life
+    insurance company.
+
+   EV provides an early indicator of operating performance. Under regulatory or GAAP
+    reporting, the profitability of new business is hidden and the impact of changes in
+    experience is smoothed over a long period.
+
+   Analysts can use EV to compare performance in different countries on a comparable
+    basis because EVs are less dependent on any particular country’s regulatory reporting
+    standards.
+
+1.4       Aims of Israeli EV Rules and Guidance
+
+The Israeli EV Rules and Guidance aim to:
+
+   Set out the minimum standards that Israeli companies must adhere to when
+    calculating and publishing EV.
+
+   Provide guidance to help companies implement the rules.
+
+   Provide a rationale for the rules and guidance.
+
+The Israeli EV Rules and Guidance deliberately do not cover all aspects of EVs. In
+particular, they do not cover the following:
+
+   The actual assumptions required under EV, where these by nature are company
+    specific and are likely to vary over time.
+
+   The actual calculation formulae required under EV.
+
+   The choice of modelling system used to calculate the EV.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance                 4
+
+
+1.5       Structure of Israeli EV Rules and Guidance
+
+The rules and guidance structure is as follows:
+
+   Rules paragraphs are in bold and boxed.
+
+   Guidance paragraphs are in italics.
+
+Rules are compulsory to the extent that not following a particular rule or set of rules may
+result in the materiality limits set in Section 14 being breached.
+
+Rules have been determined on the basis that they should be objective and auditable. It
+will be a requirement to abide by all relevant rules whenever practicable – if a rule is not
+followed, then companies will be required to disclose the fact clearly.
+
+Guidance is meant to describe recommended best practices, but is not compulsory.
+
+1.6       Implementation approach and next steps
+
+The Israeli EV Rules and Guidance have been written recognising the desire of the
+working party to publish EVs based on fully implemented liability models from the first
+date of publication. This is provisionally set to be May 2008, following the 2007 year
+end, in order to allow companies a reasonable timeframe to implement all the rules set out
+in the Israeli EV Rules and Guidance and to avoid the need to make modelling
+simplifications, which may have to be undone at a later stage, in order to meet an
+accelerated timescale. It is intended that the 2008 publication will comprise the 2007 EV
+and VNB and from 2009 the analysis of movement of the EV will also be published.
+
+In addition, companies are required to prepare the 2006 EV based using these rules and
+guidance (if they are accepted by the regulator) by the end of 2007. The 2006 results will
+not be published, but will be presented to the board of the company, and perhaps to the
+Commissioner if he so requests.
+
+1.7       Non-completed items and open decisions
+
+   The Committee has recommended including pension fund and asset management (at
+    least kupot gemel) business within the EV. The principles and technical issues
+    regarding this have not been directly addressed in this document, although we believe
+The Israeli Committee for the Determination of the Embedded Rules and Guidance              5
+
+
+
+    that in principle this document applies adequately to this business without
+    modification. The issue of timing of the inclusion of this business has yet to be
+    resolved since it is not certain that all companies can perform the appropriate
+    calculations for this business by the end of 2007.
+
+   Companies have stated that they require legal protection (safe-harbour) for the
+    company and the officials signing off on the EV, since it may be interpreted as
+    forward looking information that can be used by the investing public in order to make
+    investment decisions, hence exposing these parties to a risk. The Committee has asked
+    the Commissioner for help in this regard.
+
+   The Committee recommends that the EV publication is signed by the actuary (or
+    actuaries) responsible for preparing the EV together with the signatories of the
+    financial statements. In Europe it is common that the directors sign the publication.
+    The Committee does not have a unanimous view on this and leaves it to be settled
+    between the industry and the Regulator.
+
+   The scope and frequency of any audit or review, whether any such review should be
+    mandatory, and any restrictions regarding who can or cannot perform a review are all
+    open issues to be settled between the industry and the Regulator.
+
+   The Committee recommends preparing a glossary of EV related terms in Hebrew, in
+    order for there to be standard terminology used in EV publications, with agreed
+    definitions.
+
+   There are complex issues regarding the publication of the EV at the level of a holding
+    company. The Committee recognises the fact that in most cases in Israel the insurance
+    companies are subsidiaries of a public holding company that may have to include the
+    EV information with its own financial statements, even though the Regulator’s
+    circular on EV does not fall on holding companies.
+
+   This document has to be translated into Hebrew.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance               6
+
+
+
+2.          DEFINITIONS
+2.1         Introduction
+
+Embedded value publications by companies tend to use EV balance sheets and VNB
+presentations which are broadly similar but on occasion contain significant differences.
+Whilst these differences may in some cases be only presentational, a common
+presentation of the results will aid comparability across the Israeli life insurance industry.
+
+2.2         Definitions
+Ref 2.2.1
+
+The EV consists of the following components:
+
+    Adjusted Net Worth (ANW), which is the reported amount of the Shareholder
+     Equity of the company in which the Covered Business is written, less intangible
+     assets related to the Covered Business (see chapter 5); For a holding company
+     that is publishing EV information in respect of its subsidiary, the ANW is based
+     on the consolidated Shareholder Equity adjusted for the value of consolidated
+     intangible assets related to the Covered Business.
+
+    Value of In-Force Business (VIF), which is the present value after taxation of
+     future shareholder cash flows projected to emerge from the Covered Business in-
+     force at the valuation date after:
+
+     ⎯ Allowance for the time value of financial options & guarantees (EVFOG)
+
+     ⎯ Allowance for cost of capital (EVCoC)
+
+Unadjusted VIF is defined as VIF before EVFOG and EV CoC
+The Israeli Committee for the Determination of the Embedded Rules and Guidance   7
+
+
+
+
+Ref 2.2.2
+
+The Value of New Business (VNB), is the present value after taxation of future
+shareholder cash flows arising from New Business written during the reporting
+period immediately prior to the valuation date, adjusted for:
+
+   ⎯ Impact of the time value of financial options & guarantees (NBFOG)
+
+   ⎯ Impact of the cost of capital (NBCoC)
+
+   Unadjusted VNB is defined as VNB before NBFOG and NBCoC.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            8
+
+
+
+3.          COVERAGE
+3.1         Introduction
+
+For EV reporting, there should be a clear definition of the business that has been included
+and the business that has been excluded from the EV calculation. This ensures that all
+parties who use the results understand what the EV represents. If senior management,
+analysts and other users of EV information understand the exact nature of the business
+underlying the EV result they are in a better position to understand the result itself.
+
+The business covered by the EV and VNB calculation is termed the “Covered Business”.
+This is described in more detail below.
+
+3.2         Definitions
+Ref 3.2.1
+
+Covered Business should include both life insurance and health insurance business
+as classified within regulatory reporting. All such business in force at the valuation
+date should be included. Short term business such as group life and health business
+as well as long term business should be included in the EV projections provided it
+falls under the Covered Business insurance category.
+
+Short term (up to one year) individual business should not be included in Covered
+Business, even if it is classified as life or health insurance.
+
+Current examples of lines of business which fall outside the definition of Covered
+Business are personal accident and travel insurance.
+
+The separation of insurance business between Covered Business and other business
+should be consistent with that already used within regulatory reporting.
+
+Ref 3.2.2
+
+Business that does not fall into the life insurance or health insurance category should
+not be included within the Covered Business EV.
+
+Such business may be valued on an EV-type basis but should be reported separately. An
+example of where this might apply is unit trust business. The Israeli EV Rules and
+The Israeli Committee for the Determination of the Embedded Rules and Guidance          9
+
+
+
+Guidance are mandatory only for the Covered Business. If other business is valued and
+separately reported on an EV-type basis, it should be disclosed whether the approach
+follows the Israeli EV Rules and Guidance; if not, details should be provided of the
+methodology and assumptions.
+
+
+
+Ref 3.2.3
+
+At the corporate (group) level, the EV will cover all life and health insurance
+subsidiary companies within the group, including overseas subsidiaries. Other
+subsidiaries will also be included within the ANW component of the EV if, and in
+the same way in which, they are included in the Shareholder Equity (i.e.
+Shareholder Equity on a consolidated basis).
+The Israeli Committee for the Determination of the Embedded Rules and Guidance         10
+
+
+
+4.          ALLOWANCE FOR RISK
+4.1         Introduction
+
+A key aspect of embedded values is the methodology for allowance for risk. A robust
+methodology provides much more useful information to management and the outside
+world. Different methodologies can lead to very different results.
+
+This Section provides rules and guidance on the need to ensure an appropriate allowance
+for risk and the features required by the allowance for risk methodology.
+
+4.2         Allowance for risk
+Ref 4.2.1
+
+At each valuation date, the embedded value must make sufficient allowance for the
+aggregate risks in the business being valued. The allowance for risk should be based
+on market-consistent embedded value principles.
+
+All financial options/guarantees should be valued using either market prices or a
+stochastic market-consistent approach, consistent with market-consistent embedded value
+principles. A requirement for the overall EV and VNB to be market-consistent is for
+financial options and guarantees embedded in the portfolio to be valued in a manner
+consistent with how those financial options and guarantees would be valued in the
+market. This approach is recognised by the international analyst community to provide
+the most robust, best practice allowance for risk.
+
+Section 9 provides details regarding the approach to the allowance for risk for financial
+options and guarantees.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            11
+
+
+4.3         Principles of market-consistent embedded value
+Ref 4.3.1
+
+The allowance for risk approach should follow the following principles:
+
+   No arbitrage - if two assets or liabilities have exactly the same cash flows in all
+    possible circumstances, then they should have the same present value at the
+    valuation date.
+
+   Market prices - the valuation of both assets and liabilities should be consistent
+    with unsmoothed market information as at the valuation date, in particular asset
+    index levels, risk-free yield curves and the market price of traded options.
+
+The above principles mean that the allowance for risk should be set at a granular level.
+In particular the allowance should be:
+
+   Company-specific not industry specific
+
+   Product-specific
+
+   Value of new business-specific
+
+   Reassessed actively at each valuation date
+
+These rules could not be adopted if the Working Party adopted a “top-down” approach
+(e.g. WACC) to the allowance for risk which has been used by a number of companies
+who have followed the EEV principles.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance              12
+
+
+
+5.         VALUATION OF ASSETS AND ADJUSTED NET
+           WORTH
+5.1        Introduction
+
+A key component of the embedded value balance sheet is the adjusted net worth (ANW).
+All assets (net of liabilities) not allocated to the Covered Business regulatory reserves
+should be included in the ANW calculation. Due to the potential large amount of work
+required to restate all these assets to market value, and the subjectivity regarding certain
+illiquid assets, the Working Party proposes to include these assets at their accounting
+value (subject to any adjustments outlined in the Rules and Guidance). The Working
+Party notes that changes in International Accounting Standards may eventually result in
+all the net assets of the company being account for on a market value basis.
+
+This Section therefore sets out rules and guidance on how to calculate the ANW and the
+valuation of assets backing the regulatory reserves of Covered Business and other net
+assets. This Section is structured as follows:
+
+    Definition of ANW
+
+    Identifying the tangible assets allocated to Covered Business
+
+    Valuation of Company Net Assets
+
+    Treatment of assets whose value may be captured in the EV or VNB
+
+    Valuation of the tangible assets allocated to the regulatory reserves of Covered
+     Business
+
+    Valuation of the regulatory reserves allocated to the Covered Business
+
+    Global reserves and provisions
+
+    Treatment of subsidiaries
+
+    Consolidation and intra-group arrangements
+
+    Financial reinsurance and debt
+
+    Reconciliation to primary accounts.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            13
+
+
+5.2         Definition of ANW
+
+The ANW is defined in Section 2.2.
+
+5.3         Identifying the tangible assets allocated to Covered
+            Business
+Ref 5.3.1
+
+In order to calculate the ANW of the Covered Business, companies are required to
+identify all the Net Assets of the company (the “Company Net Assets”). Where there
+is a pre-defined split, companies should segregate the Company Net Assets between
+those backing the Covered Business and those backing the remaining business
+written by the company. Currently, in Israel, there is not a pre-defined split, and
+therefore the ANW will include the total Shareholder Equity of the company (with
+adjustments as specified in the EV Rules and Guidance).
+
+This is to ensure that the valuation of the Net Assets allocated to Covered Business is
+appropriate within the EV. In Israel, it is not possible to segregate the Net Assets within
+the relevant company into those allocated to Covered Business and other business,
+therefore the disclosure should make clear that the ANW is of the total company and not
+just the Covered Business. In such circumstances all the Company Net Assets should be
+valued using the Israeli EV Rules and Guidance Where an alternative approach to
+defining the ANW of composite companies emerges as best practice then consideration
+will be given to amending the rules and guidance to reflect this.
+
+5.4         Valuation of Company Net Assets
+Ref 5.4.1
+
+Company Net Assets should be valued using the value placed on them in the
+accounts subject to the adjustments described in this Section. Where any assets are
+valued at other than market value then this must be disclosed.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           14
+
+
+5.5         Treatment of assets whose value may be captured in the
+            EV or VNB
+Ref 5.5.1
+
+Where the value of certain assets is already included in the calculation of the VIF or
+the VNB, then the value of these assets should be excluded from the ANW
+calculation.
+
+Examples of adjustments include the following intangible assets:
+
+   Books DAC
+
+   any “PVIF” asset in respect of Covered Business. (PVIF in this respect is used as an
+    IFRS term not an EV term.)
+
+   any asset in respect of future new Covered Business. Regarding this example, it is
+    recognised that this adjustment may lead to an immediate EV loss when a company
+    acquires a new subsidiary or portfolio and an element of the purchase price
+    represents future new business value which cannot be recognised in the EV balance
+    sheet. Such inconsistencies should be appropriately explained and disclosed in the EV
+    publication.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           15
+
+
+
+
+5.6         Valuation of the tangible assets allocated to the
+            regulatory reserves of Covered Business
+Ref 5.6.1
+
+Tangible assets allocated to the regulatory reserves of Covered Business should be
+valued using market value or, where market values do not exist, an estimate of
+market value.
+
+For assets where there is a regularly available market price, companies should use
+the market price. For this purpose, market price is defined as mid-price, the mid-
+point between bid and offer price.
+
+For assets where there is no regularly available market price, companies should
+estimate the market value. The methodology used to estimate the market value
+should aim to ensure that if the company were to purchase the asset on the valuation
+date, the estimated market value should materially equal the price that would have
+been paid at that time for purchase of a similar traded asset.
+
+Where relevant, the methodology used to estimate market value should be consistent
+with valuing non-traded assets in the Participating Portfolio of the company.
+
+Special government bonds (“chetz”) allocated to the reserves of Covered Business
+should not be re-valued at market-value, but should be kept at the same value at
+which they are reported in the financial statements.
+
+The estimated market value may be calculated using a simplistic value measure if
+appropriate (for instance the ratio of price to earnings) or a more sophisticated model (a
+mark-to model approach).
+
+When using any mark-to-model valuation, companies should ensure that the model and
+its parameters are appropriate for the asset being valued. It would not be appropriate
+for the model to be used to give a mark-to-model result for an asset on the day of
+purchase significantly different to purchase price.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            16
+
+
+
+The valuation of untraded assets should take account of any hidden features of the asset
+contract, in particular features which are derivatives.
+
+There is a risk with untraded assets that a mark-to-model approach ignores features of
+the contract which may have a material impact on value, for example derivatives
+embedded within convertible bonds. Such features can have a significant impact on the
+value of the contract, either at the valuation date or in future if market conditions change.
+
+The valuation of tangible assets need not consider the impact of taxation or investment
+expenses that the company may incur on those assets.
+
+For other assets, it may be that the existing valuation in the primary accounts is
+sufficiently appropriate to be deemed an estimate of market value.
+
+5.7         Valuation of the regulatory reserves of Covered Business
+Ref 5.7.1
+
+The methodology and assumptions used to value the regulatory reserves in the
+calculation of the VIF and VNB should be the same as that used in the Israeli
+reserving calculation applied at the valuation date for the purposes of determining
+regulatory solvency. The reserves used in the calculation of the VIF should
+therefore be directly reconcilable to those used in the calculation of regulatory
+solvency. For this purpose, the regulatory reserves should not include any
+regulatory or other capital requirements deemed to be required in addition to the
+regulatory reserves.
+
+Such additional capital requirements are referred to as “Required Capital”. Rules and
+guidance regarding the Required Capital and its associated cost are set out in Section 6.
+
+Any credit in respect of the assumed release of margins within these reserves would be
+expected to emerge in the VIF, as described in Section 7.
+
+5.8         Global reserves and provisions
+Ref 5.8.1
+
+The ANW should be calculated net of any global reserves and provisions which are
+included within the regulatory reserves of Covered Business.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           17
+
+
+
+Global reserves refers to reserves which are required to be held for regulatory purposes
+which cannot be attributed to any one particular policy. A list should be made of such
+global reserves and provisions, together with their level at the valuation date for use in
+the calculation of the VIF.
+
+Currently there are no regulatory global reserves or provisions under Israeli reporting
+practice for Insurance companies.
+
+5.9         Treatment of subsidiaries
+Ref 5.9.1
+
+If material subsidiaries are assets of Company in which Covered Business is written,
+an appropriate valuation of such subsidiaries should be determined.
+
+Subsidiaries which write Covered Business should be valued in accordance with the
+Israeli EV Rules and Guidance. However, the publication of the EV may be performed at
+the group level, and disclosure of the EV for individual subsidiaries is not required.
+
+Other subsidiaries should be valued in accordance with current accounting rules, such
+that there is no change in their value compared to that reported in the parent company’s
+financial statements.
+
+5.10        Consolidation and intra-group arrangements
+Ref 5.10.1
+
+The calculation of the ANW should eliminate distortions that could arise from any
+intra-group arrangements.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           18
+
+
+5.11      Debt and financial reinsurance
+Ref 5.11.1
+
+The Company Net Assets should be valued after the deduction of the market value
+of any debt and loans secured against future surplus emerging on Covered Business.
+If market value is not available, a value consistent with the market value of debt
+with similar characteristics should be used.
+
+Characteristics such as the outstanding term, coupon and credit rating should be
+considered when assessing the market value of the debt on loan.
+
+Ref 5.11.2
+
+The valuation of subordinated debt should also be calculated using market value, or
+where not available, a mark-to-model value.
+
+Ref 5.11.3
+
+Where financial reinsurance has been secured against the future surpluses arising
+from the Covered Business then the market value of the liability to recapture the
+financial reinsurance should be deducted from the tangible assets allocated to the
+Covered Business.
+
+If a market value is not available to value the financial reinsurance, one of the following
+alternatives should be used:
+
+   a value consistent with the market value of debt with similar characteristics, or
+
+   a value should be determined equal to the difference between a mark-to-model value
+    of the cash flows with the financial reinsurance and a mark-to-model value of the
+    cash flows without the financial reinsurance.
+
+Financial reinsurance (also known as “Mod-Re”) and debt can cause a leveraging effect
+on EV. If such features exist within a company, this effect should be allowed for explicitly
+within the allowance for risk within the EV calculation.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           19
+
+
+Ref 5.11.4
+
+The Company Net Assets should be valued after the deduction of other debt and
+loans (not secured against future surplus emerging), at their accounting value.
+
+5.12      Reconciliation to primary accounts
+Ref 5.12.1
+
+A reconciliation between the ANW and the Israeli GAAP primary account valuation
+should be prepared and disclosed. This reconciliation should explicitly list all the
+material adjustments required to get from the primary accounts of the insurance
+company to ANW and the value of the adjustments at the valuation date.
+
+This reconciliation should act as a check that the value from the assets attributable to the
+Covered Business is counted only once. Examples of material adjustments include the
+intangible assets as described in Section 5.5. All immaterial adjustments may be grouped
+under a single heading.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance             20
+
+
+
+6.          REQUIRED CAPITAL AND THE COST OF CAPITAL
+6.1         Introduction
+
+This Section sets out the rules and guidance for the calculation of the Required Capital
+and Cost of Capital and is structured as follows:
+
+    Definition of Required Capital
+
+    Cost of Capital
+
+    Modelling projected Required Capital
+
+6.2         Definition of Required Capital
+Ref 6.2.1
+
+Required Capital is the amount of capital required to be held in addition to
+regulatory reserves in respect of the Covered Business. The level of Required
+Capital must be no less than that prescribed by Israeli regulations for Covered
+Business on a standalone basis or any other legal restrictions that prevent its
+distribution.
+
+Required capital applies to:
+
+    The in force business, when determining the EV
+
+    The New Business written in the reporting period prior to the valuation date, when
+     determining the VNB.
+
+It may be the case that insurance companies choose to hold Required Capital in excess of
+that prescribed by the regulators. This could occur for various reasons, for example a
+desire to achieve a certain credit rating.
+
+Where the Required Capital has been reduced via the use of reinsurance, the Required
+Capital is the amount after allowing for the effects of this item.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance               21
+
+
+6.3         Cost of capital
+Ref 6.3.1
+
+The cost associated with holding Required Capital, known as the “cost of capital”,
+should be explicitly allowed for as a reduction in the VIF and the VNB. The cost of
+capital is defined as the difference between the face amount of Required Capital at
+the valuation date and the present value of future releases of that capital, allowing
+for the future investment return on the Required Capital, future taxation arising
+from holding that Required Capital and investment expenses relating to assets
+backing that Required Capital.
+
+The rate of future investment return and discount process should follow the rules set out
+in Sections 7 and 10.
+
+The cost of capital is defined in Section 2 as EVCoC for the EV and NBCoC for the VNB.
+
+6.4         Projection of Required Capital
+
+The cost of capital is a function of the size of the capital held, the length of time it is held
+for and the cost per unit of capital held. The capital is held as a buffer to ensure that
+payments resulting from claims on the in-force business can be made with confidence. It
+is therefore appropriate to run-off this capital at a pace commensurate with the run-off of
+the business.
+
+Ref 6.4.1
+
+The timeframe chosen to run off Required Capital for the purposes of determining
+the EVCoC should be consistent with the term of the Covered Business.
+
+The timeframe chosen to run off Required Capital for the purposes of determining
+the NBCoC should be consistent with the term of the New Business.
+
+The run off of Required Capital requires a model of projected Required Capital, starting
+from the level of capital required at the valuation date. It may be that projected Required
+Capital is expected initially to increase (compared to Required Capital) after the
+valuation date before running off – if so, this should be allowed for in the model.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           22
+
+
+
+The projected Required Capital should be based on the calculation of the Required
+Capital at the valuation date, but may be simplified where this does not materially affect
+the cost of capital calculation. Ideally, the projection of Required Capital should be
+calculated by identifying the formula which defines Required Capital as a function of
+other variables; this formula will contain variables which vary by time (e.g. level of basic
+reserves or Books DAC) and variables which do not vary by time (e.g. the percentage of
+basic reserves feeding into the Required Capital formula). The calculation of the
+projected Required Capital can be based on applying this formula to the projected
+variables.
+
+Global amounts that form components of the Required Capital, that are direct functions
+of any measure, such as premium or sum-at-risk, should be split where possible by the
+nature of the capital requirements and projected as a constant proportion of an
+appropriate global measure.
+
+Global amounts that form components of the Required Capital, that are not direct
+functions of any measure, should be split using an appropriate approach which the
+Committee determined to be to divide the capital requirement into two equal amounts at
+the valuation date, and each amount should be projected forward as a constant
+proportion of the projected premium and projected reserves respectively.
+
+Similarly, regulations that specify a floor to any component of Required Capital, such as
+the floor relating to the amount of the extraordinary risk reserve held by a company as at
+31.12.2006, can be ignored when projecting required capital, since these regulations
+relate in principle to a company continuing to write new business, whereas the EV
+calculations apply only to business in-force at a particular date, but with certain
+underlying assumptions reflecting a company open to new business.
+
+Where certain projected variables are not readily available from the projection model (as
+described in Section 7) then an additional projection of that metric is required. For
+example, a projection of the Books DAC may not be required in the projection model
+calculation of Unadjusted VIF, but is required to determine projected Required Capital.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            23
+
+
+Ref 6.4.2
+
+Where the Required Capital is reduced from its gross amount via the use of
+reinsurance then credit for this reduction can be taken into account in the projection
+of the Required Capital for the period over which the arrangements leading to the
+reductions are expected to remain in place.
+
+Where the effect of reinsurance of the policy liabilities leads to a reduction in the
+Required Capital, then credit for this reduction can be taken consistently with the
+assumed period of reinsurance in the VIF or VNB calculation.
+
+Ref 6.4.3
+
+Where the level of Shareholder Equity required to support the Required Capital is
+reduced via the use of financial engineering, then credit for this reduction can be
+taken into account in the projection. The projected Required Capital can be
+reduced by the amount of benefit the financial instrument has on Shareholder
+Equity for the period over which the arrangements, including likely renewals or
+replacements, leading to the reductions are expected to remain in place.
+
+“Financial Engineering” in the above rule refers to means used to reduce required
+capital, such as subordinated debt. Where companies use subordinated debt to reduce
+Required Capital, then credit may be taken for the effect that debt has on reducing the
+level of Shareholder Equity required to support Required Capital (credit would normally
+be taken through the reduction of the cost of capital). For modelling purposes, this may
+be reflected by reducing the level of Required Capital projected by the amount of
+additional regulatory capital the subordinated debt provides. Companies are permitted to
+assume that following the redemption of current subordinated debt then a debt instrument
+with equivalent characteristics would be raised in its place provided, under current
+market conditions, no more favourable terms could be secured.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance         24
+
+
+
+7.          VALUE OF IN-FORCE BUSINESS
+
+This section provides a definition of the VIF before adjustment for the EVCoC and
+EVFOG, which are covered in Sections 6 and 9 respectively; for brevity this is referred to
+as the “Unadjusted VIF”.
+
+The published EV will be based on market-consistent embedded value principles. This
+includes the use of the certainty equivalent approach (defined below), which broadly
+satisfies these principles for all cash flows without embedded financial options and
+guarantees.
+
+This section sets out the rules and guidance for the calculation of the Unadjusted VIF and
+is structured as follows:
+
+    Definition of Unadjusted VIF
+
+    The calculation of Unadjusted VIF
+
+    Definition of in-force business
+
+    Calculation methodology for global provisions.
+
+7.1         Definition of Unadjusted VIF
+
+The Unadjusted VIF arises because the ANW component of the balance sheet is prudent
+and so margins are expected to arise in future from the in-force business.
+
+Ref 7.1.1
+
+The Unadjusted VIF is the present value, after taxation, of future shareholder cash
+flows projected to emerge from Covered Business in force at the valuation, before
+allowance for EVCoC and EVFOG.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance          25
+
+
+7.2         The calculation of Unadjusted VIF
+Ref 7.2.1
+
+The Unadjusted VIF should be calculated using a certainty-equivalent approach.
+This is defined as follows:
+
+   The gross projected market related investment return assumptions for all asset
+    classes should be set equal to the gross risk-free rate as described in Section 10,
+    except for the special government bonds (“chetz”) for which the investment
+    return should be set according to their guaranteed yield.
+
+   Projected tax and investment expense rates on these investment returns should
+    be set equal to expected tax and investment expense rates (expressed as a
+    percentage of return) given the actual asset mix of the business.
+
+   Projected after-tax shareholder profits should be discounted using the gross risk-
+    free rate.
+
+   All non-economic projection assumptions should be set equal to best estimates,
+    as described in Section 11.
+
+The certainty-equivalent approach automatically allows for the intrinsic value of
+financial options and guarantees but not the time value of financial options and
+guarantees. Therefore the EVFOG item of the balance sheet is also required - the
+valuation of this item is described in Section 9.
+
+The projection of the proportion of assets invested in special government bonds (“chetz”)
+should take account of the total expected term of the existing and future bonds backing in-
+force Covered Business. In other words, the valuation should allow for the promise in the
+law to issue new bonds at known terms if reserves grow, or when existing bonds mature,
+as well as to the expected early redemption of the bonds based on the projected runoff of
+the reserves, rather than to the” nominal” date at which the existing bonds will
+technically mature.
+
+There are certain investments that earn a higher investment return than other assets with
+an equivalent risk profile because of higher expenses or profit margins. This situation can
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            26
+
+
+
+exist in an inefficient market, which currently exists for assets such as mortgages and
+policyholders loans. For these assets, allowance can be made in the EV by increasing
+their assumed investment return by the difference between the interest rate earned on the
+loan and the market interest on other loans or bonds with an equivalent credit rating (or
+by another indirect but equivalent method). Where the value of the additional margin is
+material, this should be disclosed.
+
+Ref 7.2.2
+
+Companies should calculate the Unadjusted VIF using computerised projection
+models for all material lines of business. The models should project the cash flows
+of the Covered Business using the certainty-equivalent approach. The model should
+project reserves reflecting the reserving methodology and bases used to calculate
+regulatory reserves at the valuation date, allowing for any future changes in the
+methodology or bases that are highly likely to occur. The resulting projected
+regulatory surplus after tax should then be discounted to the valuation date using
+the discount rate as defined by the certainty-equivalent approach.
+
+In order to calculate VIF, a model is required to accurately project the cash flows
+expected to arise from the Covered Business. The model should cover all material lines
+of business, but there are likely to be some lines which it is not economic to model. As a
+general rule, at least 95% of the business (measured in terms of reserves, premium and
+value) should be modelled.
+
+Ref 7.2.3
+
+Where grouped data is used companies should be able to demonstrate that the loss
+of the level of accuracy using the grouped data is not material; otherwise,
+ungrouped data or data grouped using more appropriate criteria, producing a more
+accurate result, must be used.
+
+For certain contract types the use of grouped data may reflect the nature of the contract,
+for instance Group Risk products. In these circumstances the materiality test does not
+apply.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            27
+
+
+Ref 7.2.4
+
+The calculation of the Unadjusted VIF should be based on a monthly cash flow
+model, unless it can be demonstrated that a model projection frequency less than
+monthly does not result in a material loss of accuracy.
+
+The calculation of the Unadjusted VIF is more accurate and reflects reality more closely
+when projected on a monthly basis. In reality a significant number of cash flows can
+occur on a monthly basis, e.g. premiums, commission payments.
+
+Ref 7.2.5
+
+The term of the projection should be sufficient to ensure that all cash flows which
+materially affect the Unadjusted VIF are fully captured.
+
+Insurance business would be expected to generate profits or losses over the course of its
+full term and so the projection period should be sufficiently long in order that all material
+cash flows relating to in-force business have been modelled up to the point that that
+business expires.
+
+Ref 7.2.6
+
+The Unadjusted VIF should allow for all material beneficial conditions or special
+terms that are offered on a contract, including guaranteed insurability. Where such
+beneficial conditions exist, the Unadjusted VIF should be calculated under the
+assumption that the beneficial conditions continue for as long as is expected by the
+company, which may be longer than the legal definition contained in the policy
+contracts.
+
+Many policies contain beneficial conditions compared to the standard product terms.
+These can be discounts to the premium rates or extra coverage provided free of charge.
+Often the agreement with the customer specifies that at a certain future date the
+beneficial conditions will cease or be adjusted, possibly depending on the performance of
+the group/employer to which the customer belongs.
+
+Assuming beneficial conditions ceased at their contractual termination date when the
+company’s policy in practice is to extend those conditions could lead to an overstatement
+of the EV.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance               28
+
+
+Ref 7.2.7
+
+Where a policy behaves as two individual elements that interact directly with each
+other, then the modelling of the Unadjusted VIF should take account of this
+interaction.
+
+An example of this situation arises with policies where the benefit level is fixed and the
+company varies the proportion of premium being invested into savings/protection in
+order to reduce the sum assured. The position should be addressed by either modelling
+the overall policy as a whole, or making appropriate, consistent, assumptions regarding
+premium increases or decreases for the separate elements of the policy.
+
+A further example is for policies where the benefit level is not fixed and the policyholder
+can choose to vary the proportion of premium being invested into savings/protection in
+order to reduce the sum at risk. In this instance any assumption in relation to changes in
+the savings element should be consistent with assumptions in relation to the protection
+element.
+
+A further example is where a child’s cover has a discounted premium rate as long as the
+parent’s cover is still in force. For this example, if the parent’s cover is expected to lapse
+before the child’s cover, the premium for the child’s cover can be assumed to increase in
+line with the policy conditions and realistic assumptions.
+
+Ref 7.2.8
+
+The Unadjusted VIF should allow appropriately for reinsurance.
+
+The Unadjusted VIF should reflect cash flows and reserve movements after allowance for
+the impact of reinsurance. For example, where the presence of reinsurance reduces the
+amount of claim outgo or a profit sharing formula exists then this should be allowed for.
+Similarly the payment of any reinsurance premiums and commissions should also be
+allowed for.
+
+Short term reinsurance treaties, such as catastrophe treaties, that are normally renewed,
+should be allowed for including future renewals based on realistic assumptions. The
+existence of catastrophe reinsurance will have an implication on how the assumptions for
+mortality and/or other risk factors allow for catastrophe risks.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance              29
+
+
+7.3         Definition of in force business
+Ref 7.3.1
+
+The Unadjusted VIF should be calculated allowing for the policy terms and
+conditions in force at the valuation date. Contractual or reasonably certain
+increases or decreases in regular premiums or policyholder benefits should be
+included in the Unadjusted VIF.
+
+An example of a contractual increase is where premiums automatically increase with
+salary inflation. The increases in the future premiums should be captured in the model of
+the Unadjusted VIF. Allowing for the effect of salary increases on premium levels should
+take account of the expected effect of tax ceilings and the splitting of employee-benefit
+contributions between different types of policies or other savings vehicles.
+
+An example of a contractual decrease is where premiums on the protection element of a
+policy are reduced automatically to reflect the reduction in the sum at risk.
+
+Ref 7.3.2
+
+Where increases or decreases in regular premiums are expected with reasonable
+certainty to arise in excess of a contractual limit, then that increase or decrease
+should be included in the Unadjusted VIF provided experience substantiates the
+assumption.
+
+For example, it is acceptable to assume that policyholders are likely to increase the
+savings element on a policy where they have the option to increase the savings element as
+the policy duration increases, and there is evidence of regular take up of this option in
+practice.
+
+Ref 7.3.3
+
+Lump sum premiums used to purchase additional benefits which arise due to
+increases in regular premiums should be included in the Unadjusted VIF.
+
+For example lump sum premiums used to buy additional severance pay benefits
+(“pizzuim”) when salary increases are in excess of inflation should be allowed for in the
+The Israeli Committee for the Determination of the Embedded Rules and Guidance              30
+
+
+
+Unadjusted VIF. This may require separate modelling of the “pizzuim” and “tagmulim”
+components of a policy where this separation has a material effect on the EV.
+
+Ref 7.3.4
+
+Infrequent and unpredictable single premium payments should be excluded from
+the Unadjusted VIF. Premiums of this nature received by the company should be
+classified as New Business rather than renewals of in force Covered Business.
+
+Such business is by nature relatively uncertain and so it would not be appropriate to
+capitalise future “expected” single premiums and the profits thereon in the embedded
+value.
+
+Ref 7.3.5
+
+Short term business with a defined term should be included in the Unadjusted VIF
+on the basis that the policy matures at the end of the term of the original contract.
+
+The issue of renewability is particularly relevant for short term business where there is
+an expectation that both parties will agree a renewal of the terms and conditions of the
+contract at the end of the contract period.
+
+However this situation is different to most other forms of new business/renewals. In this
+case, the option to renew the contract is held by both parties. The company has the right
+but not the obligation to offer a similar contract at the end of the policy term. If offered,
+the policyholder has the right but not the obligation to accept the terms of the new
+contract.
+
+In other forms of contract, the insurer generally has the obligation to offer a renewal of
+the contract on the same terms and conditions.
+
+This rule applies in particular to Group Risk and health business.
+
+Ref 7.3.6
+
+Changes to covers which can be reasonably anticipated should be allowed for in the
+Unadjusted VIF.
+
+In other words, such future changes are included in in-force business.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance               31
+
+
+
+Examples of this are where the policyholder can increase the level of the benefit on an
+inforce policy.
+
+This may be allowed either explicitly by modelling a conversion rate to revised terms and
+rider profitability or implicitly via and adjustment to the rider lapse rates.
+
+The modelling approach to rider benefits must be disclosed. Changes in covers which
+are not reasonably foreseeable and which are not included in the VNB will emerge as an
+experience variance.
+
+7.4         Approach to valuing global reserves / provisions
+Ref 7.4.1
+
+The Unadjusted VIF should include an allowance for the value of the global reserves
+and provisions identified in Section 5. For each reserve, it should be determined
+how much is needed as a “best estimate”. The remaining reserve should be assumed
+to be released over time into the surplus arising.
+
+“Best estimate” should be considered in the context of the discussion on the allowance
+for non-market risk in Section 11. It should reflect the mean expected outcome to
+shareholders of fluctuations in experience.
+
+The calculation of the contribution to Unadjusted VIF from global reserves and
+provisions can be performed outside the main projection model. For example an
+adjustment to the Unadjusted VIF calculated by the main EV models could be added from
+a spreadsheet calculation.
+
+The value should make allowance for the time period over which the reserve will be
+released. This should be consistent with the run-off of the in-force liabilities for which
+the reserve was set up. The run-off pattern should not allow for reserves which might be
+required in respect of new business after the valuation date.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance             32
+
+
+
+8.          VALUE OF NEW BUSINESS
+8.1         Introduction
+
+The VNB is a key component of EV disclosure. This Section provides a definition of the
+VNB before adjustment for the NBCoC and NBFOG which are covered in Sections 6 and
+9 respectively. For brevity this is referred to as the “Unadjusted VNB”.
+
+This Section sets out the rules and guidance for the calculation of the VNB and is
+structured as follows:
+
+    Definition of Unadjusted VNB
+
+    Definition of new business
+
+    Calculation of Unadjusted VNB
+
+    Impact of global reserves and provisions on Unadjusted VNB
+
+8.2         Definition of the Unadjusted VNB
+Ref 8.2.1
+
+The Unadjusted VNB is the present value, after taxation, of shareholder cash flows
+arising from the New Business written during the reporting period immediately
+prior to the valuation date, before allowance for NBCoC and NBFOG.
+
+8.3         Definition of New Business
+Ref 8.3.1
+
+New Business is defined to be the Covered Business written during the reporting
+period ending on the valuation date. The definition of New Business should be
+consistent with the definition of in force business set out in Section 7.
+
+For example, since group life and health policies should be included up to the end of the
+current policy term, the renewal of a group life and health policy should be included in
+the New Business.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            33
+
+
+Ref 8.3.2
+
+The New Business definition should include business written during the reporting
+period that has subsequently gone off the books.
+
+This business, although no longer in-force, will have had an impact on the EV due to cash
+flows occurring during the reporting period. It is important to allow for these in the
+calculation of VNB.
+
+Ref 8.3.3
+
+The New Business definition should exclude the value of new business expected to be
+written in future reporting periods.
+
+EV is a measure of the business in-force at the valuation date and does not include the
+value of business expected to be written in the future.
+
+Ref 8.3.4
+
+The New Business definition should exclude any increases to regular premiums on
+policies already in-force at the beginning of the reporting period to the extent that
+such increases have already been included in the calculation of the Unadjusted VIF.
+Conversely, new and increased premiums on existing business which were not
+anticipated in the calculation of the Unadjusted VIF should be included in the New
+Business definition.
+
+Where increments and additional premiums to existing business are captured within the
+VIF at the start of the reporting period, these should be excluded from the new business
+added in the reporting period, as to do otherwise would be to double count the value of
+such premiums in the EV.
+
+Ref 8.3.5
+
+The New Business definition should include any renewals which occur on short term
+business which has been excluded from the VIF.
+
+New rider benefits on existing policies should be treated as new business.
+
+Where an existing policy gives rise to a new rider benefit, as opposed to a converted
+rider, then this should be allowed for in the Unadjusted VNB.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            34
+
+
+Ref 8.3.6
+
+The New Business definition should exclude any business which has not formally
+gone “on risk” at the valuation date.
+
+This situation could arise, for example, where a policy was sold close to the year end. If
+the policy has not formally gone “on risk”, there is no liability at the valuation date to the
+insurance company. However, the calculation of the ANW will need to be consistent in
+eliminating any premium monies received which have not been placed with such policies.
+
+Ref 8.3.7
+
+A reconciliation should be performed between the volume of New Business being
+valued within the VNB and the volume of new business being reported externally as
+sold during the reporting period for other purposes.
+
+It is possible that the definition of new business for EV terms and the definition for
+general reporting purposes will differ. Typically, this might be because of the treatment
+of increments or additional single premiums on existing policies, which might be included
+in new business statistics.
+
+8.4         Calculation of Unadjusted VNB
+
+The remainder of this Section contains rules and guidance on various aspects of the
+definition of the VNB where, to date, practice differs among companies publishing EV.
+It is felt that the advantage of consistency within the Israeli industry outweighs the
+usefulness of flexibility.
+
+Ref 8.4.1
+
+The Unadjusted VNB should be calculated in a consistent manner with that of the
+Unadjusted VIF, using the certainty-equivalent approach described in Section 7.
+
+The NBCoC and NBFOG are calculated using separate processes which are described in
+Section 6 and Section 9 respectively.
+
+Ref 8.4.2
+
+The Unadjusted VNB should make full allowance for expenses and commissions
+incurred in the acquisition of the business.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           35
+
+
+
+The Unadjusted VNB should reflect all expenses classified as acquisition expenses in the
+analysis described in Section 11. The Unadjusted VNB should also reflect the
+commission terms on which the business has been sold, including any special terms which
+may apply.
+
+Ref 8.4.3
+
+The Unadjusted VNB should make full allowance for maintenance and investment
+expenses allocated to the New Business.
+
+Ref 8.4.4
+
+The Unadjusted VNB should not be reduced for development expenses, if these
+expenses can be allocated to future years’ new business according to the company’s
+business plan.
+
+Ref 8.4.5
+
+The Unadjusted VNB should be based on end period economic and non-economic
+assumptions. It should not be based on pricing assumptions.
+
+In the past, some companies have published VNB on start year assumptions, in particular
+non-economic assumptions. This is often for practical reasons and based in part on the
+order in which they calculate the analysis of EV profit. Such companies have often
+separately published VNB based on end year assumptions in the notes to the EV. This
+rule is designed to avoid the need for two different VNBs to be calculated and quoted in
+the disclosure. In the Israeli EV Rules and Guidance there are rules around the order of
+calculation of the analysis of EV profit to ensure consistency with the above.
+
+For interest rate sensitive products, the end year economic assumptions can differ
+significantly from the pricing assumptions. The impact of the pricing and investment
+management decisions during the year should come through in the identification of the
+ANW impact of writing the new business.
+
+Ref 8.4.6
+
+The Unadjusted VNB should be calculated as at the valuation date, not the point of
+sale and should separately identify the impact on the VIF and the impact on the
+ANW.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            36
+
+
+
+The act of writing new business generally has a negative impact on ANW. This is a useful
+item to monitor to help identify the capital strain of writing new business.
+
+This is an area where practice differs in EV reporting to date, and the rule is designed to
+ensure consistency within the industry.
+
+The total VNB that will be reported includes the full value of the new business from the
+point of sale. This rule implies that the VIF component of the VNB will be calculated as
+at the valuation date, and the ANW component of the VNB will be based on actual
+experience (revenues and expenses) between the point of sale and the valuation date in
+respect of the new business, rolled forward with interest to the valuation date. It should be
+noted that as a result of this rule, the VNB will include both investment and non-
+investment experience variances between the point of sale and the valuation date.
+Investment variances in particular can significantly impact the VNB between the point of
+sale and the valuation date. It is optional whether companies wish to separately identify
+and disclose the investment experience related to the Unadjusted VNB.
+
+Ref 8.4.7
+
+The data to be used in calculating the Unadjusted VNB can be either identified using
+New Business policy data within the in-force data file, or by identifying the New
+Business data within the movements file.
+
+These two approaches to calculating the Unadjusted VNB should lead to the same result,
+provided a consistent allowance is made for the cash flow movements between the point
+of sale and the valuation date.
+
+It is permissible to calculate the Unadjusted VNB by calculating the Unadjusted VIF
+component arising from New Business policies , and to separately identify the impact on
+ANW of selling the New Business. In such circumstances companies would be expected to
+reconcile the impact on the ANW of selling the New Business from (for example)
+accounting data and the surplus cash flows arising from the projection model between the
+point of sale and the valuation date.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance          37
+
+
+Ref 8.4.8
+
+Where grouped New Business data is used companies must demonstrate that the loss
+of the level of accuracy using the grouped data is not material, otherwise ungrouped
+or data grouped using more appropriate criteria, producing a more accurate result
+must be used.
+
+The Unadjusted VNB should allow appropriately for taxation on a marginal basis.
+
+Allowance for taxation is discussed in Section 11. The unadjusted VNB should allow
+appropriately for the tax expected to arise as a result of writing the New Business.
+
+This allowance for taxation should be on a marginal basis. In other words, if writing
+New Business changes the value of the Tax DAC valued in the VIF, the impact of that
+change should be included in the VNB.
+
+8.5         Impact of global reserves and provisions on Unadjusted
+            VNB
+Ref 8.5.1
+
+The impact on the global reserves and provisions of writing New Business should be
+assessed. If the New Business leads to an increase in the level of reserve or a delay in
+releasing the reserve, the marginal impact should be allowed for in determining the
+VNB.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance               38
+
+
+
+9.         FINANCIAL OPTIONS & GUARANTEES
+9.1        Introduction
+
+Market conditions since 2000 have had an unprecedented impact on the financial position
+of life insurers worldwide, as a result of the combination of the sale of products with
+financial options and guarantees, asset-liability mismatching, and sustained falls in equity
+markets and interest rates. It is important therefore that the EV rules and guidance deal
+with financial options and guarantees in a rigorous and transparent manner.
+
+There are various elements of the balance sheet which may contain financial options and
+guarantees, including the tangible assets, the policyholder liabilities, and other aspects of
+the asset or liability side of the balance sheet including tax assets and liabilities.
+
+This Section is primarily focused on the policyholder liabilities, although certain contract
+structures in Israel also result in financial options and guarantees being to the benefit of
+shareholders. In addition the need to consider the impact of financial options and
+guarantees on value is also a requirement for the tangible assets (see Section 5) and a
+requirement for the tax assets and liabilities (see Section 11).
+
+The Committee has concluded that the existing products in most Israeli companies do not
+contain any FOG that have a material impact on the EV, and therefore they do not require
+the application of this chapter. However, every company should validate if this
+generalisation applies to its specific portfolio, and this validation should take place at
+every valuation date since the situation can change as new products are developed and
+become more material.
+
+The remainder of this Section is structured as follows:
+
+    Definition of financial options and guarantees.
+
+    Financial options/guarantees identification process.
+
+    Classification of financial options/guarantees.
+
+    Setting the EVFOG.
+
+    Setting the NBFOG.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance               39
+
+
+
+   Impact of non-market risk on EVFOG and NBFOG.
+
+9.2         Definition of financial options and guarantees
+Ref 9.2.1
+
+Financial options and guarantees are features of assets and liabilities whose value
+changes asymmetrically given symmetric movements in financial markets.
+
+Within insurance contracts, such features typically allow the policyholder the more
+valuable of two (or more) benefits, with at least one being linked to the level of financial
+markets.
+
+Certain contracts give rise to additional shareholder profit margins when investment
+returns exceed a pre-defined rate – this is a financial option for the benefit of
+shareholders.
+
+A “guarantee” is deemed to be included within this definition if the policyholder receives
+the higher of a guaranteed amount and the benefit had the guarantee not been in place.
+
+Non-profit business, where the guaranteed payout is fixed or only contingent on non-
+market related events, would not be deemed to have features classified as financial
+options and guarantees for this purpose. An example not classified as financial options
+and guarantees would be fixed or inflation-linked annuities payable on survivorship after
+retirement. However if an inflation-linked annuity had a minimum underpin to the
+inflation (e.g. the annuity payment will not decrease if inflation is negative), then that
+feature would be classified as a financial option and guarantee and should be valued
+accordingly.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           40
+
+
+9.3         Financial options/guarantees identification process
+Ref 9.3.1
+
+Companies should perform an analysis to identify policyholder liabilities in force as
+at 31 December 2006 which have embedded financial options/guarantees and repeat
+this for any new product types developed and sold after 31 December 2006.
+
+Materiality should be ignored when determining the list. This is taken into account by
+identifying the volume of the option/guarantee.
+
+The output of this exercise should be a table including the following fields:
+
+   Type of product
+
+   Description of option/guarantee
+
+   Years of sale of product with option/guarantee in stated form
+
+   Calendar year in which option may be triggered
+
+   Event which can lead to option being triggered
+
+   Preferred metric to measure volume of option/guarantee
+
+   Volume of option/guarantee in-force
+
+   Volume of option/guarantee within New Business
+
+   Extent to which the financial option/guarantee is matched by a hedging asset
+
+   Description of how management actions and policyholder behaviour impact the cost
+    of the financial option/guarantee
+The Israeli Committee for the Determination of the Embedded Rules and Guidance              41
+
+
+9.4         Calculating the EVFOG
+Ref 9.4.1
+
+The EV balance sheet should contain an allowance for the time value of financial
+options and guarantees (EVFOG).
+
+The methodology and assumptions proposed in Sections 7 and 10 of this document
+appropriately captures the intrinsic value of financial options and guarantees based on
+market-consistent principles. Therefore this Section of the document is only concerned
+with capturing the time value of options and guarantees.
+
+For options where the market price is known or straightforward to determine at the
+valuation date, this price should be used as the value for EVFOG.
+
+Generally, the EVFOG is expected to have a negative impact on the EV. However for
+some financial options and guarantees, the EVFOG impact may be positive, and therefore
+it is possible for the total EVFOG is expected to have a positive impact on the EV. It is
+acceptable for positive impacts to be used to offset negative impacts elsewhere. An
+example of such financial options and guarantees are call options to shareholders, for
+example the payment to shareholders of an x% share of any credited bonus above a y%
+level, and where the shareholders do not share in any costs where credited bonus is
+below y%. The use of market-consistent valuation for the intrinsic value will mean that
+the time value of this positive value to shareholders will be ignored, and so this should be
+captured in the EVFOG.
+
+Ref 9.4.2
+
+The provision for financial options and guarantees should be determined using a
+stochastic market-consistent methodology or, provided that to do so does not result
+in a material inaccuracy in the EV or VNB, an appropriate closed-form solution.
+
+Where stochastic simulation models are used then these should use standardised market
+data to calibrate the stochastic economic scenario generator. The scenarios should be
+market-consistent. The scenarios can either be a set of risk neutral simulations where
+equal weight is applied in the valuation to the outcome of each scenario, or real-world
+The Israeli Committee for the Determination of the Embedded Rules and Guidance             42
+
+
+
+simulations with scenario specific deflators. Both approaches should produce the same
+results, but the output of the models must be demonstrably market consistent.
+
+Where closed form solutions are used then companies should calibrate these to be
+consistent with the parameters used in the stochastic economic scenario generator.
+
+Companies will be required to disclose the implied volatility and correlation assumptions
+used where these have a material impact on the EV and VNB.
+
+Companies are encouraged to plan actively for the longer term requirement. Building
+and testing stochastic models to auditable standards is a time consuming and non-trivial
+task.
+
+The calibration of the stochastic scenarios should be appropriate to the features of the
+liabilities. Such features include duration, term and in-/out-of-the-moneyness.
+
+Where hedging exists that offsets the effect of the FOGs, this can be allowed for, which
+may remove the necessity to model the FOGs explicitly. In such a situation the value/cost
+of the hedging needs to be allowed for correctly.
+
+9.5         Calculating the NBFOG
+Ref 9.5.1
+
+Within the EVFOG, companies should identify what proportion is attributable to
+the New Business. This should be identified separately and is referred to as the new
+business financial options and guarantees allowance (NBFOG).
+
+The NBFOG should be calculated by applying the calculation principles used to
+calculated the EVFOG to the policies used to calculate the Unadjusted VNB.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance               43
+
+
+
+10.       ECONOMIC ASSUMPTIONS
+10.1      Introduction
+
+The use of the certainty-equivalent approach means that there is no discretion as to the
+choice of gross economic projection assumptions or the choice of discount rate. The key
+economic assumption is therefore the choice of risk-free rate.
+
+The remainder of this Section is structured as follows:
+
+   Definition of risk-free rate.
+
+   Real versus nominal modelling.
+
+   Inflation assumptions.
+
+   Expected Return.
+
+   Asset mix assumptions.
+
+10.2      Definition of risk-free rate
+Ref 10.2.1
+
+The risk-free rate assumption within the EV is defined to be the published vector of
+real interest rates, referred to in current pension fund valuation regulations in
+Israel.
+
+A company may choose to disclose the equivalent single risk-free rate that, for its own EV
+produces the same result as the above mentioned vector.
+
+In other countries there has been some debate as to whether a government bond-based
+risk- free rate or a swap-based risk-free rate is more appropriate. Experience is that for
+many products this definition does not materially impact the EV result. For some
+products, in particular large single premium investment products (including annuities)
+and those with embedded financial options and guarantees, this assumption can be
+significant.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            44
+
+
+
+It is noted that the published vector of interest rates is real, and would need to be
+appropriately adjusted to nominal, if the EV is calculated using a model that projects
+nominal cashflows. This is discussed later in this Section.
+
+10.3      Real versus nominal modelling
+Ref 10.3.1
+
+It is permissible to use models which project cashflows using either real or nominal
+interest rates, provided that the model and all assumptions are internally consistent.
+Both methods should produce the same results for the EV.
+
+Companies building EV models for the first time are encouraged, but not required to
+project cash flows on a nominal basis to comply with international best practice.
+
+Companies should disclose how inflation is treated in its models.
+
+10.4      Inflation assumptions
+
+For the purposes of the EV, various inflation-related assumptions may be required,
+including expense inflation, inflation-linked increases in premium and benefits, claim
+inflation in particular medical claim inflation.
+
+Ref 10.4.1
+
+The CPI-inflation assumption should be set equal to that implied by the difference
+between the yield on fixed-rate government bonds and the yield on CPI-linked
+bonds of similar duration. Other inflation assumptions should be set to be
+consistent with the CPI-inflation assumption. The rationale for any differences
+should be disclosed.
+
+It is noted that for health business, the setting of the medical claim inflation assumption
+requires significant judgement. This issue is dealt with by allowing company discretion
+in the setting of the assumption, and requiring the impact of experience variances to be
+disclosed and requiring a sensitivity to be performed on this assumption.
+
+Companies should disclose how the inflation assumption is set.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           45
+
+
+10.5      Expected Return
+Ref 10.5.1
+
+Companies are required to determine an expected return on assets allocated to
+Covered Business and assets included in the ANW calculation. The expected return
+should be based on the company’s expectation of the return on assets over the next
+financial reporting period. For assets held at book value this will be the book value
+return.
+
+The expected return is not required for the EV, but is required in the presentation of the
+analysis of movement.
+
+10.6      Asset mix assumptions
+Ref 10.6.1
+
+The EV model will require assumptions around the current and expected future
+asset mix of the assets backing the Covered Business.
+
+The current asset mix should be set equal to the actual mix of assets at the valuation date.
+
+The expected future asset mix should be consistent with the current asset mix. Any
+material differences between the expected future asset mix and the current asset mix
+should be disclosed and the rationale explained.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            46
+
+
+
+11.       NON-ECONOMIC ASSUMPTIONS AND RISK
+11.1      Introduction
+
+It is a requirement that the EV is calculated by all Israeli companies. This includes a
+mixture of large companies, where experience data is credible and experience analyses
+are completed on a regular basis, and small companies where experience data is not
+credible and experience analyses are not yet regularly completed. The Israeli EV Rules
+and Guidance have been drafted to take account of this fact. Reference is therefore made
+to “company-specific assumptions” representing those assumptions which are based on an
+analysis of credible data undertaken by the company.
+
+The rest of this Section is structured as follows:
+
+   Principles when setting non-economic assumptions and allowing for risk.
+
+   Demographic assumptions setting – company-specific or industry-wide.
+
+   Experience investigations.
+
+   Setting demographic assumptions.
+
+   Setting expense and commission assumptions.
+
+   Bonus rates.
+
+   Allowance for taxation.
+
+11.2      Principles when setting non-economic assumptions and
+          allowing for risk
+
+The EV framework as proposed allows for market and credit risk but leaves open the
+question as to whether sufficient allowance has been made for other risks.
+
+Financial theory states that investors should not require compensation in the discount rate
+for non-market risks as long as they can diversify away the uncertainty around the return.
+In such circumstances the allowance for non-market risk is made through the choice of
+appropriate best estimate assumptions, with indirect allowance through the cost of capital.
+This theory assumes that best estimates have been defined appropriately.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance          47
+
+
+
+
+Ref 11.2.1
+
+Best estimate assumptions should:
+
+   be set so as to give the mean financial outcome to shareholders, .
+
+   have regard to past, current and expected future experience and to any other
+    relevant data.
+
+   be age, calendar year or policy year dependent if material.
+
+Ref 11.2.2
+
+Companies should consider the appropriateness of the company-specific best
+estimate assumptions for each EV calculation, and update them if necessary.
+
+Ref 11.2.3
+
+Companies are required to perform a risk gap analysis of the proposed EV basis
+including proposed EV provisions in the light of the above rules and ensure that
+sufficient allowance has been made for all risks.
+
+This analysis should take account of the following:
+
+   Whether best estimate non-market risk assumptions adequately allow for skewness in
+    the risk distribution (for example the potential skewness related to catastrophes and
+    war-risk).
+
+   Whether best estimate non-market risk assumptions adequately allow for asymmetries
+    in the payout to shareholders arising from fluctuations in the distribution.
+
+   Whether there is an assumed correlation between particular non-market risks and
+    market movements.
+
+   Whether there are some risks with low probability of occurring which have not been
+    captured within the best estimate assumptions set and would lead to losses to
+    shareholders should they materialise. A typical example is operational risk.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           48
+
+
+
+As part of the risk gap analysis companies should consider whether the presence of
+options and guarantees (which may be financial or insurance-related) within particular
+products may give rise to an asymmetric fluctuation in the claim payout as a result of
+fluctuations in the non-market risk.
+
+11.3      Demographic assumption setting
+Ref 11.3.1
+
+Where credible and relevant data exists, companies should undertake experience
+analyses in order to set company-specific assumptions.
+
+Ref 11.3.2
+
+Where credible and relevant company-specific data does not exist then the most
+suitable alternative sources of data should be identified. In this case, industry
+statistics derived from experience of similar or identical policies in the Israeli
+market can be used in the first instance, provided that there are no other more
+suitable external statistics.
+
+For example, where a company is making assumptions with regard to annuitant
+mortality, but does not have any credible experience, then the assumptions could be
+based on the Israeli standard tables for annuitants arising from occupational pension
+schemes, adjusted for any expected differences or built-in margins. In addition, statistics
+based on reinsurer’s rates would normally be an acceptable source of industry data.
+
+Ref 11.3.3
+
+Where no credible data exists and no appropriate external statistics exist, then
+companies may use the discretion of the actuary for setting the best estimate
+assumptions provided this should be disclosed.
+
+A starting point may be information that is used to help set pricing bases. Where
+assumptions which have been set solely using the discretion of the actuary without
+recourse to external or internal data have a material impact on the EV, then this should
+be disclosed.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            49
+
+
+Ref 11.3.4
+
+Where companies do not use assumptions based on their own experience, then this
+should be disclosed.
+
+11.4      Experience investigations
+
+The following rules apply to those companies using company-specific assumptions.
+
+Ref 11.4.1
+
+Companies should perform experience investigations to determine company-specific
+best estimate assumptions. Experience analyses should be undertaken annually for
+the assumptions which most materially impact EV. For less material assumptions a
+less frequent analysis is permitted, although no less frequent than once every three
+years.
+
+Material assumptions are likely to include, but are not limited to, the following examples:
+
+   Expenses
+
+   Mortality
+
+   Morbidity
+
+   Persistency
+
+   Premium linkage to salary
+
+Where an assumption is material to one line of business, but not another, then it is
+permissible for the company to restrict the more frequent analyses to the product lines
+where the assumption has a material impact.
+
+For less material assumptions actual experience should be monitored against best
+estimate assumptions, and the impact on EV of variations should be identified in the
+analysis of EV profit, as specified in Section 14. Where there is a material impact on EV
+arising from fluctuations in experience, an experience analysis is required in the current
+reporting period, as a large variance in the analysis of movement would indicate that the
+assumption would need to be updated immediately.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance             50
+
+
+
+The period over which data is collected for the analysis, and the end date of the data
+captured (i.e. the end of the period over which data is captured) for the analysis will
+depend on the item being analysed and the company’s own experience. However, in
+general it would be expected that the end date of the data captured would be no more
+than one year prior to the valuation date. In determining the period of data capture,
+companies should consider the impact of items which may affect policyholder behaviour
+and therefore affect the validity of using data arising from certain periods. Such items
+include, but are not limited to:
+
+   Significant changes in economic conditions
+
+   Changes in legislation
+
+   Changes in claims management procedures
+
+Where the experience has been subject to a one-off “shock” which is not expected to
+recur then the impact of this event should be excluded from the analysis. An example
+would be where a change in legislation causes a short term change in policyholder
+behaviour which is not expected to continue in the future.
+
+The construction of data points within the experience investigations should reflect the
+material features of the business for that assumption.
+
+Such features are likely to include, but are not limited to, the following examples:
+
+   Product
+
+   Age
+
+   Sex
+
+   Smoker status
+
+   Policy year
+
+   Calendar year
+
+   Distribution channel
+The Israeli Committee for the Determination of the Embedded Rules and Guidance             51
+
+
+
+Certain features may be immaterial for certain product/assumption combinations in
+which case it is acceptable to ignore that feature in the experience analysis.
+
+Where two very similar products are in existence and they exhibit similar experience,
+then it is acceptable to group the data across the similar products.
+
+11.5      Setting demographic assumptions
+
+Where an analysis of past experience has been undertaken then this should form the basis
+for setting demographic assumptions.
+
+Where a step change in experience is clearly visible in the analysis and this is expected to
+be a permanent feature then when determining demographic assumptions more weight
+should be placed on the most recent data.
+
+Companies should justify the approach where more weight is given to more recent data,
+particularly if this acts to increase the embedded value. An example may be where an
+improvement in customer services leads to a decrease in lapse rates.
+
+Where a trend in experience is clearly visible in the analysis and this is expected to
+continue in the future then this should be reflected in setting the assumptions. An
+example is that mortality continues to improve for annuitants.
+
+Where there is a high correlation between different assumptions then this should be
+reflected in the assumption setting process. For instance if a company assumes beneficial
+conditions are withdrawn on a product this may lead to higher lapse rates and such an
+allowance should be allowed for. Similarly if a premium rate review is likely to lead to
+premium increases not observed elsewhere in the market then the potential effect on lapse
+rates should be considered when setting the lapse assumptions for that product.
+
+Provided that policy conditions permit premium rate reviews, then it is permissible to
+allow for premium increases at policy review dates within the EV based on realistic
+expectations regarding the timing and conditions applicable to the premium rate review.
+
+
+If a company assumes that there is greater than nil profit after the review date then this
+should be disclosed. The increased outgo due to anti-selection risk and future cost of
+The Israeli Committee for the Determination of the Embedded Rules and Guidance              52
+
+
+
+processing changes in future premium levels should be allowed for. If other companies
+with similar products are not following this approach, the decrement assumptions (in
+particular lapses) should be reviewed in the light of possible worsening future experience
+following the review.
+
+All material beneficial conditions should be allowed for within the EV. It is permitted to
+assume that beneficial conditions cease provided this follows the terms and conditions of
+the policy, and provided this is consistent with business plans. If beneficial conditions
+were assumed to cease, this could lead to an increase in lapses and companies should
+review their other demographic assumptions as appropriate..
+
+The expected risks and costs around the guaranteed insurability option should be allowed
+for within the EV and VNB.
+
+Where a guaranteed insurability option is available and experience indicates that this
+option is exercised by the policyholder then companies should make an assumption
+regarding the cost of policyholders exercising that option at the exercise date.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           53
+
+
+11.6      Setting expense and commission assumptions
+Ref 11.6.1
+
+The VIF should reflect the full costs of the ongoing life insurance operation
+including overhead expenses. The VNB should reflect the full acquisition costs
+associated with securing that business and the ongoing expenses associated with
+administering that book including its share of overhead expenses. Where expenses
+are incurred outside of the life insurance company which relate to the Covered
+Business then these should be included in the expense assumptions.
+
+All expected future acquisition, maintenance, claim and investment expenses in respect of
+the in-force business should be captured within the best estimate assumptions, and all
+expenses incurred in writing new business should be included within the value of new
+business. A marginal expense allocation when determining the VNB is not acceptable.
+
+Companies should include the costs of service companies on a “look through” basis
+where these service companies service the life company.
+
+Where a holding company incurs certain expenses which relate to the insurance
+operation then these should be included in the expense assumptions.
+
+In certain circumstances the group holding or service company and the insurance
+company may operate on commercial terms. In such circumstances it may be assumed
+within the EV that the expenses equal the charges by the holding / service company,
+provided that it can be demonstrated that this approach does not disguise material profits
+or losses by the holding / service company and that the approach is disclosed.
+
+Ref 11.6.2
+
+Companies must undertake an analysis to allocate expenses to one of acquisition,
+maintenance, claim, investment or development. If more than 10% of the current
+expenses are allocated to development expenses then the magnitude of this allocation
+in excess of 10% and the impact on the EV must be disclosed.
+
+The level of detail of analysis the company undertakes will depend upon the size and
+complexity of the company and its business. Overheads should be allocated to the
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           54
+
+
+
+Covered Business as appropriate consistent with current business plans and future
+expectations.
+
+Development expenses are defined as those which are expected to lead to profitable
+future new business or those which are expected to lead to improvement in future
+expenses beyond those allowed for within the EV or expenses arising as a result of one-
+off projects driven by legislation.
+
+Examples of development expenses are those which relate to developing a future new
+business strategy or systems developments to support the launch of new products.
+
+Development expenses in the reporting period should not be allocated to the VNB.
+
+The expense amounts should be converted into product loadings appropriate for the
+business. In the event that product loadings cannot be derived then companies should
+demonstrate that the EV and VNB reflects the level of expenses set out in the Israeli EV
+Rules and Guidance in aggregate.
+
+Ideally, maintenance expenses should be linked to the in-force business by expressing
+them as a percentage of premium or a per policy amount, depending on their nature. It
+may be appropriate to express acquisition expenses as a percentage of the sum insured or
+a per policy amount.
+
+For smaller companies, the ability to differentiate between costs associated across
+products may be limited. In this instance an approach which models expenses globally is
+acceptable.
+
+Expense overruns should be allowed for and disclosed in the EV. If the level and
+duration of overrun relies on an assumption regarding the rate of future new business,
+the new business assumptions used should be disclosed.
+
+Companies should be prepared to provide a sensitivity of the results on the assumption
+that the overrun is never eliminated.
+
+Expected future expense savings should not be allowed for within the EV beyond what has
+been achieved by the valuation date.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            55
+
+
+
+Expected future worsening of expense levels should be allowed for within the EV.
+
+Where future changes in commission payments are known then these changes should be
+allowed for in the EV and VNB provided that:
+   There is a business plan in place to change the commission rates which has been
+    approved by the Board of Directors
+   The impact of the change in commission rates is disclosed.
+
+11.7      Bonus rates
+Ref 11.7.1
+
+The method used to value discretionary-participating business must make
+assumptions about future bonus rates and the determination of profit allocation
+between policyholders and shareholders. Projected bonus rates should be consistent
+with policy conditions, company practice, regulatory requirements and the assumed
+future investment returns used.
+
+Currently in Israel there is no discretionary-participating business.
+
+11.8      Allowance for taxation
+Ref 11.8.1
+
+The allowance for taxation within the cash flow models should be based on existing
+legislation. This should include future changes to the tax regime where these have
+been legislated for.
+
+Where tax rates within existing legislation differ by asset class, this difference should be
+allowed for in the model.
+
+Ref 11.8.2
+
+If tax rates are expected to change in the future, companies should disclose whether
+or not these expectations are allowed for within the EV and VNB.
+
+Where changes have been announced by the regulators, companies should allow for these
+explicitly within the EV calculation and disclose the impact.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance          56
+
+
+
+Where changes are uncertain, companies should calculate the EV without allowance for
+the impact of the change, but perform a separate sensitivity to assess the potential impact
+of the change.
+
+Ref 11.8.3
+
+If material tax assets exist within the EV and/or VNB, the value of tax assets should
+be set with regard to the delay in realisation of such assets, the time value of money
+and the impact of market fluctuations on this position.
+
+The taxation liability of a company arising from certain policies in-force is reduced as a
+result of the write-down of the Tax DAC over a period of time. This reduction in the tax
+liability (and hence increase in the VIF) should be allowed for.
+
+The allowance can be made at a global level as opposed to a model point level.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance             57
+
+
+
+12.       MANAGEMENT ACTIONS AND DYNAMIC
+          POLICYHOLDER BEHAVIOUR
+12.1      Introduction
+
+For business where the company has discretion in respect of the management of the
+business and claim payouts, the assumptions around management actions can materially
+impact the EV and VNB. Currently no business in Israel fits this description (in other
+words, “management action” in this section does not refer to the regular management
+activity that takes place in a company, rather to the irregular actions that can take place in
+response to irregular changes in policyholder behaviour or economic circumstances,
+where management has discretion in areas which are normally contractual). However this
+section has been retained in order to meet any potential future product developments.
+
+The rest of this section is structured as follows:
+
+   Calculation of EVFOG and NBFOG.
+
+   Management actions.
+
+   Consistency between EV and VNB.
+
+   Financial impact.
+
+12.2      Calculation of EVFOG and VNBFOG
+Ref 12.2.1
+
+The calculation of EVFOG and NBFOG can incorporate the impact of management
+actions provided the rules below are followed.
+
+12.3      Management actions
+Ref 12.3.1
+
+Any allowance for management actions should be fully disclosed and agreed by the
+board of the company.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance             58
+
+
+
+When considering the impact of economic sensitivities on building stochastic simulation
+models, assumed management actions may be a key determinant. Examples of possible
+management actions include:
+
+   Setting of future bonus rates, including reducing future bonus rates or smoothing
+   Changing the split of bonus rates across policies, e.g. to enable better matching of
+    assets and liabilities
+   Changing the asset allocation weight in equities or moving to a dynamic asset
+    allocation
+   Purchasing hedging options (may be difficult to model)
+   Closing to new business (but see below)
+
+12.4      Dynamic policyholder behaviour
+Ref 12.4.1
+
+The calculation of EVFOG and NBFOG should consider the impact of dynamic
+policyholder behaviour where this can be projected with reasonable confidence.
+
+12.5      Consistency between EV and VNB
+Ref 12.5.1
+
+There should be consistency between the management action and policyholder
+behaviour assumptions backing the VIF and VNB calculations.
+
+12.6      Financial impact
+Ref 12.6.1
+
+The financial impact of the management actions assumptions should be identified by
+carrying out a sensitivity test on the VIF and VNB results to show the impact of
+assuming no management actions.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance                59
+
+
+
+13.       POLICY DATA
+13.1      Introduction
+
+The policy data used within the EV projection should be accurate in order to give
+confidence in the results of the projection. Errors in areas such as sums assured or
+premiums payable could have a material impact on the resulting EV.
+
+This section provides rules and guidance on the data to be used as an input to the EV
+projections. Companies must follow the rules in order to ensure that:
+
+   the VIF and VNB takes account of all policy data in respect of Covered Business;
+
+   the policy data is sufficient detailed to ensure the VIF projection accurately reflects
+    the features of the Covered Business; and
+
+   the policy data has been grouped in an appropriate way (if appropriate).
+
+Obligations exist elsewhere for companies to ensure the integrity of policy administration
+data and this is not considered here.
+
+13.2      Data Validation
+Ref 13.2.1
+
+Companies must perform independent checks of the data to be used in the VIF to
+ensure it is appropriate for the EV calculations. These checks should be sufficient
+for the company to be able to demonstrate that:
+
+   any corruption or loss of data between the extract being made from the
+    administration systems and that being used in the EV calculations has been
+    identified and explained;
+
+   the data reflects appropriately the policy structures and terms which are
+    relevant for the EV calculation.
+
+Ref 13.2.2
+
+Companies should perform a reconciliation of the data as used in the EV
+calculations with the unadjusted data extracted from the administration systems.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance         60
+
+
+
+External disclosure of the above checks is not required.
+
+Companies are expected to undertake these checks on a policy by policy basis using
+database programs.
+
+Companies should perform reasonableness checks to ensure the data to be used in the EV
+calculation appropriately reflects the product terms and structures.
+
+Companies should perform a reconciliation of the movement in the data used in the
+previous EV calculation and the current EV calculation.
+
+The reconciliation should be performed for the key in-force items used in the EV
+calculation, for example:
+
+   ⎯ Total number of policies
+
+   ⎯ Total sum assured
+
+   ⎯ Total annual premium in-force
+
+Companies should carry out checks which compare the data extracts used in previous EV
+calculations with those used for the current EV calculation. For year-end 2006 this
+comparison may not be possible. The checks should be performed to ensure that the
+movement in data within individual policies can be reasonably explained.
+
+Checks that group data movements into ranges and identify the reasons for outliers are
+permissible. For example a check may be carried out on the movement in the sum assured
+on individual contracts over the period. Where that change in the sum assured lies
+outside a tolerable range then individual spot checking of the data may be required.
+
+Checks to ensure consistency with other areas of reporting, e.g. accounting, should also
+be carried out.
+
+Ref 13.2.3
+
+Where a material data error or omission exists, companies should disclose the
+nature of the error or omission. This can be done in aggregate for all errors and
+omissions.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance              61
+
+
+
+
+Ref 13.2.4
+
+Data used in the Embedded Value reporting process should be reconciled to that
+used in other reporting areas to ensure consistency, e.g. published accounts.
+
+13.3      Data Coverage
+
+The data extracted for the EV reporting process should represent the business described
+under the term “Covered Business” and should reflect all in-force business as at the
+valuation date.
+
+New business written during the reporting period should be clearly identifiable from
+business in-force at the start of the reporting period.
+
+This is required to comply with the requirements of the Sections 8 and 15.
+
+Details relating to the treatment of unmodelled business are provided in Section 14.
+
+13.4      Data Materiality
+
+The data extracted from the administration system should contain sufficient detail to
+enable the key features that drive EV results to be captured fully by the EV model.
+
+It is important that all data fields that impact the EV result are captured within the EV
+data extract. The following points give an indication of some key areas where
+information might be recorded. Note that this list is not comprehensive and that not all
+the fields below are relevant to all products:
+
+   Date of issue
+
+   Policyholder’s date of birth
+
+   Annual premium
+
+   Product Identifier
+
+   Sum assured/level of accrued bonus/unit fund (“tzvira”)
+
+   Surrender value
+The Israeli Committee for the Determination of the Embedded Rules and Guidance           62
+
+
+
+   Term
+
+   Smoker Status / gender / underwriting group
+
+   Premium paying status
+
+13.5       Data Grouping
+
+The grouping of data can result in a significant loss of accuracy. The projection systems
+used for the calculation of EV may be able to cope with a seriatim run of the policy data
+in the context of a deterministic EV projection. If so then data grouping should be
+avoided.
+
+For businesses with large policy data files, and as stochastic models come into use it may
+be necessary to group policy data in order to keep projection runtimes to a manageable
+level.
+
+Where data is grouped, the company should satisfy itself that the loss of accuracy
+compared with using ungrouped data falls within the prescribed materiality limits
+
+Checks to assist with assessing the materiality of the loss of accuracy from data grouping
+include, but are not limited to:
+
+   Grouped data should be checked for consistency with ungrouped data held on the
+    administration system.
+
+   The results obtained from the model using a grouped data file should be compared to
+    results from using an ungrouped data file at least annually.
+
+   Any grouping criteria should be reassessed on an annual basis
+
+   Any grouping criteria should be reassessed if it is to be used for other modelling
+    purposes e.g. stochastic modelling.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance         63
+
+
+
+14.       MATERIALITY LIMITS
+14.1      Introduction
+
+This Section sets out how companies should determine materiality limits for EV
+calculations.
+
+14.2      Materiality limits
+Ref 14.2.1
+
+Companies should determine appropriate materiality limits for each of EV, VIF,
+VNB and the analysis of movement. Such limits should be expressed in both
+percentage and monetary terms.
+
+Ref 14.2.2
+
+Materiality limits should be disclosed
+
+Materiality limits should be interpreted to mean the inaccuracy in value created by
+modelling and data approximations which would arise in the values if the assumptions
+underlying the calculation of the VIF and VNB were borne out exactly.
+
+For the balance sheet EV, recommended maximum materiality limits are as follows:
+
+   For the calculation of the VIF: The maximum of 5% of the VIF, and an absolute
+    amount to be determined by the Israeli industry and regulator, consistently to other
+    similar materiality criteria in Israel.
+
+   For the calculation of the VNB: The maximum of 10% of the VNB, and an absolute
+    amount to be determined by the Israeli industry and regulator, consistently to other
+    similar materiality criteria in Israel.
+
+For the analysis of movement, recommended maximum materiality limits are as follows:
+
+   For the calculation of Embedded Value Profits: The maximum of 2% of the opening
+    VIF, , and an absolute amount to be determined by the Israeli industry and regulator,
+    consistently to other similar materiality criteria in Israel.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance          64
+
+
+
+Where an inaccuracy that is immaterial according to the above criteria would lead to a
+qualitative difference in the reported EV results (for example, reporting an EV loss
+instead of an EV profit), the company should consider tightening the materiality criteria
+in order to avoid such a “qualitative error”.
+
+The rationale for the differing materiality limits for VNB and Embedded Value Profits
+compare to the VIF is as follows:
+
+The data required to calculate the VNB is normally less robust than that used to calculate
+the VIF, hence the higher materiality limit for VNB.
+
+Systematic errors in the embedded value will cancel each other out from one year to the
+next, hence the lower materiality limit for Embedded Value Profits.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance            65
+
+
+
+15.       ANALYSIS OF EV PROFIT
+15.1      Introduction
+
+The analysis of EV profit is also known as the Analysis of Movement. The former term
+is used in this document.
+
+The analysis of EV profit process is a key step within the actuarial control cycle. A
+breakdown of the movement in EV between successive reporting periods provides
+management (and analysts) with information on how the company has performed over the
+year relative to expectations in various categories. This helps in assessing how
+management has affected shareholder value. In addition it helps to:
+
+   identify the need to improve internal processes, for example with regard to expense
+    management;
+   highlight any EV assumptions which may need to be revised for future reporting
+    periods;
+   identify where premium rates and other features of new business to be written in the
+    future should be reviewed; and
+   provide a check that there are no material errors in the EV models and processes.
+
+This section provides rules and guidance for the production and presentation of the
+analysis of EV profit and is structured as follows
+
+   Requirement to produce analysis of EV Profit.
+
+   Procedure for Calculating EV Profit.
+
+   Presentation of analysis of EV Profit.
+
+15.2      Requirement to produce analysis of EV profit
+Ref 15.2.1
+
+Companies are required to disclose details of the analysis of EV profit over the
+reporting period.
+The Israeli Committee for the Determination of the Embedded Rules and Guidance          66
+
+
+15.3      Procedure for calculating EV Profit
+Ref 15.3.1
+
+Companies should follow the order of calculation set out in Table 15.1
+
+Note that the order to calculation set out below follows from the order of presentation in
+section 15.4, which applies to most regular situations. However, where there was an
+extraordinary and material event or transaction which affects the movement in EV, it
+should be disclosed and presented in the movement in the EV in an appropriate manner,
+which may diverge from the presentation in section 15.4, such as by adding an extra line
+and item. This may affect the order of calculation in the table below.
+The Israeli Insurance Association                                                                                64
+
+
+
+
+ TABLE 15.1
+
+ Process for analysis of EV profit
+
+ Run     Valn.      Data      Allow for    Insurance    Economic     Investment return     Comments                                           Output
+          date               Financial    assumptions   Basis (and   in Financial Year
+                                Year                    scenarios)
+                             experience
+                             variances?
+
+   0     FYE - 1   FYE – 1       No         FYE - 1       FYE - 1       FYE - 1 basis      Published number for last year-end                 Opening EV
+
+
+   1     FYE - 1   FYE – 1       No         FYE - 1       FYE - 1       FYE - 1 basis      As for run 0, but with any opening adjustments     Opening adjustments (= run 1 – run 0)
+                                                                                           (* see below for examples)
+   2     FYE - 1   FYE – 1       No          FYE          FYE - 1       FYE - 1 basis      As for run 1, but with FYE - 1 non-economic        Insurance Assumptions changes (=run 2 –
+                                                                                           assumption changes split separately order to       run 1)
+                                                                                           assess the impact of each change
+
+   3      FYE      FYE – 1       No          FYE          FYE - 1      Expected (best      Roll-forward a year on the expected 2006 best-     Expected Return (=run 3 – run 2)
+                                                                        estimate) for      estimate return and recalculate the EV at this
+                                                                     Financial Year only   date on the FYE - 1 economic basis/scenarios
+
+   4      FYE      FYE – 1       No          FYE           FYE             Actual          As for run 3, but allowing for actual investment   Investment Variance (=run 4 – run 3)
+                                                                                           returns and FYE economic conditions (may be
+                                                                                           split down further to aid understanding of
+                                                                                           impact)
+
+   5      FYE      FYE - 1      Yes          FYE           FYE             Actual          As for run 4, but allowing for known insurance     Insurance Experience variance (=run 5 –
+                                                                                           experience variances (e.g. higher than             run 4)
+                                                                                           expected expenses/lapses/deaths etc.). Split
+                                                                                           into more runs to quantify each experience
+                                                                                           variance separately
+
+
+
+   6      FYE       FYE          n/a         FYE           FYE               n/a           Actual 2006 EV excluding 2006 new business         Unexplained movement (=run 6 – run 5)
+                    (excl
+The Israeli Insurance Association                                                                         65
+
+
+
+
+ TABLE 15.1
+
+ Process for analysis of EV profit
+
+ Run     Valn.     Data       Allow for    Insurance    Economic     Investment return   Comments              Output
+          date               Financial    assumptions   Basis (and   in Financial Year
+                                Year                    scenarios)
+                             experience
+                             variances?
+
+                   New
+                  Busine
+                    ss
+                  written
+                     in
+                  Financi
+                  al Year)
+   7      FYE      FYE           n/a         FYE           FYE              n/a          Actual 2006 EV        Value of New business (=run 7 – run 6) and
+                                                                                                               Closing EV
+
+
+
+
+The definitions in the table mean:
+
+FYE = Current Financial Year End (Valuation Date)
+FYE – 1 = Previous Financial Year End
+
+* Opening adjustments referred to in the above table could include, for example, corrections or changes to the model, new EV methodology or
+sale of a portfolio. Any of these examples, if they are material, could warrant a separate and special disclosure and presentation beyond that
+contained in the above table and standard presentation.
+The Israeli Insurance Association                                                         66
+
+
+
+
+It is noted that the order of calculation within the analysis process does not fully follow the presentation order set out below. The main
+difference is that run 2 in the table above is carried out before the analysis of actual against expected experience. Therefore variances arising
+from actual experience are measured against end of year, as opposed to start of year assumptions. Many companies adopt this approach
+because it enables run 2 to be performed before the year end and therefore accelerate the reporting process. The alternative is to move run 2 to
+be immediately before run 6 which may have implications for the timescales over which the EV is produced.
+The Israeli Insurance Association                                                                                                   67
+
+
+15.4           Presentation of analysis of EV profit
+Ref 15.4.1
+
+The analysis EV Profit should be presented in nominal terms in a manner consistent
+with Table 15.2.
+ TABLE 15.2
+
+ Analysis of EV profit
+
+ Item                               Adjusted net worth1                  Value of in force2                       Total EV
+ Opening EV                                         XXX                               XXX                                XXX
+ Opening adjustments                                XXX                               XXX                                XXX
+ Restated opening EV                                XXX                               XXX                                XXX
+ Profit from existing                               XXX                               XXX                                XXX
+ business, consisting of:
+ - operating assumption                             XXX                               XXX                                XXX
+ changes
+ - expected return on VIF                           XXX                               XXX                                XXX
+ - expected return on ANW                           XXX                               XXX                                XXX
+ - expected surplus arising                         XXX                               XXX                                XXX
+ - operating experience                             XXX                               XXX                                XXX
+ variances
+ Contribution to profit from                        XXX                               XXX                                XXX
+ new business
+ Development costs                                  XXX                               XXX                                XXX
+ EV operating profit                                XXX                               XXX                                XXX
+ Non-recurring items                                XXX                               XXX                                XXX
+ Investment variances on in                         XXX                               XXX                                XXX
+ force
+ Capital inflows/outflows                           XXX                               XXX                                XXX
+ Unexplained                                        XXX                               XXX                                XXX
+ EV profit                                          XXX                               XXX                                XXX
+ Closing EV                                         XXX                               XXX                                XXX
+1. More information can be provided by splitting this into Required Capital and Free Surplus. This is useful at least internally.
+2. More information can be provided by splitting this into VIF before EVFOG and EVCoC, EVFOG and EVCoC.
+
+
+Whilst a split of the analysis column VIF into VIF before EVFOG and EVCoC, EVFOG
+and EVCoC is not required externally, this split is required internally as it helps provide
+a check on the results.
+
+The order and format of the above presentation applies to most regular situations.
+However, where there was an extraordinary and material change, event or transaction
+The Israeli Insurance Association                                                           68
+
+
+
+which affects the movement in EV, it should be disclosed and presented in the movement
+in the EV in an appropriate manner, which may diverge from the above presentation,
+such as by adding an extra line and item, or by presenting the EV and related information
+before and after the relevant event or transaction.
+
+A company should exercise discretion in presenting the change in EV, and in the related
+disclosures, if such discretion or flexibility improves the level of understanding of the
+change in EV in respect of extraordinary events, changes in methodology or transactions.
+Possible examples include capital raising, changes in accounting policy or estimates (not
+related to VIF) that affect the ANW and the acquisition or sale of a portfolio or
+subsidiary.
+
+If such items have a non-material impact on the EV then they may be disclosed, in
+aggregate, under “non-recurring items” in the above table.
+
+The impact on the EV of a change in the reserving method or bases that is not
+accompanied by a related change in the EV assumptions (used for calculating the VIF)
+should be presented under “non-recurring items” in the above table.
+
+The impact on the EV of a change in the reserving bases that is accompanied by a related
+change in the EV assumptions (used for calculating the VIF) should be presented under
+“assumption changes” in the above table. (In other words, the change in the EV
+assumptions would primarily be reflected under the VIF column of the above table, and
+the impact from the change in the reserves from changing the same assumptions would
+primarily be reflected under the ANW column, in the same row).
+The Israeli Insurance Association                                                        69
+
+
+
+16.         SENSITIVITIES AND SCENARIO ANALYSES
+16.1        Introduction
+
+The sensitivity tests performed on the EV result provide management with useful
+information about the key risks to which the embedded value and VNB is exposed. This
+information can be used to improve the measuring and monitoring of risk.
+
+This section gives guidance around specific sensitivities that should be carried out on the
+EV result in order to provide suitable information to management to help improve and
+maintain internal risk control processes.
+
+16.2        General guidance
+Ref 16.2.1
+
+Sensitivity tests on all material experience assumptions should be carried out at least
+annually.
+
+It is only necessary to calculate a sensitivity test in a single direction, unless a movement
+in the opposite direction should be expected to give a significantly different movement in
+which case both directions should be shown. This situation could arise for example
+where the value of options and guarantees held by the company are close to at-the-money
+pre-sensitivity. Post-sensitivity, the assets may have reduced considerably, but the
+corresponding fall in liabilities would be capped once the options went in-the-money.
+
+Generally, it is helpful to split the EV impact into adjusted net worth and VIF but this is
+not a requirement.
+
+When performing sensitivity tests, companies should keep reserving bases constant and
+only vary future experience assumptions, unless it is misleading to do so. The choice of
+methodology should be clearly disclosed in either case.
+
+The preparation of segmental level sensitivities, the preparation of sensitivities at
+segmental level is not required.
+The Israeli Insurance Association                                                        70
+
+
+Ref 16.2.2
+
+Each sensitivity test is required to be calculated in isolation, i.e. varying one
+assumption at a time.
+
+Ref 16.2.3
+
+The sensitivities should incorporate the impact on EVFOG/NBFOG and this impact
+should be disclosed separately.
+
+Required capital does not need to be recalculated.
+
+Ref 16.2.4
+
+The sensitivities should be provided for total EV results and VNB.
+
+Splitting sensitivities into these two parts gives useful additional information. For
+example, it allows analysts to make an assessment of whether the risks and new business
+written during the reporting period differs materially in any way from the EV as a whole.
+
+Ref 16.2.5
+
+Where relevant to the company, each sensitivity is required to be submitted
+alongside the EV submission.
+
+There may be some circumstances where the products or asset mix of a particular
+company result in the sensitivity having no effect on the EV and VNB, In these
+circumstances it is permissible for companies to disclose that this sensitivity is not
+relevant and no calculation in respect of that sensitivity has been performed.
+
+16.3       Required Sensitivities
+Ref 16.3.1
+
+Sensitivity 1: Parallel reduction of 50 basis points in the real risk-free rate, with a
+corresponding increase in index-linked asset values.
+
+
+
+Ref 16.3.2
+
+Sensitivity 2: Parallel reduction of 100 basis points in the nominal risk-free rate,
+with a corresponding increase in fixed interest asset values.
+The Israeli Insurance Association                                                        71
+
+
+
+Starting assets and unit fund values should be re-calculated to reflect the change in the
+values of index-linked or fixed interest assets arising from the change in the level of the
+yield curve.
+
+Corporate bond credit spreads should be assumed unchanged.
+
+Equity and property values should be assumed to be unchanged.
+
+Nominal risk-free interest rates should not be allowed to fall below 0% at any durations.
+
+Where an immediate reduction in the risk free rate would result in the revaluation of
+certain reserves then this should be allowed for in the sensitivity.
+
+Future inflation should assume to be unchanged such that there is a parallel shift in both
+the real and nominal yield curves.
+
+Where the reserving basis does not change with market conditions (e.g. where the
+reserving basis is based on the pricing tariff) then no revaluation of reserves in relation
+to those policies is required.
+
+
+
+Ref 16.3.3
+
+Sensitivity 3: 10% reduction in market values of equity/property
+
+Starting assets and unit fund values should be re-valued to reflect the change in the
+values of equity and property assets arising from the assumed reduction in asset values.
+The revaluation should include any derivative assets which are a function of underlying
+equity or property assets.
+
+Separate disclosure of equity and property movements is not mandatory. However, an
+insurer may choose to disclose separately if the results were significantly different for
+these asset classes.
+
+Where an immediate reduction in the market value of equity and property assets would
+result in the revaluation of certain reserves then this should be allowed for in the
+sensitivity.
+The Israeli Insurance Association                                                         72
+
+
+
+Companies should assume that the portfolio is re-balanced the market movement to
+achieve the same long-term asset mix as persisted at the balance sheet date
+
+Ref 16.3.4
+
+Sensitivity 4: The impact of assuming the implied volatility increases by 20%.
+
+This sensitivity should only be applied to the recalculation of EVFOG and NBFOG and
+for any assets specifically backing those financial options or guarantees.
+
+The sensitivity should be carried out in a proportionate manner i.e. if the actual implied
+volatility of the market is 15%, the sensitivity is of a 3% rise in implied volatility to 18%.
+
+Ref 16.3.5
+
+Sensitivity 5: 10% increase in maintenance expenses
+
+An immediate increase of all expenses which have been classified as maintenance in the
+calculation of the EV and VNB should be assumed.
+
+An increase in maintenance expenses may result in an increase in reserves. However for
+the purposes of this sensitivity, no such change to reserves should be assumed.
+
+Policy fees or explicit charges to meet maintenance expenses contained in policies should
+be unchanged from that assumed in the EV and VNB.
+
+Ref 16.3.6
+
+Sensitivity 6: 10% proportionate increase in lapse rates
+
+The sensitivity should be applied multiplicatively, i.e. a base lapse rate of 5% pa becomes
+1.1 x 5% = 5.5% pa.
+
+Paid-up rates should remain unchanged from that assumed in the EV and VNB.
+The Israeli Insurance Association                                                        73
+
+
+Ref 16.3.7
+
+Sensitivity 7: 10% proportionate increase in base mortality and morbidity rates for
+protection and investment covers, and 10% proportionate decrease in base mortality
+for annuity covers.
+
+Companies must carry out sensitivities separately (with mortality changing in opposite
+directions) for assurance business and annuity business (both for EV and VNB), however
+the results may be disclosed together as one item if the absolute impact of one of the
+sensitivities is less than 5% of the impact of the other, otherwise separate disclosures are
+required .
+
+Where the sensitivities are disclosed together, companies must disclose which sensitivity
+dominates.
+
+The basis of classification of business into Life and Annuity should be disclosed alongside
+this sensitivity.
+
+Where the change in the level of base mortality and morbidity would result in a
+revaluation of reserves then this should be allowed for in the sensitivity.
+
+Where, in the normal course of events, companies would reflect a change in the base level
+of mortality in future pricing reviews then companies should allow for this in the
+sensitivity and disclose the future management actions modelled as a reaction to the
+changing mortality/morbidity rates.
+
+16.4         Scenario analyses
+Ref 16.4.1
+
+Where a company anticipates that an event (which is outside its control) which has
+occurred prior to the Valuation Date, will have a material impact on the embedded
+value, but the impact is as yet unknown then the company is permitted to perform a
+scenario analysis and calculate a Scenario EV and Scenario VNB.
+
+Ref 16.4.2
+
+If the company performs a scenario analysis, then the Scenario EV and Scenario
+VNB replaces the EV and VNB.
+The Israeli Insurance Association                                                       74
+
+
+Ref 16.4.3
+
+Companies are required to disclose fully the assumptions used in the scenario
+analysis, how these deviate from best estimate assumptions derived from past
+experience, and what the impact has been in moving from the EV and VNB to the
+Scenario EV and Scenario VNB respectively.
+
+In certain circumstances there may be significant uncertainty as to the accuracy of best
+estimate assumptions due to, for example, legislative changes which have been
+announced, but where the impact has not yet fed through to life office experience.
+
+For the avoidance of doubt all other sensitivities in this section must be calculated with
+reference to the Scenario EV and Scenario VNB.
+
+This section does not apply for events which happen after the valuation date.
+
+Ref 16.4.4
+
+Alternatively the company may chose to perform a sensitivity in which case the
+company is required to disclose fully the assumptions used in the sensitvity, how
+these deviate from best estimate assumptions derived from past experience, and
+what the impact has been on the EV and VNB
+
+16.5       Sensitivities to reflect post Valuation Date events
+Ref 16.5.1
+
+If an event has occurred after the Valuation Date which the company expects to
+have a material effect on the EV and VNB then a sensitivity of the EV and VNB to
+that event is required.
+
+Ref 16.5.2
+
+For the purposes of this section, material means a 20% change in the Embedded
+Value.
+
+Ref 16.5.3
+
+Companies are required to disclose fully the assumptions used in the sensitvity, how
+these deviate from best estimate assumptions derived from past experience, and
+what the impact has been on the EV and VNB.
+The Israeli Insurance Association                                                      75
+
+
+
+The EV will change over time due to the emergence of profits on the in-force and the
+addition of value by writing new business. This change should be taken into account when
+considering the materiality limits.
+
+An example of a material event would be, for example a substantial fall or rise in equity
+markets over a short period of time.
+
+For the avoidance of doubt, the results of this sensitivity do not replace the EV and VNB.
+The Israeli Insurance Association                                                     76
+
+
+
+17.         DISCLOSURE
+17.1        Introduction
+
+This Section sets out the minimum levels of disclosure that is required of the company’s
+EV disclosures. In practice, it is expected that companies will disclose additional
+information over and above that specified here. A clear understanding of the EV and
+VNB results improves credibility in the public domain and aids valid comparisons across
+different companies.
+
+17.2        Disclosure considerations
+Ref 17.2.1
+
+The EV should be to segregated into Covered Business VIF and ANW.
+
+Ref 17.2.2
+
+If a company writes both Covered Business and other forms of business, it should be
+made clear in disclosure that the EV results are only in respect of Covered Business.
+
+Ref 17.2.3
+
+If it is not possible to segregate the tangible assets within the relevant company into
+that allocated to Covered Business and other business, the disclosure should make
+clear that the ANW is of the total company and not just the Covered Business. In
+such circumstances all the tangible assets of the company should be valued using the
+Israeli EV Rules and Guidance.
+
+Ref 17.2.4
+
+A statement regarding which group of individuals accept responsibility for the
+calculation of the EV, VNB, analysis of EV Profit and sensitivities should be
+included.
+The Israeli Insurance Association                                                      77
+
+
+17.3       Structure and contents of EV disclosure
+
+The EV disclosure document should be structured as follows:
+
+1.      Highlights and key performance indicators
+
+2.      EV limitations
+
+3.      Detailed EV results
+
+4.      Notes to the results
+
+5.      Reconciliations
+
+6.      EV methodology
+
+7.      EV assumptions
+
+8.      Sensitivity analysis
+
+9.      Audit/review report
+
+17.4       EV limitations
+Ref 17.4.1
+
+Companies should make disclosures on the limitation of the EV.
+
+For example, the following may be used:
+
+“In calculating the EV which is compliant with the Israeli EV Rules and Guidance the EV
+will be in conformity with what is believed to be the current and proposed operating
+environment and the “most probable” future experience within this environment, it
+should be recognised that actual future experience will vary from that projected in the EV
+calculation.
+
+Deviations from the parameters assumed in the EV projection could have a material
+impact on the result. These parameters include:
+
+    Management discretion
+
+    Insurance regulations
+The Israeli Insurance Association                                                       78
+
+
+
+   Reinsurance practices
+
+   Accounting practices
+
+   Taxation
+
+   Economic factors
+
+In addition deviations from “most probable” experience are normal and to be expected.
+Even without any change in perceived environments and in parameters used to reflect
+them, actual results from year to year will vary from those projected due to normal
+random fluctuations.
+
+It is important to note that the calculated EV is not representative of the company’s
+overall market value of the company or its life insurance subsidiaries and should not be
+interpreted as such.”
+The Israeli Insurance Association                                                      79
+
+
+17.5         Detailed EV results
+Ref 17.5.1
+
+The Israeli EV balance sheet should be presented as follows:
+
+ TABLE 17.1
+
+ Embedded value balance sheet
+
+ Component                                        Value (ILS m)
+ Adjusted net worth (ANW),                               XXX
+ consisting of:
+  - Free surplus                                         XXX
+
+ - Required capital                                      XXX
+
+ Value of in force business (VIF),                       XXX
+ consisting of:
+ VIF before EVFOG and EVCoC                              XXX
+ (Unadjusted VIF)
+ Provision for the time value of                         XXX
+ financial options & guarantees
+ (EVFOG)
+
+ Provision for cost of capital (EVCoC)                   XXX
+
+ Embedded value (ANW + VIF)                              XXX
+
+
+
+
+The Israeli EV value of new business should be presented as follows:
+
+ TABLE 17.2
+
+ Value of new business presentation
+
+ Component                                        Value (ILS m)
+ Value of new business (VNB),                            XXX
+ consisting of:
+ VNB before NBFOG and NBCoC                              XXX
+ (Unadjusted VNB)
+ Impact of VNB on the time value of                      XXX
+ financial options & guarantees
+ (NBFOG)
+
+ Impact of VNB on the cost of capital                    XXX
+ (NBCoC)
+The amounts in table 17.2 should include both the VIF and ANW components of the VNB.
+The Israeli Insurance Association                                                   80
+
+
+17.6       Notes to the results
+Ref 17.6.1
+
+A description of which proportion of the primary account GAAP equity relates to
+the EV, and which proportion of the primary account P&L relates to the analysis of
+EV profit should be disclosed.
+
+This information will be used by analysts to determine the sum-of-the-parts approach.
+Analysts generally wish to understand how the EV relates to the primary account
+publication.
+
+17.7       Reconciliations
+Ref 17.7.1
+
+A reconciliation of the ANW with the GAAP equity in the primary accounts should
+be disclosed.
+
+17.8       EV methodology
+Ref 17.8.1
+
+The following should be dislosed:
+
+   Basis of preparation
+
+   Covered Business
+
+   Description of allowance for risk methodology
+
+   Description of how economic assumptions have been set
+
+   Description of how non-economic assumptions have been set
+
+   Description of calculation of embedded value and value of new business
+
+   Description of calculation of allowance for financial options and guarantees
+
+   Description of analysis of EV profit
+The Israeli Insurance Association                                                   81
+
+
+17.9       EV assumptions
+Ref 17.9.1
+
+The following economic assumptions should be disclosed:
+
+   Risk-free rate
+
+   All inflation assumptions, in particular expense inflation and medical claim
+    inflation
+
+   Asset mix assumptions.
+
+The following non-economic assumptions should be disclosed:
+
+   Tax rates
+
+   Value of tax assets (if any)
+
+   Within the expense analysis, the proportion of expenses allocated to acquisition,
+    maintenance, development, investment management and claim events.
+
+   Material demographic and policy-holder behaviour assumptions do not have to
+    be disclosed for reasons of confidentiality, however the company should describe
+    the basis for these assumptions and/or how they were determined.
+
+17.10      Sensitivities
+Ref 17.10.1
+
+This should include the results of the Sensitivities required to be disclosed plus the
+approach used to calculate the Sensitivities, as described in Section 16. This includes
+and sensitivities to reflect post valuation date events
+
+17.11      Scenario analyses
+Ref 17.11.1
+
+Where a company has undertaken a scenario analysis then the material assumptions
+underlying that scenario must be disclosed, including how these deviate form best
+estimate and what the impact on the EV of these deviations has been.
+The Israeli Insurance Association                                                        82
+
+
+17.12      Audit/Review report
+Ref 17.12.1
+
+The nature of any audit or review of the EV, VNB, analysis of EV Profit and
+sensitivities should be disclosed.
+
+This can take several forms such as:
+   A third party opinion that the methodology and assumptions are in line with the Israeli
+    EV Rules and Guidance
+   A third party opinion that the calculations are materially in line with the Israeli EV
+    Rules and Guidance. This opinion may be limited in scope.
+
+The audit / review may include a document to senior management highlighting the key
+issues arising and include recommendations.
+
+17.13      Additional items to be included in disclosure
+
+Companies should disclose further information if the Israeli Rules and Guidance indicate
+that such disclosure should be made in the individual
+The Israeli Insurance Association                                                       83
+
+
+
+APPENDIX A - GLOSSARY
+
+Adjusted Net Worth (ANW): This is the value of the Shareholder Equity of the company
+in which the Covered Business is written, less intangible assets related to the Covered
+Business (see chapter 5).
+
+Analysis of EV Profit: An process to examine the key drivers where management has
+increased or reduced EV
+
+Appraisal Value: The value of an insurance company with an allowance for Goodwill.
+
+Certainty Equivalent approach: A risk neutral deterministic technique for valuing non-
+option cash flows, described in more depth in Section 7.
+
+Company Net Assets: All Net Assets within the company which writes Covered Business
+
+Cost of Capital: This is the cost associated with being required to hold capital to back the
+in-force Covered Business.
+
+Covered Business: The business at the valuation date that is regarded by the Regulator as
+being life or health insurance business.
+
+Embedded Value (EV): The sum of the adjusted net worth and the value of in-force
+business.
+
+Embedded Value Operating Profit: A significant portion of Embedded Value Total Profit,
+but excluding items deemed to be less under management control in the short term, for
+example investment variances.
+
+Embedded Value Total Profit: The increase in EV over the reporting period.
+
+Financial Options and Guarantees: Features of assets and liabilities whose value changes
+asymmetrically given symmetric movements in financial markets
+
+Goodwill: This represents a measure of the franchise value of the company i.e. its brand
+and its ability to write new business in the future.
+The Israeli Insurance Association                                                             84
+
+
+
+Market-consistent Embedded Value (MCEV): There are various equivalent definitions of
+MCEV including:
+
+    ⎯ ANW plus market-consistent value of in force less market-consistent cost of
+        capital.
+
+    ⎯ Market value of tangible assets less market-consistent value of in force Covered
+        Business liabilities less market-consistent cost of capital
+
+Market-consistent Embedded Value Principles: The guidelines in this document for the
+calculation of MCEV.
+
+New business (NB): Business that is regarded by local insurance regulators as life or
+health insurance business, which was written during the reporting period.
+
+Participating Portfolio: The official term is use in Israel for the asset portfolio that is
+segregated and held to back Life insurance policies that "participate in [investment]
+profits”
+
+Reporting Period: The time period between the current EV calculation and the previous
+EV calculation.
+
+Required capital: The amount of assets, which forms a subset of the adjusted net worth,
+whose distribution to shareholders is restricted as a result of risks associated with the
+Covered Business. It gives a measure of risk relating to the liabilities associated with the
+Covered Business.
+
+Risk-free rate: The risk-free rate is the rate of interest required to compensate investors
+only for the time-value of money, e.g. for investments where there is no risk. This is taken
+to be the yield on appropriate government debt, proxied by the quarterly published vector
+of interest rates.
+
+Risk Discount Rate: In traditional EV calculations, this is the rate used to discount future
+shareholder cash flows emerging from the Covered Business in order to determine the
+VIF.
+The Israeli Insurance Association                                                      85
+
+
+
+Shareholder Equity: The value placed on equity in the company in which the Covered
+Business is written using Israeli General Accounting Accepted Practice.
+
+Tangible Asset: Assets having a physical existence, such as cash, shares, equipment and
+real estate.
+
+Value of in-force business (VIF): The present value of future shareholder cash flows
+projected to emerge in the future from the business in-force at the valuation date.
+
+Value of new business (VNB): The present value of future shareholder cash flows
+projected to emerge in the future from the new business written during the last reporting
+period.
+The Israeli Insurance Association                                                     86
+
+
+
+APPENDIX B – REFERENCES / RECOMMENDED READING
+ANDERSON, J. C. H. (1959). Gross premium calculations and profit measurement for
+        non-participating insurance. Transactions of the Society of Actuaries, XI, 357-
+        394.
+BABBEL, D., GOLD, J. & MERRIL, C. (2002). Fair value of liabilities: the financial
+       economics perspective. North American Actuarial Journal, 6(1), 12-27.
+BLIGHT, P., KAPEL, A. & BICE, A. (2003). Market-consistent economic valuations for
+       the wealth management industry. Institute of Actuaries of Australia.
+BREALEY, R. A. & MYERS, S. C. (2003). Principles of corporate finance, 7th Edition.
+        McGraw-Hill / Irwin.
+EUROPEAN CFO FORUM (May 2004). EEV Principles, Guidance and Basis for
+        Conclusions.
+EUROPEAN CFO FORUM (October 2005). Additional guidance on EEV disclosures.
+HANCOCK, J., HUBER, P. & KOCK, P. (2001). The economics of insurance – how
+        insurers create value for shareholders. Swiss Re Publishing.
+MEHTA, S. J. B. (1992). Allowing for asset, liability and business risk in the valuation of
+        a life office. Journal of the Institute of Actuaries, 119, 385-455.
+O’KEEFFE, P. J .L., DESAI, A. J., FOROUGHI, K., HIBBETT, G. J., MAXWELL, A.
+        F., SHARP, A. C., TAVERNER, N. H., WARD, M. B. & WILLIS, F. J. P.
+        (2005). Current developments in embedded value reporting. British Actuarial
+        Journal, 11,407-496 .
+SHELDON, T. J. & SMITH, A. D. (2004). Market consistent valuation of life assurance
+        business. British Actuarial Journal, 10, 543-626.
+SMITH, A. D. (1996). How actuaries can use financial economics. British Actuarial
+       Journal, 2(5), 1057-1193.
+SMITH, A. D., MORAN, I. & WALCZAK, D. (2003). Why can financial firms charge
+       for diversifiable risk? Discussion paper presented to Bowles Symposium, Society
+       of Actuaries (USA).
+TILLINGHAST (2002). Economic value: from fair value to share price. Emphasis on
+        Financial Management Special
+TILLINGHAST (2003). Market-Consistent Embedded Value: Allowance for risk within
+        Embedded Value framework. White Paper
+TILLINGHAST (May 2004). EEV – A significant step forward. Update
+TILLINGHAST (September 2004). Taking forward embedded values. Emphasis 2004/3
+TILLINGHAST (February 2005). Market-Consistent Embedded Value: Dispelling the
+        Myths. White Paper
+TILLINGHAST (June 2005). EEV – The story so far. Update
+TILLINGHAST (July 2005). Making sense of it all: building a consistent framework for
+measuring and managing risk, capital and value. White Paper
+TILLINGHAST (December 2005). Friends Provident’s EEV. Update
+TILLINGHAST (July 2006). EEV – A trend emerges. Update
+
