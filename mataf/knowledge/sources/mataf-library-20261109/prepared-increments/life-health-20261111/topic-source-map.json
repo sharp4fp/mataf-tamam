@@ -1,0 +1,59 @@
+{
+ "as_of": "2026-11-11",
+ "base_index": "profession-index/v1.3-20261110 (לא שונה; זהו delta)",
+ "note": "pdf_pages = עמודי ה-PDF.",
+ "topics": [
+  {
+   "id": "P12.01",
+   "title": "בריאות, סיעוד, תאונות אישיות ומחלות קשות",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "codex-gate6-part3-health-insurance",
+     "section": "שער 6 חלק 3 - הוראות לתכניות ופוליסות ביטוח בריאות",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": ""
+    },
+    {
+     "source_id": "cma-20130829-regulation-1611",
+     "section": "עריכת תכנית לביטוח סיעודי (2013-1-5)",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": "עודכן אחר כך (עדכונים 2-4, ותיקוני קודקס)"
+    },
+    {
+     "source_id": "cma-20151006-regulation-1158",
+     "section": "הכיסוי הביטוחי בתכנית לביטוח תרופות (2015-1-18)",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P12.04",
+   "title": "רציפות, שינוי בריאות, תחליף כיסוי וסיכון בביטול",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "cma-20151214-regulation-1146-1",
+     "section": "הנהגת כתבי שירות ואופן שיווקם (2015-1-27)",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  }
+ ]
+}
