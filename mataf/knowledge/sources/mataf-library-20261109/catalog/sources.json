@@ -857,5 +857,63 @@
       4
     ],
     "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
+  },
+  {
+    "id": "ita-form-159",
+    "title": "טופס 159 - בקשת עמית מפקיד השומה למשיכת כספי תגמולים מקופת גמל ללא ניכוי מס (נכות, הוצאות רפואיות)",
+    "url": "https://www.gov.il/BlobFolder/service/itc-financial-compensation-without-deduction-tax/he/IncomeTax_itc159.pdf",
+    "publisher": "רשות המסים בישראל",
+    "edition": "\"מעודכן ל-7.2021\" (שולי הטופס); קובץ נוצר 8.7.2021; עמוד אחד. דף השירות עודכן 6.4.2025",
+    "retained_on": "2026-11-11",
+    "library_packaged_on": "2026-11-11",
+    "last_live_revalidation": null,
+    "effective_scope": "טופס והסבר מנהלי לפי תקנות 34 ו-38 לתקנות מס הכנסה (כללים לאישור ולניהול קופות גמל); לא חקיקה",
+    "verification": "הורד מ-gov.il בדפדפן המובנה של הבעלים (אישור הורדה 11.11.2026, 08:37); SHA-256 זהה בדפדפן ובעותק שהועבר מתיקיית ההורדות. טקסט עזר בחילוץ אוטומטי (טופס - שכבת הטקסט מקוטעת). עמ' 1 נבדק מול תמונת העמוד ב-11.11.2026.",
+    "pdf_path": "prepared-increments/official-sources-20261111b/ita-form-159.pdf",
+    "text_path": "prepared-increments/official-sources-20261111b/ita-form-159.txt",
+    "text_method": "pdftotext -q -layout (poppler), pages separated by form feed",
+    "text_pages": 1,
+    "pdf_pages": 1,
+    "empty_text_pages": [],
+    "increment_metadata": "prepared-increments/official-sources-20261111b/README-HE.md",
+    "retention_scope": "Publicly accessible official document retained for reference. No redistribution licence determination.",
+    "supersedes": null,
+    "sha256": "b584d053b3586cdc95e5e0a8dc40714073ffd69b8d2dc7cffce6bf46397748c8",
+    "source_class": "original_official",
+    "source_class_he": "מקור מקורי רשמי",
+    "text_class": "derived_auto_partial_checked",
+    "checked_pages": [
+      1
+    ],
+    "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
+  },
+  {
+    "id": "ita-form-159a",
+    "title": "טופס 159א - בקשת עמית למשיכת כספי תגמולים מקופת גמל ללא ניכוי מס בשל \"מיעוט הכנסות\"",
+    "url": "https://www.gov.il/BlobFolder/service/withdrawal-funds/he/Service_Pages_Income_tax_annual-report-2025_itc159a.pdf",
+    "publisher": "רשות המסים בישראל",
+    "edition": "\"מעודכן ל-9.2025\" (שולי הטופס); קובץ נוצר 29.9.2025; עמוד אחד",
+    "retained_on": "2026-11-11",
+    "library_packaged_on": "2026-11-11",
+    "last_live_revalidation": null,
+    "effective_scope": "טופס והסבר מנהלי לפי תקנות 34 ו-38; מוגש לקופת הגמל; לא חקיקה",
+    "verification": "הורד מ-gov.il בדפדפן המובנה של הבעלים (אישור הורדה 11.11.2026, 08:37); SHA-256 זהה בדפדפן ובעותק שהועבר מתיקיית ההורדות. טקסט עזר בחילוץ אוטומטי (טופס - שכבת הטקסט מקוטעת). עמ' 1 נבדק מול תמונת העמוד ב-11.11.2026: טבלת מקורות ההכנסה כוללת \"קצבאות (לרבות קצבאות פטורות ממס)\".",
+    "pdf_path": "prepared-increments/official-sources-20261111b/ita-form-159a.pdf",
+    "text_path": "prepared-increments/official-sources-20261111b/ita-form-159a.txt",
+    "text_method": "pdftotext -q -layout (poppler), pages separated by form feed",
+    "text_pages": 1,
+    "pdf_pages": 1,
+    "empty_text_pages": [],
+    "increment_metadata": "prepared-increments/official-sources-20261111b/README-HE.md",
+    "retention_scope": "Publicly accessible official document retained for reference. No redistribution licence determination.",
+    "supersedes": null,
+    "sha256": "49d4ce63bbf743f729cf8122e70c311de3fccee923af239b3094066991a2e886",
+    "source_class": "original_official",
+    "source_class_he": "מקור מקורי רשמי",
+    "text_class": "derived_auto_partial_checked",
+    "checked_pages": [
+      1
+    ],
+    "text_class_he": "טקסט עזר בחילוץ אוטומטי; עמודים מסוימים נבדקו מול תמונה (ראו checked_pages); ה-PDF מחייב"
   }
 ]

@@ -102,6 +102,8 @@
 | L21 | 11.11 | `import ... from 'playwright'` בקובץ `.mjs` נכשל גם עם `NODE_PATH` (ESM מתעלם ממנו) | `import { createRequire } from 'module'; const require = createRequire('/opt/npm-tools/node_modules/'); const { chromium } = require('playwright');` |
 | L22 | 11.11 | היפוך מחרוזת עברית ידנית לפני ציור ב-Pillow הפך את הטקסט פעמיים | Pillow עם raqm מטפל בכיווניות: `d.text(..., direction='rtl')` בלי היפוך |
 | L23 | 11.11 | טופס 161 ריק או בלי ת"ז תואמת מועבר ל"ממתין" ותמונת הטופס לא מוצגת | לבדיקות ממשק: PDF סינתטי (`docs/proposals/2026-11-11-retirement-simplification/fixtures/mk161.py`), עברית נשמרת בסדר חזותי כמו בטופס הרשמי |
+| L24 | 11.11 | נחשב שקובץ בל"ל `Laws1/00_0001_000001.pdf` הוא "עדכון" של החוק | בל"ל מפרסם חוקים גם לפי פרקים (`..._000000` = מלא, `..._0000NN` = פרק); לזהות לפי התוכן (השוואת טקסט לנוסח המלא) לפני סיווג |
+| L25 | 11.11 | חיפוש ב"מדיניות ונהלים" של gov.il עם `?q=` - הפרמטר מתעלם ומחזיר הכול | לאיתור חוזר: WebSearch עם המספר והשם, או דפוס הכתובת `BlobFolder/policy/<slug>/he/...` מדף שכבר ידוע |
 
 ## 4. איך מוסיפים לקח
 

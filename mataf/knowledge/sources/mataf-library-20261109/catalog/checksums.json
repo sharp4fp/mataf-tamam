@@ -4,10 +4,10 @@
   "catalog/fund-corpus-index.csv": "2aae7e428d5ccced069debb660b64cd1443f33d6404ba838776b06fe4719a543",
   "catalog/fund-corpus-provenance.md": "c3d936c7130a13afbeff1b71adb16b4b166ece58bfee14accd7188cf080efcbd",
   "catalog/gaps.json": "aa70089aea7908f46c512bb9d2dbb8592b5418ac32a4aa71a172a96aaba3b395",
-  "catalog/sources.json": "a20f92d0bc1f2ef2348ab83b5665458fa8c46533699b16e4740f85ca36cb9fd8",
+  "catalog/sources.json": "e9fb81540d2873c1b3e65e71c85b12f3d88857877c5fcc3221a08079ba281310",
   "knowledge/retirement-v4.md": "ab20225cd845386f71181f20f77196719ece3e4f9f0a4a2a4e8a1f82bb49fc7e",
   "search.py": "9bc54bc9ae10f017c0641b1a4015d7553e5930c73a4d958d6d1abaa972519b6b",
-  "search.sqlite": "307f22f7b878bd43fc4741578db31dab65ab1a98705dfe29a49b6cb22a111c01",
+  "search.sqlite": "af828788edfb9ff8bb714f998038e78e4ba69bfaa4eea09e2b3c8cb5b8c6fabe",
   "sources/tax-161d-2026.pdf": "40eba7d3b5abded138edc9c0292ae5810fa740808afc30ea021c44f21d84d679",
   "sources/tax-161d-2026.txt": "79a78085a7ce93ae44634afe01be4593ca77138cc2fbfe86322f3f9ece10d2b9",
   "sources/tax-booklet-2026.pdf": "de6fee7208bdde4ec8b8731be95bcea2106aba449d949e5e646c2a0d5f2182a1",
@@ -63,5 +63,10 @@
   "prepared-increments/official-sources-20261111/knesset-provident-funds-law-2005-original.pdf": "4ddf9eb6d8ab3b5f11e39e4b46e49337109d3ede908a9fde51ddf85e20da035e",
   "prepared-increments/official-sources-20261111/knesset-provident-funds-law-2005-original.txt": "4630d22f7290589f7a4f0263d5a6a61870a944e47dfaeb528f02abccf8d48ea3",
   "prepared-increments/official-sources-20261111/knesset-retirement-age-law-2004-original.pdf": "d7fefd69f3d6b005f9d3d80b488775614e732c2cfcc4598b5ee8d92fda356c00",
-  "prepared-increments/official-sources-20261111/knesset-retirement-age-law-2004-original.txt": "91c1b3a35a0c8d487c8919fede15dd9df5546b38ef05be1f9508b85628408f12"
+  "prepared-increments/official-sources-20261111/knesset-retirement-age-law-2004-original.txt": "91c1b3a35a0c8d487c8919fede15dd9df5546b38ef05be1f9508b85628408f12",
+  "prepared-increments/official-sources-20261111b/ita-form-159.pdf": "b584d053b3586cdc95e5e0a8dc40714073ffd69b8d2dc7cffce6bf46397748c8",
+  "prepared-increments/official-sources-20261111b/ita-form-159.txt": "3acad6c0ebc22faf2d65b2d403f642eb4d0f8563eb3559c84d546e2814c23f88",
+  "prepared-increments/official-sources-20261111b/ita-form-159a.pdf": "49d4ce63bbf743f729cf8122e70c311de3fccee923af239b3094066991a2e886",
+  "prepared-increments/official-sources-20261111b/ita-form-159a.txt": "f58bb2dbd178714452de1a2c76ce61e5f7d99f189f9925486dcd476a12337681",
+  "prepared-increments/official-sources-20261111b/gov-il-159a-service-page-snapshot-20261111.txt": "a59187282660bc0cbed00a79fe091a0912ca55fd569035b7efcc4113c44eaffb"
 }
