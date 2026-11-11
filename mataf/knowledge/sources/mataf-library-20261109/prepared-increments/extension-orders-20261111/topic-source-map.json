@@ -1,0 +1,65 @@
+{
+ "as_of": "2026-11-11",
+ "base_index": "profession-index/v1.3-20261110 (לא שונה; זהו delta)",
+ "note": "pdf_pages = עמודי ה-PDF. verified_how: image = נבדק מול תמונת העמוד; retained = המקור שמור בלבד.",
+ "topics": [
+  {
+   "id": "P06.06",
+   "title": "סיום עבודה, פיצויים, שחרור כספים וסעיף 14",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "labor-general-approval-sec14-severance-pay",
+     "section": "האישור הכללי, סעיפים (1)-(2)",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P05.01",
+   "title": "חובת ביטוח פנסיוני לשכיר",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "labor-extension-order-pension-increase-2016",
+     "section": "הגדרות, יום התחילה 1.7.2016",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": ""
+    },
+    {
+     "source_id": "ext-extention-order-pension-2007",
+     "section": "הגדרות, תחולה מ-1.1.2008",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P05.02",
+   "title": "הפקדות עובד, מעסיק ופיצויים",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "labor-extension-order-pension-increase-2016",
+     "section": "התוספת - ההוראות המורחבות",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  }
+ ]
+}

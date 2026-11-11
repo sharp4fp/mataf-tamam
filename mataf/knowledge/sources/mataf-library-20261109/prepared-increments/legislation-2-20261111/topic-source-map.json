@@ -1,0 +1,76 @@
+{
+ "as_of": "2026-11-11",
+ "base_index": "profession-index/v1.3-20261110 (לא שונה; זהו delta)",
+ "note": "pdf_pages = עמודי ה-PDF. verified_how: image = נבדק מול תמונת העמוד; retained = המקור שמור בלבד.",
+ "topics": [
+  {
+   "id": "P06.06",
+   "title": "סיום עבודה, פיצויים, שחרור כספים וסעיף 14",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "knesset-provident-funds-amendment21",
+     "section": "סעיף 23(א)(3)(ב)-(ה) לחוק קופות גמל",
+     "pdf_pages": [
+      2
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P26.04",
+   "title": "איסור הלבנת הון",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "aml-order-insurers-agents-managing-companies-consolidated-wikisource",
+     "section": "הצו",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P01.03",
+   "title": "הכשרה ובחינות",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "licensing-training-exams-regs-consolidated-wikisource",
+     "section": "התוספת הראשונה",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P21.04",
+   "title": "דמי ביטוח ובריאות",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "national-health-insurance-law-consolidated-wikisource",
+     "section": "פרק ה",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "btl-regs-contributions-payment-exemption-1995",
+     "section": "התקנות",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  }
+ ]
+}

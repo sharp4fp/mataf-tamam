@@ -1,0 +1,268 @@
+{
+ "as_of": "2026-11-11",
+ "base_index": "profession-index/v1.3-20261110 (לא שונה; זהו delta)",
+ "note": "pdf_pages = עמודי ה-PDF. verified_how: image = נבדק מול תמונת העמוד; retained = המקור שמור בלבד.",
+ "topics": [
+  {
+   "id": "P08.02",
+   "title": "עלות שנתית צפויה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "cma-20230720-notice-2023-010",
+     "section": "סעיפים 1-2",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P08.01",
+   "title": "דמי ניהול",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "cma-20130101-regulation-1700",
+     "section": "כל החוזר",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-20170912-regulation-989",
+     "section": "תיקון",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-20140303-regulation-1490-1",
+     "section": "הנחה למקבלי קצבה",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P05.03",
+   "title": "עצמאי - משיכה במצב אבטלה (הוראת שעה)",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "cma-20210210-2021-3-1",
+     "section": "סעיפים 1-2",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P09.01",
+   "title": "צירוף לביטוח והצטרפות",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "cma-20160609-regulation-1112-2",
+     "section": "חוזר צירוף",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-20230301-notice-2023-1-5",
+     "section": "תיקון 2023",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-20160929-regulation-1071-3",
+     "section": "הצטרפות לקרן פנסיה או קופת גמל",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P28.01",
+   "title": "מסמך הנמקה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "cma-20160831-regulation-1086",
+     "section": "מסמך הנמקה",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-20180718-regulation-704-1",
+     "section": "תיקון 2018",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P26.04",
+   "title": "איסור הלבנת הון",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "cma-20180201-regulation-930-1",
+     "section": "חוזר ניהול סיכוני הלבנת הון",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P12.01",
+   "title": "בריאות וסיעוד",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "cma-20160125-regulation-1138-1",
+     "section": "החוזר המאוחד - ביטוח בריאות",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-20231204-notice-2023-039-1",
+     "section": "ביטוח סיעודי",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P10.01",
+   "title": "אובדן כושר עבודה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "cma-20160929-regulation-1080-1",
+     "section": "קווים מנחים",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-20180501-regulation-822-1",
+     "section": "שיווק",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-20150428-regulation-1222-1",
+     "section": "נכות בקרן פנסיה וקצבה ממקור אחר",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P04.03",
+   "title": "ביטוח מנהלים",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "cma-20040818-w8052",
+     "section": "עמדת הממונה",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-19990419-w9030",
+     "section": "עמדת הממונה",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-19830106-regulation-2093",
+     "section": "תנאים בפוליסות לביטוח חיים",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P04.06",
+   "title": "קופת גמל להשקעה / חיסכון לילד",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "cma-20161106-regulation-1056-1",
+     "section": "קופת גמל להשקעה לחיסכון ארוך טווח לילד",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P06.01",
+   "title": "בחירת קופה וקרנות נבחרות",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "cma-20240825-notice-2024-097-1",
+     "section": "בחירת קופת גמל - תיקון 2024",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "cma-20250611-notice-2025-26",
+     "section": "הליך קביעת קרנות נבחרות",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P08.03",
+   "title": "פרסום תשואה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "cma-20091207-regulation-1781-1",
+     "section": "כללי פרסום תשואה",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  }
+ ]
+}

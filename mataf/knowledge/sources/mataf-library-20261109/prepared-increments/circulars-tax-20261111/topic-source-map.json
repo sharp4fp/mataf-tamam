@@ -1,0 +1,130 @@
+{
+ "as_of": "2026-11-11",
+ "base_index": "profession-index/v1.3-20261110 (לא שונה; זהו delta)",
+ "note": "pdf_pages = עמודי ה-PDF. verified_how: image = נבדק מול תמונת העמוד; retained = המקור שמור בלבד.",
+ "topics": [
+  {
+   "id": "P05.02",
+   "title": "הפקדות עובד, מעסיק ופיצויים",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "ita-circular-2019-04-employer-deposits-amendment232",
+     "section": "תיקון 232",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P17.04",
+   "title": "חרטה מרצף",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "ita-circular-2011-03-continuity-regret",
+     "section": "סעיף 1 - רקע",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": ""
+    }
+   ]
+  },
+  {
+   "id": "P17.03",
+   "title": "רצף קצבה מבחירה לעומת רצף פיצויים",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "ita-circular-2011-03-continuity-regret",
+     "section": "כל החוזר",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P19.01",
+   "title": "גיל זכאות, סעיף 9א, קצבה מזכה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "סעיף נבדק",
+   "mappings": [
+    {
+     "source_id": "ita-circular-2013-02-amendment190-sec9a",
+     "section": "תוכן העניינים",
+     "pdf_pages": [
+      1
+     ],
+     "verified_how": "image",
+     "limits": ""
+    },
+    {
+     "source_id": "ita-procedure-2025-sec9a-b-exempt-pension",
+     "section": "פטור 2025",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P15.01",
+   "title": "קצבה מזכה ומוכרת",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "ita-circular-2013-02-amendment190-sec9a",
+     "section": "פרק 2-4",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P16.04",
+   "title": "מענק חייב, רצף, משיכה, פריסה",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "ita-circular-2004-21-severance-exemption-9-7a",
+     "section": "סעיף 9(7א)",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    },
+    {
+     "source_id": "ita-circular-2015-02-excess-pension-savings",
+     "section": "מענק שנים עודפות",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  },
+  {
+   "id": "P22.01",
+   "title": "מדרגות מס ונקודות זיכוי",
+   "previous_status": "לפי v1.3 / delta קודם",
+   "new_status": "מקור שמור",
+   "mappings": [
+    {
+     "source_id": "ita-monthly-deductions-booklet-2025",
+     "section": "לוח 2025",
+     "pdf_pages": [],
+     "verified_how": "retained",
+     "limits": "מקור נשמר; הסעיף לא נבדק מול תמונה"
+    }
+   ]
+  }
+ ]
+}
