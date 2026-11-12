@@ -10,7 +10,7 @@ import { renderReport, renderBeforeAfter, eligibleKeysOf } from './report.js';
 import { renderTransferRules } from './transfer-rules.js';
 import { renderDiffBody, diffPortfolios, renderNifraimBody, parseNifraimText, matchNifraim } from './diffnifraim.js';
 import { renderLifeTab, renderHealthTab, insInit, insApply, emptyInsState } from './insurance.js';
-import { renderCalcTab, calcApply } from './calc.js';
+import { renderCalcTab, renderCalcSubtabs, calcApply } from './calc.js';
 import { evaluateRetirement } from './retire-engine.js';
 import { AMOUNT_RANGES, EQUITY_RANGES, FEE_RANGES, RENT_RANGES, SECTIONS, parseBalanceItems, computeTotal } from './assets.js';
 
@@ -2551,6 +2551,7 @@ function render() {
                 </div>
                 <a class="ghostbtn liblink" href="https://mataf-library.pages.dev/" target="_blank" rel="noopener">ספריית המקורות</a>
             </div>
+            ${state.mode === 'calc' ? renderCalcSubtabs(state) : ''}
         </div>
     </header>
     <main class="wrap">

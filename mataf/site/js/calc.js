@@ -53,6 +53,11 @@ export const CALC_SUBS = [
     ['fees', 'דמי ניהול לאורך זמן'], ['severance', 'פיצויים - תקרת הפטור'], ['mukeret', 'קצבה מוכרת'],
     ['retage', 'גיל פרישה'], ['assets', 'תמונת נכסים וסיכון כולל'],
 ];
+// פס הלשוניות המשניות - מוצג בכותרת מתחת לכרטסות הראשיות כשכרטסת מחשבונים פתוחה (בקשת הבעלים 12.11 13:00)
+export function renderCalcSubtabs(state) {
+    const sub = CALC_SUBS.some(([id]) => id === state.calcSub) ? state.calcSub : 'fees';
+    return `<nav class="subtabs" role="tablist" aria-label="מחשבונים">${CALC_SUBS.map(([id, label]) => `<button type="button" role="tab" class="subtab${id === sub ? ' on' : ''}" aria-selected="${id === sub}" data-action="calcsub|${id}">${label}</button>`).join('')}</nav>`;
+}
 export function renderCalcTab(state, extra = {}) {
     const c = state.calc;
     // דמי ניהול
@@ -76,11 +81,9 @@ export function renderCalcTab(state, extra = {}) {
     }
     const sub = CALC_SUBS.some(([id]) => id === state.calcSub) ? state.calcSub : 'fees';
     const card = (id) => `<div class="card" data-calcsub-card="${id}"${id === sub ? '' : ' hidden'}>`;
-    const bar = `<nav class="subtabs" role="tablist" aria-label="מחשבונים">${CALC_SUBS.map(([id, label]) => `<button type="button" role="tab" class="subtab${id === sub ? ' on' : ''}" aria-selected="${id === sub}" data-action="calcsub|${id}">${label}</button>`).join('')}</nav>`;
     return `
         <div class="group-label">מחשבונים</div>
-        <h2>מחשבונים ממוקדים</h2>
-        ${bar}
+        <h2>${(CALC_SUBS.find(([id]) => id === sub) || [])[1] || 'מחשבונים'}</h2>
         <div class="note small">כל מחשבון עומד בפני עצמו ועובד רק על הערכים שמוזנים בו, עם תווית מקור משלו. קיבוע זכויות נשאר בכרטסת תכנון פרישה.</div>
         ${card('fees')}
             <div class="group-label">דמי ניהול לאורך זמן</div>
