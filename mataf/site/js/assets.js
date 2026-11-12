@@ -71,10 +71,9 @@ export const SECTIONS = [
     { title: 'פנסיה וביטוח', rows: [
         { id: 'pol', label: 'פוליסות חיסכון וגמל להשקעה שאינם במסלקה', fields: [['pol', 'amount'], ['polEq', 'eq']] },
     ] },
+    // שורה אחת לכל ההתחייבויות (החלטת הבעלים 12.11 12:38); המינוף נשאל בתוכה כי הוא משנה את הסיכון
     { title: 'התחייבויות', rows: [
-        { id: 'lev', label: 'הלוואה כנגד תיק השקעות (מינוף)', fields: [['lev', 'amount']] },
-        { id: 'loans', label: 'הלוואות אחרות וערבויות אישיות', fields: [['loans', 'amount']] },
-        { id: 'taxDebt', label: 'חובות מס צפויים (מס שבח, רווחי הון, שומות)', fields: [['taxDebt', 'amount']] },
+        { id: 'debts', label: 'הלוואות, ערבויות אישיות וחובות מס צפויים (מס שבח, רווחי הון, שומות) - בלי משכנתאות', fields: [['debts', 'amount'], ['lev', 'amount', 'מתוכם הלוואה כנגד תיק השקעות (מינוף)']] },
     ] },
     { title: 'מבנה, צרכים וסבילות', rows: [
         { id: 'struct', label: 'איך מוחזק ההון', fields: [['struct', 'choice', '', [['', 'לא נבחר'], ['private', 'פרטית בלבד'], ['holding', 'גם דרך חברת אחזקות (ארנק)'], ['trust', 'גם דרך נאמנות (Trust)'], ['partner', 'גם דרך שותפות'], ['mixed', 'שילוב של כמה']]]] },
@@ -179,7 +178,7 @@ export function computeTotal(inp) {
     add('emp', 'מניות ממקום העבודה', { eq: 100 });
     add('pol', 'פוליסות חיסכון וגמל להשקעה', {});
     const home = amountOf(q.home);
-    const debtKeys = ['homeDebt', 'reIlDebt', 'reAbroadDebt', 'lev', 'loans', 'taxDebt'];
+    const debtKeys = ['homeDebt', 'reIlDebt', 'reAbroadDebt', 'debts']; // lev הוא "מתוכם" של debts - לא נספר פעמיים
     const debt = (k) => { const a = amountOf(q[k]); return a ? { lo: a.lo, hi: a.hi } : { lo: 0, hi: 0 }; };
     const debtsLo = sum(debtKeys, k => debt(k).lo) + liabBanks, debtsHi = sum(debtKeys, k => debt(k).hi) + liabBanks;
 

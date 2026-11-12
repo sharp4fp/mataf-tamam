@@ -47,7 +47,7 @@ ok(near(r1.totals.debtsLo, 86175.31, 0.01), 'bank-credit-counted-as-debt', Strin
 
 // שאלון (7 נושאים): תיק בישראל 300-600 אלף מנייתי עם דמי ניהול 1-1.5%; דירה 2-5 מיליון (במאזן בלבד);
 // נדל"ן מניב 1-2 מיליון עם שכירות 5-10 אלף; מניות ממקום העבודה 150-300 אלף; VC/PE 150-300 אלף + Capital Calls עד 50 אלף
-const q = { il: 'd', ilEq: 'm', ilFee: 'f3', home: 'g', homeDebt: 'c', reIl: 'f', reIlRent: 'r2', emp: 'c', alt: 'c', altCalls: 'a', need: 'c', tol: 'sell', income: 'pension', lev: 'b', struct: 'holding', bizPlan: 'exit', biz: 'd' };
+const q = { il: 'd', ilEq: 'm', ilFee: 'f3', home: 'g', homeDebt: 'c', reIl: 'f', reIlRent: 'r2', emp: 'c', alt: 'c', altCalls: 'a', need: 'c', tol: 'sell', income: 'pension', debts: 'b', lev: 'b', struct: 'holding', bizPlan: 'exit', biz: 'd' };
 const r2 = A.computeTotal({ banks, q, pension: { value: 1000000, eqLo: 70, eqHi: 70 } });
 ok(r2.items.some(i => i.group === 'il' && i.lo === 300000 && i.hi === 600000 && i.eqLo === 80 && i.fee.lo === 1), 'securities-range-equity-and-fee');
 ok(r2.totals.home && r2.totals.home.lo === 2000000 && !r2.items.some(i => i.group === 'home'), 'home-in-balance-sheet-not-in-risk (owner decision)');
@@ -65,7 +65,7 @@ ok(r2.concentration.includes('נדל"ן מניב בישראל'), 'concentration-
 const r3 = A.computeTotal({ banks: [], q: { abroad: 'b', abroadEq: 'u' } });
 ok(r3.equity.lo === 0 && r3.equity.hi === 100 && r3.fxPct === 100, 'unknown-equity-is-0-100-and-abroad-is-fx');
 ok(A.computeTotal({ banks: [], q: {} }).equity.lo === null, 'empty-input-no-fake-number');
-ok(A.SECTIONS.length === 7 && A.SECTIONS.reduce((n, s) => n + s.rows.length, 0) <= 19 && !A.SECTIONS.some(s => s.rows.some(r => r.id === 'pen')), 'questionnaire-7-sections-19-rows; pension only from maslaka (owner 12.11 12:36)');
+ok(A.SECTIONS.length === 7 && A.SECTIONS.reduce((n, s) => n + s.rows.length, 0) <= 17 && A.SECTIONS.find(s => s.title === 'התחייבויות').rows.length === 1 && !A.SECTIONS.some(s => s.rows.some(r => r.id === 'pen')), 'questionnaire-7-sections-17-rows; liabilities one row (12:38); pension only from maslaka (12:36)');
 ok(A.AMOUNT_RANGES.some(r => r.id === 'j') && A.FEE_RANGES.length === 5 && A.RENT_RANGES.length === 6, 'ranges-cover-high-net-worth-fees-and-rent');
 console.log(`assets: PASS=${pass} FAIL=${fail}`);
 process.exit(fail ? 1 : 0);
