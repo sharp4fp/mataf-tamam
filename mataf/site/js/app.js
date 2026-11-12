@@ -112,9 +112,9 @@ const state = {
 };
 
 // Accordion: כל חלק נפתח/נסגר בלחיצה על הכותרת. המצב נשמר ב-state.open כך שרינדור מחדש לא סוגר חלקים.
-function acc(id, titleHtml, badge, body, forceOpen = false) {
+function acc(id, titleHtml, badge, body, forceOpen = false, aside = '') {
     const isOpen = forceOpen || state.open[id] === undefined ? (forceOpen || false) : state.open[id];
-    return `<section class="card acc" id="acc-${id}">
+    return `<section class="card acc${aside ? ' acc-has-aside' : ''}" id="acc-${id}">${aside ? `<div class="acc-aside">${aside}</div>` : ''}
         <button type="button" class="acc-head" data-acc="${id}" aria-expanded="${isOpen ? 'true' : 'false'}" aria-controls="acc-body-${id}">
             <span class="acc-title">${titleHtml}</span>
             ${badge ? `<span class="acc-badge">${badge}</span>` : ''}
@@ -2522,7 +2522,6 @@ function render() {
     const isRet = state.mode === 'retirement';
     const isPort = !isPlain && !isRet;
     const numStep1 = isNif ? '' : nextStepNum();
-    const numSecure = isPort ? nextStepNum() : '';
     // תכנון פרישה: 7 שלבים קבועים, מהקלט להמלצה
     const numStep2 = isRet ? nextStepNum() : '';
     const numKibua = isRet ? nextStepNum() : '';
@@ -2576,8 +2575,9 @@ function render() {
     </header>
     <main class="wrap">
         ${!isPlain ? renderCallouts() : ''}
-        ${!isPlain ? acc('step1', `${numStep1} קובץ המסלקה (ZIP או XML)`, badgeStep1(), renderStep1() + (isRet ? fold('secure', 'שמירה או טעינה של תיק מוצפן (אופציונלי)', renderEncPanel()) : ''), !hasP) : ''}
-        ${isPort ? acc('secure', `${numSecure} שמירת העבודה לקובץ מוצפן (אופציונלי)`, '', renderEncPanel()) : ''}
+        ${!isPlain ? acc('step1', `${numStep1} קובץ המסלקה (ZIP או XML)`, badgeStep1(), renderStep1() + (isRet ? fold('secure', 'שמירה או טעינה של תיק מוצפן (אופציונלי)', renderEncPanel()) : ''), !hasP,
+            isPort ? `<button type="button" class="encbtn${state.encOpen ? ' on' : ''}" data-action="enctoggle" aria-expanded="${!!state.encOpen}">🔒 שמירה / טעינה בקובץ מוצפן</button>` : '') : ''}
+        ${isPort && state.encOpen ? `<section class="card" id="enc-panel"><div class="group-label">שמירת העבודה לקובץ מוצפן (אופציונלי)</div>${renderEncPanel()}</section>` : ''}
         ${isNif ? acc('nifraim', `${numNif} נפרעים צפויים לפי חברת ביטוח`, state.nif.parsed ? 'קובץ נטען' : '', renderNifraimBody({ nif: state.nif, portfolio: null }), true) : ''}
         ${state.mode === 'life' ? renderLifeTab(state) : ''}
         ${state.mode === 'health' ? renderHealthTab(state) : ''}
@@ -3219,6 +3219,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addDocCandidates(key, getDoc(key).candidates.map((_, i) => i));
             render(); return;
         }
+        if (t.dataset.action === 'enctoggle') { state.encOpen = !state.encOpen; render(); if (state.encOpen) { const el = document.getElementById('enc-panel'); if (el) el.scrollIntoView({ block: 'nearest' }); } return; }
         if (t.dataset.action && t.dataset.action.startsWith('calcsub|')) { state.calcSub = t.dataset.action.split('|')[1]; render(); return; }
         if (t.dataset.action === 'asmanual') { state.assets.banks.push({ file: 'הזנה ידנית', bank: 'הזנה ידנית', date: '', manual: true, rows: [
             { key: 'cashIls', label: 'עו"ש ופיקדונות', source: 'הזנה ידנית', cat: 'cash', amount: 0, eq: 0, page: '-', include: true },

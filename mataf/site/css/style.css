@@ -698,3 +698,17 @@ details.alts.market .altstbl td:nth-child(2) { min-width: 180px; }
 .subtab { border: 1px solid rgba(255,255,255,0.35); background: transparent; color: #fff; border-radius: 999px; padding: 5px 13px; font: inherit; font-size: 0.85rem; cursor: pointer; }
 .subtab:hover { background: rgba(255,255,255,0.12); }
 .subtab.on { background: #fff; color: #1f4d3f; border-color: #fff; font-weight: 700; }
+
+/* כפתור שמירה מוצפנת בצד שמאל של חלק 1 בתיק הפנסיוני (בקשת הבעלים 12.11 14:31) */
+.acc-has-aside { position: relative; }
+.acc-has-aside > .acc-head { padding-left: 290px; }
+.acc-aside { position: absolute; left: 48px; top: 10px; z-index: 1; }
+.encbtn { background: #2e7d4f; color: #fff; border: 0; border-radius: 999px; padding: 8px 16px; font: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.encbtn:hover { background: #256a42; }
+.encbtn.on { background: #1d5636; }
+@media (max-width: 640px) {
+    .acc-has-aside { display: flex; flex-direction: column; }
+    .acc-has-aside > .acc-head { padding-left: 16px; order: 1; }
+    .acc-has-aside > .acc-aside { position: static; order: 2; padding: 8px 16px; }
+    .acc-has-aside > .acc-body { order: 3; }
+}
