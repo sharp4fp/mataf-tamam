@@ -42,6 +42,31 @@ function renderHarbGuide() {
     </div>`;
 }
 
+// רשימות בחירה (בקשת הבעלים 12.11 13:53: חלונות נגללים במקום שדות ריקים, חברות ממוינות לפי שם).
+// "אחר" תמיד אחרון ופותח שדה טקסט. ערך שנשמר בעבר ואינו ברשימה נשמר ומוצג כאפשרות.
+const sortHe = (arr) => [...arr].sort((a, b) => a.localeCompare(b, 'he'));
+const OTHER = 'אחר';
+export const LIFE_INSURERS = sortHe(['AIG', 'איילון', 'ביטוח ישיר', 'הכשרה', 'הפניקס', 'הראל', 'כלל', 'מגדל', 'מנורה מבטחים']);
+export const HEALTH_INSURERS = sortHe([...LIFE_INSURERS, 'ווישור', 'כללית (שב״ן)', 'מכבי (שב״ן)', 'מאוחדת (שב״ן)', 'לאומית (שב״ן)', 'ליברה']);
+const LIFE_PRODUCTS = ['ריסק - ביטוח חיים טהור', 'ביטוח חיים למשכנתא', 'ביטוח מנהלים - רכיב ריסק', 'אובדן כושר עבודה', 'מוות מתאונה', 'נכות מתאונה', 'מחלות קשות', 'סיעודי'];
+const HEALTH_PRODUCTS = ['ניתוחים בישראל', 'תרופות שאינן בסל', 'השתלות וטיפולים מיוחדים בחו״ל', 'אמבולטורי (בדיקות, ייעוצים)', 'מחלות קשות', 'סיעודי', 'שב״ן - רובד בסיסי', 'שב״ן - רובד עליון (זהב / פלטינום)', 'פוליסה משולבת (כמה כיסויים)'];
+const DISCOUNT_PCTS = Array.from({ length: 19 }, (_, k) => String(k * 5)); // 0-90 בקפיצות של 5
+const DISCOUNT_PERIODS = ['אין הנחה', 'עד שנה', '1-2 שנים', '3-5 שנים', '5-10 שנים', 'לכל תקופת הביטוח'];
+const DEDUCTIBLES = ['ללא השתתפות עצמית (מהשקל הראשון)', 'מעל השב״ן (משלים שב״ן)', 'השתתפות עצמית קבועה', 'לא ידוע'];
+const WAITING = ['ללא', '90 יום', '6 חודשים', '12 חודשים', '24 חודשים', 'לא ידוע'];
+const CLAIM_ROUTES = ['הסכם עם נותן השירות (בלי תשלום מראש)', 'החזר הוצאות', 'שילוב של שניהם', 'לא ידוע'];
+// select עם "אחר" שפותח שדה טקסט (המפתח key+'Other')
+function choiceField(ns, i, key, label, options, p, sorted = false) {
+    const val = p[key] || '';
+    const list = sorted ? sortHe(options) : options;
+    const known = list.includes(val) || val === OTHER || val === '';
+    const opts = [['', label + '...'], ...list.map(o => [o, o]), ...(known ? [] : [[val, val]]), [OTHER, OTHER]];
+    const sel = `<select data-ins="${ns}|${i}|${key}">${opts.map(([v, l]) => `<option value="${escIns(v)}"${val === v ? ' selected' : ''}>${escIns(l)}</option>`).join('')}</select>`;
+    const other = val === OTHER ? `<input type="text" data-ins="${ns}|${i}|${key}Other" value="${escIns(p[key + 'Other'] || '')}" placeholder="פירוט">` : '';
+    return `<label class="ins-field">${label}${sel}${other}</label>`;
+}
+const shown = (p, key) => p[key] === OTHER ? (p[key + 'Other'] || OTHER) : p[key];
+
 const SOURCE_OPTS = [['', 'מקור הנתון'], ['harb', 'דוח הר הביטוח'], ['manual', 'קלט ידני / פוליסה'], ['other', 'אחר']];
 function sourceSelect(ns, i, val) {
     return `<label class="ins-field">מקור הנתון<select data-ins="${ns}|${i}|source">${SOURCE_OPTS.map(([v, l]) => `<option value="${v}"${val === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>`;
@@ -50,7 +75,7 @@ function sourceSelect(ns, i, val) {
 function policyCard(ns, i, p, fieldsHtml, alertsHtml) {
     return `<div class="card ins-policy">
         <div class="ins-policy-head">
-            <b>פוליסה ${i + 1}${p.insurer ? ' · ' + escIns(p.insurer) : ''}${p.product ? ' · ' + escIns(p.product) : ''}</b>
+            <b>פוליסה ${i + 1}${p.insurer ? ' · ' + escIns(shown(p, 'insurer')) : ''}${p.product ? ' · ' + escIns(shown(p, 'product')) : ''}</b>
             <button type="button" class="ghostbtn" data-ins-del="${ns}|${i}">הסרה</button>
         </div>
         <div class="ins-grid">${fieldsHtml}</div>
@@ -67,11 +92,11 @@ export function renderLifeTab(state) {
         const a = discountAlert(p);
         const alertHtml = a ? `<div class="note small ins-alert-${a.level}">${a.text}</div>` : '';
         return policyCard('life', i, p, `
-            ${field('life', i, 'insurer', 'חברת ביטוח', 'text', '', p.insurer)}
-            ${field('life', i, 'product', 'מוצר / סוג כיסוי', 'text', '', p.product)}
+            ${choiceField('life', i, 'insurer', 'חברת ביטוח', LIFE_INSURERS, p)}
+            ${choiceField('life', i, 'product', 'מוצר / סוג כיסוי', LIFE_PRODUCTS, p)}
             ${field('life', i, 'sumInsured', 'סכום ביטוח (₪)', 'number', 'min="0"', p.sumInsured)}
             ${field('life', i, 'premium', 'פרמיה חודשית בפועל (₪)', 'number', 'min="0" step="0.01"', p.premium)}
-            ${field('life', i, 'discountPct', 'אחוז הנחה (%)', 'number', 'min="0" max="100" step="0.5"', p.discountPct)}
+            <label class="ins-field">אחוז הנחה (%)<select data-ins="life|${i}|discountPct"><option value="">אחוז הנחה...</option>${[...DISCOUNT_PCTS, ...(p.discountPct && !DISCOUNT_PCTS.includes(String(p.discountPct)) ? [String(p.discountPct)] : [])].map(v => `<option value="${v}"${String(p.discountPct) === v ? ' selected' : ''}>${v}%</option>`).join('')}</select></label>
             ${field('life', i, 'discountEnd', 'סיום תקופת הנחה (חודש/שנה)', 'month', '', p.discountEnd)}
             ${sourceSelect('life', i, p.source)}
             ${field('life', i, 'note', 'הערה', 'text', '', p.note)}
@@ -107,17 +132,17 @@ export function renderHealthTab(state) {
         const overlapHtml = p.overlap
             ? `<div class="note small ins-alert-amber">סומן כפילות אפשרית (למשל בהר הביטוח) - <b>מצריך בחינה מקצועית</b>. התראת כפילות אינה בהכרח ביטוח מיותר; אין לבטל כיסוי על סמכה.</div>` : '';
         return policyCard('health', i, p, `
-            ${field('health', i, 'insurer', 'מבטח / קופת חולים', 'text', '', p.insurer)}
-            ${field('health', i, 'product', 'מוצר / שם תוכנית', 'text', '', p.product)}
+            ${choiceField('health', i, 'insurer', 'מבטח / קופת חולים', HEALTH_INSURERS, p)}
+            ${choiceField('health', i, 'product', 'מוצר / כיסוי', HEALTH_PRODUCTS, p)}
             ${field('health', i, 'edition', 'מהדורה / תאריך פוליסה', 'month', '', p.edition)}
             <label class="ins-field">סוג כיסוי<select data-ins="health|${i}|type">${HEALTH_TYPES.map(([v, l]) => `<option value="${v}"${p.type === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
             ${field('health', i, 'premium', 'פרמיה חודשית בפועל (₪)', 'number', 'min="0" step="0.01"', p.premium)}
-            ${field('health', i, 'discountPeriod', 'תקופת הנחה (אם יש)', 'text', '', p.discountPeriod)}
-            ${field('health', i, 'deductible', 'השתתפות עצמית', 'text', '', p.deductible)}
+            ${choiceField('health', i, 'discountPeriod', 'תקופת הנחה', DISCOUNT_PERIODS, p)}
+            ${choiceField('health', i, 'deductible', 'השתתפות עצמית', DEDUCTIBLES, p)}
             ${field('health', i, 'limits', 'מגבלות', 'text', '', p.limits)}
             ${field('health', i, 'exclusions', 'חריגים', 'text', '', p.exclusions)}
-            ${field('health', i, 'waiting', 'תקופת אכשרה', 'text', '', p.waiting)}
-            ${field('health', i, 'claimRoute', 'דרך מימוש תביעה', 'text', '', p.claimRoute)}
+            ${choiceField('health', i, 'waiting', 'תקופת אכשרה', WAITING, p)}
+            ${choiceField('health', i, 'claimRoute', 'דרך מימוש תביעה', CLAIM_ROUTES, p)}
             ${sourceSelect('health', i, p.source)}
             <label class="ins-field ins-check"><input type="checkbox" data-ins="health|${i}|overlap"${p.overlap ? ' checked' : ''}> סומנה כפילות אפשרית (למשל בהר הביטוח)</label>
             ${field('health', i, 'note', 'הערה', 'text', '', p.note)}

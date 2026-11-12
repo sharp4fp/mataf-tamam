@@ -86,6 +86,7 @@ jobs:
           node tests-1032/qa-maslaka-mekadem.mjs
           node tests-1032/qa-tax-alternatives.mjs
           node tests-1032/qa-assets.mjs
+          node tests-1032/qa-insurance-selects.mjs
 
   deploy:
     name: פריסה
