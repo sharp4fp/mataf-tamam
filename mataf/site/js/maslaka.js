@@ -70,14 +70,22 @@ export function annuityFactorOf(ylg) {
         yieldAffectsPension: flag12(txt(ylg, 'TSUA-MASHPIA-KITZBA')),
         track: txt(ylg, 'SHEM-MASLOL') || '',
         limitYears: num(txt(ylg, 'TKUFAT-HAGBALA-BESHANIM')),
-        projectedSavings: num(txt(ylg, 'TOTAL-CHISACHON-MITZTABER-TZAFUY')),
-        // SUG-KUPA בתוך הבלוק: 1 = קצבתי, 2 = הוני, 3 = השתלמות (נצפה בקבצים אמיתיים: קרן פנסיה 1, השתלמות 3)
+        totalSavings: num(txt(ylg, 'TOTAL-CHISACHON-MITZTABER-TZAFUY')),
+        // ממשק אחזקות גרסה 008 (קובץ השדות הרשמי, בספרייה): 212 = צבירה צפויה המיועדת לקצבה, 210 = המיועדת להון,
+        // 206 = סכום קצבת זקנה לפי המסלול הבסיסי. SUG-KUPA (205) הוא 1 = משלמת, 2 = לא משלמת, 3 = השתלמות -
+        // הוא אינו מבחין בין קצבה להון (תוקן 12.11.2026, M-046).
+        annuitySavings: num(txt(ylg, 'TOTAL-SCHUM-MTZBR-TZAFUY-LEGIL-PRISHA-MECHUSHAV-LEKITZBA-IM-PREMIYOT')),
+        capitalPart: num(txt(ylg, 'TOTAL-ITRA-TZFUYA-MECHUSHAV-LEHON-IM-PREMIOT')),
+        reportedPension: num(txt(ylg, 'SCHUM-KITZVAT-ZIKNA')),
         sugKupa: txt(ylg, 'SUG-KUPA') || '',
     };
-    // קצבה מהמקדם המובטח: הצבירה הצפויה לגיל הפרישה חלקי המקדם (קצבה חודשית ברוטו, לפני מס)
-    out.pensionFromGuaranteed = out.guaranteedFactor && out.projectedSavings
-        ? Math.round(out.projectedSavings / out.guaranteedFactor * 100) / 100 : null;
-    const any = out.guaranteedFactor !== null || [out.lifeGuarantee, out.yieldGuarantee, out.lifeAffectsPension, out.yieldAffectsPension].some(v => v !== null);
+    // קובץ ישן בלי שדות 210/212: כשיש מקדם, כל הצבירה נחשבת קצבתית
+    if (out.annuitySavings === null && out.capitalPart === null && out.guaranteedFactor) out.annuitySavings = out.totalSavings;
+    out.projectedSavings = out.annuitySavings;
+    // קצבה מהמקדם המובטח: הצבירה המיועדת לקצבה חלקי המקדם (קצבה חודשית ברוטו, לפני מס) - "על ידי חלוקת היתרה הצבורה במקדם"
+    out.pensionFromGuaranteed = out.guaranteedFactor && out.annuitySavings
+        ? Math.round(out.annuitySavings / out.guaranteedFactor * 100) / 100 : null;
+    const any = out.guaranteedFactor !== null || (out.capitalPart || 0) > 0 || [out.lifeGuarantee, out.yieldGuarantee, out.lifeAffectsPension, out.yieldAffectsPension].some(v => v !== null);
     return any ? out : null;
 }
 
@@ -129,32 +137,43 @@ function parseAccount(hop, yatzran, mutzarSug) {
             to: txt(m, 'TAARICH-TOM-TKUFAT-HABITUAH'),
         });
     }
+    // תחזית הגוף המנהל: סכום כל הקופות (משלמת/לא משלמת) באותו גיל פרישה - לא רק הבלוק הראשון (M-047)
     let forecast = null;
-    const ylg = hop.getElementsByTagName('YitraLefiGilPrisha')[0];
-    if (ylg) {
+    const ylgs = Array.from(hop.getElementsByTagName('YitraLefiGilPrisha'));
+    const fAge = ylgs.length ? (parseInt(txt(ylgs[0], 'GIL-PRISHA')) || 0) : 0;
+    if (fAge) {
+        const sameAge = ylgs.filter(y => (parseInt(txt(y, 'GIL-PRISHA')) || 0) === fAge);
+        const sumOf = (tag) => { const v = sameAge.map(y => num(txt(y, tag))).filter(x => x !== null); return v.length ? Math.round(v.reduce((n, x) => n + x, 0) * 100) / 100 : null; };
         forecast = {
-            age: parseInt(txt(ylg, 'GIL-PRISHA')) || 0,
-            savingsWith: num(txt(ylg, 'TOTAL-CHISACHON-MITZTABER-TZAFUY')),
-            pensionWith: num(txt(ylg, 'SCHUM-KITZVAT-ZIKNA')),
-            savingsWithout: num(txt(ylg, 'TZVIRAT-CHISACHON-CHAZUYA-LELO-PREMIYOT')),
-            pensionWithout: num(txt(ylg, 'KITZVAT-HODSHIT-TZFUYA')),
-            assumedYield: num(txt(ylg, 'ACHUZ-TSUA-BATACHAZIT')),
+            age: fAge,
+            savingsWith: sumOf('TOTAL-CHISACHON-MITZTABER-TZAFUY'),
+            pensionWith: sumOf('SCHUM-KITZVAT-ZIKNA'),
+            savingsWithout: sumOf('TZVIRAT-CHISACHON-CHAZUYA-LELO-PREMIYOT'),
+            pensionWithout: sumOf('KITZVAT-HODSHIT-TZFUYA'),
+            assumedYield: num(txt(sameAge[0], 'ACHUZ-TSUA-BATACHAZIT')),
+            blocks: sameAge.length,
         };
-        if (!forecast.age) forecast = null;
     }
     // מקדם הקצבה של הפוליסה (M-045, החלטת הבעלים 11.11 18:57): בביטוח מנהלים המקדם המובטח מגיע מהמסלקה
-    // (בלוק YitraLefiGilPrisha), ולא נדרש ציטוט קצבה. דגלים: 1 = כן, 2 = לא (המוסכמה של ממשק טרום ייעוץ,
-    // כמו YESH-TVIA ו-KAYAM-KISUY-BITUCHI-COLECTIVI-LEAMITIM). אימות מול קובץ השדות הרשמי - BACKLOG M-046.
-    // בפוליסה יכולים להיות כמה בלוקים - אחד לכל סוג קופה (קצבתי/הוני). המקדם שייך לחלק הקצבתי.
+    // (בלוק YitraLefiGilPrisha), ולא נדרש ציטוט קצבה. דגלים 1 = כן, 2 = לא - אומת מול ממשק אחזקות 008 (M-046).
+    // בפוליסה יכולים להיות כמה בלוקים: אחד לכל קופה (משלמת/לא משלמת) ולכל גיל פרישה 60-70.
+    // לוקחים את גיל הבלוק שיש בו מקדם (אחרת הראשון) ומסכמים את כל הקופות של אותו גיל.
     const factorBlocks = Array.from(hop.getElementsByTagName('YitraLefiGilPrisha')).map(annuityFactorOf).filter(Boolean);
-    const annuityFactor = factorBlocks.find(b => b.guaranteedFactor !== null)
-        || factorBlocks.find(b => b.sugKupa === '1') || factorBlocks[0] || null;
-    if (annuityFactor) {
-        // פוליסה שכל בלוקיה הוניים: אין חלק קצבתי - לא מציגים את הצבירה ההונית כבסיס לקצבה
-        annuityFactor.capitalOnly = annuityFactor.sugKupa === '2';
-        annuityFactor.capitalSavings = factorBlocks.filter(b => b.sugKupa === '2' && (b !== annuityFactor || annuityFactor.capitalOnly))
-            .reduce((n, b) => n + (b.projectedSavings || 0), 0) || null;
-        annuityFactor.blocks = factorBlocks.length;
+    const lead = factorBlocks.find(b => b.guaranteedFactor !== null) || factorBlocks[0] || null;
+    let annuityFactor = null;
+    if (lead) {
+        const same = factorBlocks.filter(b => b.retireAge === lead.retireAge);
+        const sum = (k) => same.reduce((n, b) => n + (b[k] || 0), 0);
+        annuityFactor = Object.assign({}, lead);
+        annuityFactor.annuitySavings = sum('annuitySavings') || null;
+        annuityFactor.projectedSavings = annuityFactor.annuitySavings;
+        annuityFactor.capitalSavings = sum('capitalPart') || null;
+        annuityFactor.capitalOnly = !annuityFactor.annuitySavings && !!annuityFactor.capitalSavings;
+        annuityFactor.pensionFromGuaranteed = annuityFactor.guaranteedFactor && annuityFactor.annuitySavings
+            ? Math.round(annuityFactor.annuitySavings / annuityFactor.guaranteedFactor * 100) / 100 : null;
+        annuityFactor.reportedPension = sum('reportedPension') || null;
+        annuityFactor.blocks = same.length;
+        annuityFactor.ages = Array.from(new Set(factorBlocks.map(b => b.retireAge))).filter(Boolean);
     }
     // --- שדות נוספים לדוח המקוצר (מיפוי מול דוח לדוגמה; כל השדות מכתבי ה-XML עצמו, ללא חישוב) ---
     // דמי ניהול חוזיים לפי מבנה דמי הניהול: SUG-HOTZAA=1 מצבירה (שנתי), SUG-HOTZAA=2 מהפקדה (מפרט 009).

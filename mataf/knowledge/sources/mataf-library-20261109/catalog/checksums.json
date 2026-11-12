@@ -4,7 +4,7 @@
   "catalog/fund-corpus-index.csv": "2aae7e428d5ccced069debb660b64cd1443f33d6404ba838776b06fe4719a543",
   "catalog/fund-corpus-provenance.md": "c3d936c7130a13afbeff1b71adb16b4b166ece58bfee14accd7188cf080efcbd",
   "catalog/gaps.json": "aa70089aea7908f46c512bb9d2dbb8592b5418ac32a4aa71a172a96aaba3b395",
-  "catalog/sources.json": "73a833ce4796512647d808cc453e2764a825dcc80d87338371d235d6c39c9c6c",
+  "catalog/sources.json": "4fc0839ec5d9de418c051c92b169ed9bdc1ed9b8774ed88fec964e701cc8b868",
   "knowledge/retirement-v4.md": "ab20225cd845386f71181f20f77196719ece3e4f9f0a4a2a4e8a1f82bb49fc7e",
   "search.py": "9bc54bc9ae10f017c0641b1a4015d7553e5930c73a4d958d6d1abaa972519b6b",
   "sources/tax-161d-2026.pdf": "40eba7d3b5abded138edc9c0292ae5810fa740808afc30ea021c44f21d84d679",
@@ -1222,7 +1222,7 @@
   "prepared-increments/exec-gemel-20261111/ita-circular-2002-20-savings-taxation.txt": "2f921ecfd44959569df2fd9d738a15e956abd3b5ce56e5baf343c20e28ba48b0",
   "prepared-increments/exec-gemel-20261111/cma-20160929-regulation-1070.pdf": "02c8a4d3d4743fbfdd4c9966b789496d3b27d4cbf97b3ae7df568325434e6f95",
   "prepared-increments/legislation-inventory-20261111/CEILINGS-2026-HE.md": "08ee6efb0f7e54b1ee678c1309b588c9ff08f5c9af7dc1457d0eb59f7c17d8fc",
-  "prepared-increments/legislation-inventory-20261111/INFO-REQUEST-DRAFT-HE.md": "f60c9256f467282c7016b13106b95a26d9fbc3947132386efc0c3aadc344eb2c",
+  "prepared-increments/legislation-inventory-20261111/INFO-REQUEST-DRAFT-HE.md": "82bc5f65783720b17273314254b54b3a4d5cbfff56971d2313dbe225a10ecfeb",
   "prepared-increments/csp-oldfunds-20261111/knesset-csp-8_lsr_ec_317775.pdf": "6b5a6413bf9ae74aabbe885e60cc14bd6fa8b6fad8a302a241c9927a3433308b",
   "prepared-increments/csp-oldfunds-20261111/knesset-csp-20_lsr_324296.txt": "86bdcf9a642035ca8a18d54f025f9893071368ffa441e8a1f010e7baa42295b8",
   "prepared-increments/csp-oldfunds-20261111/knesset-csp-14_lsr_211433.txt": "576b743427be8bb3d316375d1e62a1a819de2d8a05112e1a21c0cc81fd9cef53",
@@ -1426,5 +1426,11 @@
   "prepared-increments/exec-gemel-20261111/cma-life-severance-after-amendment3-2009.pdf": "dfa780808caa2081c27b16e94c69f58cbbc9d4dff1b984fc7dca10a8348afb62",
   "prepared-increments/exec-gemel-20261111/cma-life-guidelines-savings-plans-2006.pdf": "d71d86114890ff52e3d47b6ca93bcd67b9b2d46069a457b0767b186635e96b9c",
   "prepared-increments/csp-oldfunds-20261111/knesset-csp-25_lsr_10912219.pdf": "a65796008ca4cfdf5f572f5a3b19076c86bfc722c43ad70816401e1b03b3d835",
-  "prepared-increments/csp-oldfunds-20261111/knesset-csp-25_lsr_10912219.txt": "933139053270d002a33835a3778ae37ecc6b94b3b94a4f5815f3bcc0828fe1dd"
+  "prepared-increments/csp-oldfunds-20261111/knesset-csp-25_lsr_10912219.txt": "933139053270d002a33835a3778ae37ecc6b94b3b94a4f5815f3bcc0828fe1dd",
+  "prepared-increments/cma-interface-20261112/cma-20260326-circular-2026-9-3.pdf": "4ac104d61aae8ba8f70a842e4b22726264e0e5ce68869bf9c19e14093352bc5d",
+  "prepared-increments/cma-interface-20261112/cma-20260326-circular-2026-9-3.txt": "d7e9c26c52bceda64f30e5310eb24826e4e4020125b3dbb595e0ae9b8f23c83f",
+  "prepared-increments/cma-interface-20261112/cma-holdings-interface-v008-fields.pdf": "735126d7db23f3f40674e2c7aa3c56b04cdf5ed3f48e0e4f0da0c103516d0983",
+  "prepared-increments/cma-interface-20261112/cma-holdings-interface-v008-fields.txt": "6849e82899a61b7742b7ceb9e1431db82d0b6e9c267fd52434f67525a2305139",
+  "prepared-increments/cma-interface-20261112/cma-holdings-interface-v008.xlsx": "ab49830331bd5026f165d9c489760be1c58288c18fe25876c26c0dc3f32d38f0",
+  "prepared-increments/cma-interface-20261112/README-HE.md": "475bf90e5aa50d25211203d2982b144caa475199f4fcef0c983c0e1a1977e567"
 }
