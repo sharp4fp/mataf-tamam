@@ -641,8 +641,17 @@ function addDocCandidates(key, indices) {
     state.intake[key] = { value, source: d.fileName ? `${cfg.name} - ${d.fileName}${pages ? ` (עמ' ${pages})` : ''}` : cur.source };
 }
 
+// קרבה: רשימה סגורה (בקשת הבעלים 12.11 13:58 - חלון נגלל כשהתשובה מתוך עד 20 אפשרויות); "אחר" פותח שדה טקסט
+const RELATIONS = ['בן/בת זוג', 'ילד/ה', 'נכד/ה', 'הורה', 'אח/אחות', 'מוטב/ת רשום/ה', 'יורשים על פי דין', 'אחר'];
+const relationText = (r) => r.relation === 'אחר' ? (r.relationOther || 'אחר') : r.relation;
+function relationSelect(i, r) {
+    const v = r.relation || '';
+    const opts = ['', ...RELATIONS, ...(v && !RELATIONS.includes(v) ? [v] : [])];
+    return `<select data-ben="${i}|relation">${opts.map(o => `<option value="${esc(o)}"${o === v ? ' selected' : ''}>${o ? esc(o) : 'קרבה...'}</option>`).join('')}</select>`
+        + (v === 'אחר' ? `<input placeholder="פירוט הקרבה" data-ben="${i}|relationOther" value="${esc(r.relationOther || '')}">` : '');
+}
 function composeFamilyValue() {
-    const parts = state.beneficiaries.filter(r => r.name.trim()).map(r => `${r.name} - ${r.relation} [${r.source}]`);
+    const parts = state.beneficiaries.filter(r => r.name.trim()).map(r => `${r.name} - ${relationText(r)} [${r.source}]`);
     const value = [...parts, ...state.familyExtra].join('; ');
     const docsUsed = [...new Set(state.beneficiaries.map(r => (r.source || '').replace(/ \(עמ'[^)]*\)/, '')).filter(s => s && !s.startsWith('הזנה ידנית')))];
     const source = docsUsed.length ? docsUsed.join(' + ') : (state.intake.family || {}).source || '';
@@ -665,7 +674,7 @@ function renderFamilyBlock() {
         <div class="subhead small">רשימת מוטבים ובני משפחה <em class="tag-miss">לעריכה ואישור</em></div>
         ${state.beneficiaries.map((r, i) => `<div class="benrow">
             <input placeholder="שם" data-ben="${i}|name" value="${esc(r.name)}">
-            <input placeholder="קרבה (מוטב/ת, בן/בת זוג, ילד/ה)" data-ben="${i}|relation" value="${esc(r.relation)}">
+            ${relationSelect(i, r)}
             <select data-ben-src="${i}">
                 ${['אישור מוטבים מהגוף המנהל', 'ספח תעודת זהות', 'מסמך אחר', 'הזנה ידנית - ללא מסמך'].map(s => `<option ${r.source.startsWith(s) ? 'selected' : ''}>${s}</option>`).join('')}
             </select>
@@ -1153,7 +1162,7 @@ function renderKibua() {
         <div class="netgrid">
             <label>היסטוריית מעסיקים ב-32 השנים שלפני גיל הזכאות (הצהרת הלקוח - קובעת אילו מסמכים נדרשים)<select data-kib="empHistory"><option value=""${k.empHistory === '' ? ' selected' : ''}>לא נבחר - לא ידוע אם היו מעסיקים קודמים</option><option value="only"${k.empHistory === 'only' ? ' selected' : ''}>מקום עבודה יחיד - לא היו מענקי פרישה ממעסיקים קודמים</option><option value="additional"${k.empHistory === 'additional' ? ' selected' : ''}>היו מעסיקים/מענקים נוספים - יש לכלול גם אותם בסכום המענקים</option></select></label>
             <label>חודש הגעה לגיל זכאות (גיל פרישה או קצבה ראשונה, המאוחר)<input type="month" data-kib="eligDate" value="${esc(k.eligDate)}"></label>
-            <label>מספר משלמי קצבה צפויים (סל פטור אחד משותף לכולם)<input type="number" min="1" max="10" step="1" data-kib="payers" value="${esc(k.payers)}"></label>
+            <label>מספר משלמי קצבה צפויים (סל פטור אחד משותף לכולם)<select data-kib="payers">${['', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].map(v => `<option value="${v}"${String(k.payers || '') === v ? ' selected' : ''}>${v || 'בחרו...'}</option>`).join('')}</select></label>
             <label>מענקי פרישה פטורים ממס שהתקבלו (₪, סכום מצטבר - כמודפס באישורים; ההקטנה ל-32 שנים מחושבת למטה)<input type="number" min="0" step="1000" data-kib="grantExempt" value="${esc(k.grantExempt)}"></label>
             <label>שנות העבודה שבגינן שולמו המענקים (ריק = לפי טופס 161${parseWorkYears(state.f161 && state.f161.workYears) ? ': ' + parseWorkYears(state.f161.workYears) : ''}; מעל 32 - הפגיעה מוקטנת ביחס 32/שנים)<input type="number" min="0" max="60" step="0.01" data-kib="grantYears" value="${esc(k.grantYears)}"></label>
             <label>האם סכום המענקים ממודד לתחילת שנת הזכאות? (המערכת אינה ממדדת - בלי הצהרה לא יחושב)<select data-kib="grantIndexed"><option value=""${k.grantIndexed === '' ? ' selected' : ''}>לא נבחר</option><option value="yes"${k.grantIndexed === 'yes' ? ' selected' : ''}>כן - הסכום ממודד (מתוך אישורי המעסיק/הקופה)</option><option value="no"${k.grantIndexed === 'no' ? ' selected' : ''}>לא - סכום נומינלי; המידוד ייעשה מול מקור רשמי</option></select></label>
@@ -1449,6 +1458,15 @@ function renderRiskGoals() {
         + '<div id="rg-flags">' + rgFlagsHtml() + '</div>'
         + '</div>';
 }
+// פריטי השלמה שתשובתם מתוך רשימה סגורה - חלון נגלל (12.11 13:58)
+const INTAKE_CHOICES = {
+    'work-after': ['מוצהר על ידי הלקוח: לא מתכנן להמשיך לעבוד אחרי הפרישה', 'ימשיך לעבוד במשרה מלאה', 'ימשיך לעבוד במשרה חלקית', 'יעבוד כעצמאי', 'עדיין לא החליט'],
+};
+function intakeSelect(it, st) {
+    const list = INTAKE_CHOICES[it.id], v = st.value || '';
+    const opts = ['', ...list, ...(v && !list.includes(v) ? [v] : [])];
+    return `<select data-intake="${it.id}|value">${opts.map(o => `<option value="${esc(o)}"${o === v ? ' selected' : ''}>${o ? esc(o) : 'בחרו...'}</option>`).join('')}</select>`;
+}
 // כרטיס השלמה אחד (פריט INTAKE) - משמש את שלבי תכנון הפרישה 3, 4, 5 ו-7
 function intakeCard(it) {
     const st = state.intake[it.id] || { value: '', source: '' };
@@ -1457,7 +1475,7 @@ function intakeCard(it) {
         <div class="track-line"><span><b>${it.label}</b> · ${it.cat}</span><span class="small muted">${done ? (st.source.trim() ? 'התקבל עם מקור' : 'התקבל בלי מקור - לא מאומת') : 'חסר'}</span></div>
         <div class="muted small">למה צריך: ${it.why}</div>
         <div class="intakegrid">
-            ${it.id === 'pension-start' ? renderPensionStart(st) : `<input placeholder="ערך / תשובה" data-intake="${it.id}|value" value="${esc(st.value)}">`}
+            ${it.id === 'pension-start' ? renderPensionStart(st) : INTAKE_CHOICES[it.id] ? intakeSelect(it, st) : `<input placeholder="ערך / תשובה" data-intake="${it.id}|value" value="${esc(st.value)}">`}
             <input placeholder="מקור (מסמך, גוף, תאריך)" data-intake="${it.id}|source" value="${esc(st.source)}">
         </div>
         ${it.attestation && !done ? `<button type="button" class="ghostbtn" data-attest="${it.id}">${it.attBtn || 'סמנו: מוצהר שלא היו אירועים קודמים'}</button>` : ''}
@@ -1625,6 +1643,7 @@ function taxAltsResultHtml() {
         ${autoList ? `<div class="muted small"><b>מולא אוטומטית:</b> ${esc(autoList)}. אפשר לתקן בשדות למעלה.</div>` : ''}
         <div class="muted small">המקורות: ${esc(Object.values(r.refs).join(' · '))}. החישוב בערכי 2026; המס לכל שנה מחושב מעל ההכנסה האחרת של אותה שנה. אינו כולל ביטוח לאומי ומס בריאות. הבחירה עצמה נעשית בטופסי 161א, 116ג ו-161ד.</div>`;
 }
+const HEB_MONTHS = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
 const RENG_LABEL = { grant: 'מענק', workYears: 'שנות עבודה', lastSalary: 'משכורת אחרונה', retireYear: 'שנת פרישה', retireMonth: 'חודש פרישה', retireDay: 'יום', sex: 'מין', age: 'גיל בפרישה', pensionMonthly: 'קצבה חודשית', annuityFactor: 'מקדם', pensionStartYear: 'שנת תחילת קצבה', retireYearIncome: 'הכנסה בשנת הפרישה', futureIncome: 'הכנסה שנתית אחרת', creditPoints: 'נקודות זיכוי', priorExempt: 'מענקים פטורים קודמים' };
 function renderTaxAlternatives() {
     const auto = retEngAuto();
@@ -1636,7 +1655,7 @@ function renderTaxAlternatives() {
             ${f('workYears', 'שנות עבודה', 'min="0" max="60" step="0.01"')}
             ${f('lastSalary', 'משכורת חודשית אחרונה (₪)', 'min="0"')}
             ${f('retireYear', 'שנת הפרישה', 'min="2020" max="2040"')}
-            ${f('retireMonth', 'חודש הפרישה (1-12)', 'min="1" max="12"')}
+            <label>חודש הפרישה<select data-reng="retireMonth"><option value="">${auto.retireMonth && auto.retireMonth.v ? 'אוטומטי: ' + HEB_MONTHS[auto.retireMonth.v - 1] + ' (' + esc(auto.retireMonth.src) + ')' : 'בחרו...'}</option>${HEB_MONTHS.map((m, j) => `<option value="${j + 1}"${String(u.retireMonth || '') === String(j + 1) ? ' selected' : ''}>${m}</option>`).join('')}</select></label>
             ${f('age', 'גיל בפרישה', 'min="50" max="90"')}
             ${f('pensionMonthly', 'קצבה חודשית צפויה מהחיסכון הקיים (₪)', 'min="0"')}
             ${f('annuityFactor', 'מקדם המרה לקצבה (לכסף שנשאר בקופה)', 'min="50" max="400" step="0.01"')}
@@ -2870,6 +2889,7 @@ document.addEventListener('DOMContentLoaded', () => {
             state.beneficiaries[+i][k] = t.value;
             composeFamilyValue();
             syncIntakeInputs('family');
+            if (k === 'relation' && t.tagName === 'SELECT') { const _sy = window.scrollY; render(); window.scrollTo(0, _sy); }
             return;
         }
         if (t.dataset.unknownAssump !== undefined) { const v = t.value.trim(); state.unknownAssumption = v === '' ? null : Math.min(100, Math.max(0, Number(v) || 0)); render(); return; }

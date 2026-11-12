@@ -21,6 +21,16 @@ for (const ns of ['life', 'health']) {
     ok(await page.evaluate((ns) => !!document.querySelector(`input[data-ins="${ns}|0|productOther"]`), ns), `${ns}-other-opens-text-field`);
 }
 ok(await page.evaluate(() => ['discountPeriod', 'deductible', 'waiting', 'claimRoute'].every(k => document.querySelector(`select[data-ins="health|0|${k}"]`))), 'health-extra-fields-are-selects');
+// תכנון פרישה: תשובות מתוך רשימה סגורה (עד 20) הן חלונות נגללים (12.11 13:58)
+await page.goto('http://127.0.0.1:8099/?tab=retirement', { waitUntil: 'networkidle2', timeout: 30000 });
+await page.click('[data-action="demo"]'); await wait(800);
+for (let round = 0; round < 3; round++) { await page.evaluate(() => document.querySelectorAll('[data-acc][aria-expanded="false"]').forEach(h => h.click())); await wait(300); }
+await page.evaluate(() => { const b = document.querySelector('[data-ben-add], [data-action="benadd"]'); if (b && !document.querySelector('select[data-ben]')) b.click(); }); await wait(300);
+const sels = await page.evaluate(() => ({
+    payers: !!document.querySelector('select[data-kib="payers"]'), month: document.querySelectorAll('select[data-reng="retireMonth"] option').length,
+    work: !!document.querySelector('select[data-intake="work-after|value"]'), rel: !!document.querySelector('select[data-ben$="|relation"]'),
+}));
+ok(sels.payers && sels.month === 13 && sels.work && sels.rel, 'retirement-closed-answers-are-selects (payers, month, work-after, relation)', JSON.stringify(sels));
 ok(errs.length === 0, 'no-page-errors', errs[0] || '');
 console.log(`insurance-selects: PASS=${pass} FAIL=${fail}`);
 await browser.close();
