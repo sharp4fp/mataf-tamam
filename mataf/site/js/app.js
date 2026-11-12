@@ -12,6 +12,7 @@ import { renderDiffBody, diffPortfolios, renderNifraimBody, parseNifraimText, ma
 import { renderLifeTab, renderHealthTab, insInit, insApply, emptyInsState } from './insurance.js';
 import { renderCalcTab, calcApply } from './calc.js';
 import { evaluateRetirement } from './retire-engine.js';
+import { AMOUNT_RANGES, EQUITY_RANGES, QUESTIONS, parseBalanceItems, computeTotal } from './assets.js';
 
 const fmt = (n) => Math.round(n).toLocaleString('he-IL');
 const pct = (n) => (Math.round(n * 10) / 10).toLocaleString('he-IL') + '%';
@@ -68,6 +69,7 @@ const state = {
     busy: false,
     f161: { ...EMPTY_161, grants: [] },
     retEng: {},
+    assets: { banks: [], q: {}, status: '' },
     kibua: { eligDate: '', payers: '1', grantExempt: '', grantYears: '', grantYear: '', grantIndexed: '', sim2026: '', hivunPast: '', hivunPlan: '', empHistory: '' },
     alloc: { objective: '', horizon: '' },
     riskgoals: { balance: '', equity: '', equitySrc: '', income: '', resources: '', liq: '', liqDate: '', willing: '', behavior: '', goals: [{ desc: '', amount: '', date: '', importance: '', flex: '', alloc: '' }, { desc: '', amount: '', date: '', importance: '', flex: '', alloc: '' }, { desc: '', amount: '', date: '', importance: '', flex: '', alloc: '' }] },
@@ -167,7 +169,7 @@ function packVault() {
     for (const [k, d] of Object.entries(rawVault.docs)) push('doc:' + k, d.name, d.bytes);
     const manifest = {
         v: 1, savedAt: new Date().toISOString(), mode: state.mode, files,
-        manual: { netin: state.netin, kibua: state.kibua, retEng: state.retEng, alloc: state.alloc, mekIn: state.mekIn, mekManual: state.mekManual, goals: state.goals, f161: state.f161Tried ? state.f161 : null }, // קלטים מופרדים (pendingClient) אינם נשמרים בתוך קובץ הלקוח החדש - ייצוא נפרד בלבד
+        manual: { netin: state.netin, kibua: state.kibua, retEng: state.retEng, assets: { banks: state.assets.banks, q: state.assets.q }, alloc: state.alloc, mekIn: state.mekIn, mekManual: state.mekManual, goals: state.goals, f161: state.f161Tried ? state.f161 : null }, // קלטים מופרדים (pendingClient) אינם נשמרים בתוך קובץ הלקוח החדש - ייצוא נפרד בלבד
         planner: plannerSnapshotOf(state),
     };
     const head = new TextEncoder().encode(JSON.stringify(manifest));
@@ -252,6 +254,7 @@ async function loadEncryptedPortfolio() {
         if (safeObj(m.netin)) Object.assign(state.netin, m.netin);
         if (safeObj(m.kibua)) Object.assign(state.kibua, m.kibua);
         if (safeObj(m.retEng)) state.retEng = { ...m.retEng };
+        if (safeObj(m.assets)) state.assets = { banks: Array.isArray(m.assets.banks) ? m.assets.banks : [], q: safeObj(m.assets.q) || {}, status: '' };
         if (safeObj(m.alloc)) Object.assign(state.alloc, m.alloc);
         if (safeObj(m.mekIn)) { state.mekIn = m.mekIn; if (state.mekIn.companyBy !== 'user') { delete state.mekIn.company; delete state.mekIn.companyBy; } /* בחירה שאינה מפורשת (או מגרסה קודמת) מזוהה מחדש מהתיק */ }
         if (typeof m.mekManual === 'string') state.mekManual = m.mekManual;
@@ -1648,6 +1651,85 @@ function renderTaxAlternatives() {
         <div id="reng-result">${taxAltsResultHtml()}</div>`);
 }
 
+// מחשבון "תמונת נכסים וסיכון כולל" (docs/proposals/2026-11-12-total-assets-risk, אושר 12.11.2026)
+function pensionSummary() {
+    if (!view || !view.holdings || !view.holdings.length) return null;
+    let value = 0, lo = 0, hi = 0;
+    for (const h of view.holdings) {
+        const b = h.track.balance || 0; value += b;
+        if (h.equityPct !== null) { lo += b * h.equityPct; hi += b * h.equityPct; }
+        else if (h.estimate) { lo += b * h.estimate.lo; hi += b * h.estimate.hi; }
+        else { hi += b * 100; }
+    }
+    return value > 0 ? { value, eqLo: lo / value, eqHi: hi / value } : null;
+}
+async function onAssetFiles(files) {
+    if (!files || !files.length) return;
+    const lib = globalThis.pdfjsLib;
+    const list = Array.from(files);
+    const bufs = [];
+    for (const f of list) bufs.push({ name: f.name, buf: await f.arrayBuffer() });
+    state.assets.status = `קורא ${bufs.length} קבצים...`; render();
+    const msgs = [];
+    for (const { name, buf } of bufs) {
+        if (!lib) { msgs.push(`${name}: ספריית ה-PDF לא נטענה`); continue; }
+        try {
+            const doc = await lib.getDocument({ data: new Uint8Array(buf.slice(0)), isEvalSupported: false }).promise;
+            const items = [];
+            for (let p = 1; p <= doc.numPages; p++) { const tc = await (await doc.getPage(p)).getTextContent(); for (const it of tc.items) if (it.str && it.str.trim()) items.push({ page: p, x: it.transform[4], y: it.transform[5], str: it.str.trim() }); }
+            if (!items.length) { msgs.push(`${name}: אין טקסט בקובץ (סריקה) - הזינו ידנית בשאלה 1`); continue; }
+            const r = parseBalanceItems(items);
+            if (!r.rows.length && r.zeros) { msgs.push(`${name}: כל ${r.zeros} השורות שזוהו${r.bank ? ' (' + r.bank + ')' : ''} הן 0 ₪`); continue; }
+            if (!r.rows.length) { msgs.push(`${name}: לא זוהו שורות יתרה מוכרות. מבנה האישור של הבנק הזה עוד לא נלמד - שלחו דוגמה, ובינתיים הזינו בשאלה 1`); continue; }
+            state.assets.banks.push({ file: name, bank: r.bank, date: r.date, reportedNet: r.reportedNet, rows: r.rows.map(x => ({ ...x, include: true, eqRange: x.eq === null ? 'u' : '' })) });
+            msgs.push(`${name}: זוהו ${r.rows.length} שורות עם יתרה${r.zeros ? ` (ועוד ${r.zeros} שורות 0 ₪ שלא מוצגות)` : ''}${r.bank ? ' - ' + r.bank : ''}${r.date ? ', נכון ל-' + r.date : ''}`);
+        } catch (e) { msgs.push(`${name}: הקריאה נכשלה (${(e && e.message) || 'שגיאה'})`); }
+    }
+    state.assets.status = msgs.join(' · '); render();
+}
+function renderAssetsCard() {
+    const a = state.assets, q = a.q;
+    const money = (x) => '₪' + fmt(Math.round(x));
+    const rng = (lo, hi, unit = '%') => lo === null ? '—' : (Math.abs(hi - lo) < 0.5 ? `${Math.round(lo)}${unit}` : `${Math.round(lo)}-${Math.round(hi)}${unit}`);
+    const sel = (id, opts, cur) => `<select data-asq="${id}">${opts.map(([v, l]) => `<option value="${esc(v)}"${(cur || '') === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
+    const amountOpts = [['', 'לא נבחר'], ...AMOUNT_RANGES.map(r => [r.id, r.label])];
+    const eqOpts = [['', 'חשיפה למניות...'], ...EQUITY_RANGES.map(r => [r.id, r.label])];
+    const banks = a.banks.map((b, bi) => `<div class="card intake"><div class="subhead small">${esc(b.bank || 'בנק לא מזוהה')} ${b.date ? '· נכון ל-' + esc(b.date) : ''} <span class="muted small">(${esc(b.file)})</span> <button type="button" class="ghostbtn" data-action="asrm|${bi}">הסרה</button></div>
+        <div class="alts-scroll"><table class="altstbl" data-asbank="${bi}"><thead><tr><th>לכלול</th><th>סוג</th><th>יתרה (₪)</th><th>חשיפה למניות</th></tr></thead><tbody>
+        ${b.rows.map((r, ri) => `<tr><td><input type="checkbox" data-asrow="${bi}|${ri}|include"${r.include !== false ? ' checked' : ''}></td><td>${esc(r.label)}<div class="muted small">${esc(r.source)} (עמ' ${r.page})</div></td>
+            <td><input type="text" inputmode="decimal" data-asrow="${bi}|${ri}|amount" value="${esc(String(r.amount))}" style="width:9em"></td>
+            <td>${r.cat === 'liability' ? 'התחייבות' : r.eq !== null && r.eq !== undefined ? r.eq + '%' : `<select data-asrow="${bi}|${ri}|eqRange">${EQUITY_RANGES.map(e => `<option value="${e.id}"${r.eqRange === e.id ? ' selected' : ''}>${esc(e.label)}</option>`).join('')}</select>`}</td></tr>`).join('')}
+        </tbody></table></div>${b.reportedNet !== null && b.reportedNet !== undefined ? `<div class="muted small">סה"כ נטו לפי הבנק (בלי משכנתא): ${money(b.reportedNet)}</div>` : ''}</div>`).join('');
+    const qs = QUESTIONS.map(x => {
+        if (x.id === 'q6v' || x.id === 'q6m') { if (q.q6 !== 'yes') return ''; }
+        const ctl = x.kind === 'choice' ? sel(x.id, x.options, q[x.id]) : sel(x.id, amountOpts, q[x.id]) + (x.kind === 'amount+eq' && q[x.id] && q[x.id] !== '0' ? sel(x.id + 'eq', eqOpts, q[x.id + 'eq']) : '');
+        return `<label>${esc(x.label)}${x.why ? `<span class="muted small">${esc(x.why)}</span>` : ''}${ctl}</label>`;
+    }).join('');
+    const pen = pensionSummary();
+    const r = computeTotal({ banks: a.banks, q, pension: pen });
+    const answered = Object.values(q).filter(Boolean).length + a.banks.length + (pen ? 1 : 0);
+    const verdict = r.verdict === 'above' ? 'מעל מה שהלקוח אמר שהוא יכול לשאת' : r.verdict === 'below' ? 'מתחת למה שהלקוח מוכן לשאת - יש מקום להגדיל' : r.verdict === 'within' ? 'בתוך הטווח שהלקוח מוכן לשאת' : '';
+    const result = !answered ? '<div class="muted small">העלו אישור יתרות או ענו על השאלון כדי לראות את התמונה.</div>' : `
+        <div class="note" data-assets-result><b>אחוז המניות האמיתי על כל הנכסים הפיננסיים: ${rng(r.equity.lo, r.equity.hi)}</b>${r.pensionEquity ? ` (בפנסיה לבד: ${rng(r.pensionEquity.lo, r.pensionEquity.hi)})` : ''}.
+            <br>כולל נדל"ן להשקעה, עסק וקריפטו כנכסי סיכון: ${rng(r.risky.lo, r.risky.hi)} מהנכסים.${verdict ? `<br>לפי תשובה 12: ${verdict}${r.tolerance ? ` (${r.tolerance[0]}-${r.tolerance[1]}% מניות)` : ''}.` : ''}${r.capacityNote ? `<br>${esc(r.capacityNote)}.` : ''}</div>
+        <div class="alts-scroll"><table class="altstbl" data-assets-table><thead><tr><th>נכס</th><th>שווי</th><th>חשיפה למניות</th><th>נזיל</th></tr></thead><tbody>
+            ${r.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.lo === i.hi ? money(i.lo) : money(i.lo) + ' - ' + money(i.hi)}</td><td>${i.risky ? 'נכס סיכון (לא מניות)' : rng(i.eqLo, i.eqHi)}</td><td>${i.liquid ? 'כן' : 'לא'}</td></tr>`).join('')}
+            ${r.totals.home ? `<tr><td>דירת מגורים (במאזן בלבד)</td><td>${money(r.totals.home.lo)} - ${money(r.totals.home.hi)}</td><td>לא נספר</td><td>לא</td></tr>` : ''}
+        </tbody></table></div>
+        <div class="muted small">סך נכסים: ${money(r.totals.assetsLo)}${r.totals.assetsHi !== r.totals.assetsLo ? ' - ' + money(r.totals.assetsHi) : ''} · התחייבויות: ${money(r.totals.debtsLo)}${r.totals.debtsHi !== r.totals.debtsLo ? ' - ' + money(r.totals.debtsHi) : ''} · נזיל (אמצע הטווחים): ${money(r.liquid)}${r.need ? ` מול צורך של ${money(r.need.lo)}-${money(r.need.hi)} ב-3 שנים${r.liquid < r.need.lo ? ' - <b>הנזילות לא מכסה את הצורך</b>' : ''}` : ''} · חשיפה למט"ח: ${r.fxPct === null ? '—' : r.fxPct + '%'}${r.concentration.length ? ` · <b>ריכוזיות:</b> ${esc(r.concentration.join(', '))} מעל 25% מהנכסים` : ''}</div>
+        <div class="muted small">החשיפה למניות מחושבת על ערכי האמצע של טווחי הסכום, ולכן היא טווח. הפנסיה מגיעה מהמסלקה (כרטסת תיק פנסיוני), עם החשיפה של כל מסלול; מסלול שלא זוהה נספר כ-0-100%. דירת המגורים במאזן בלבד (החלטת הבעלים 12.11).</div>`;
+    return `<div class="card" id="assets-card">
+        <div class="group-label">5 · תמונת נכסים וסיכון כולל</div>
+        <div class="muted small">אחוז הסיכון האמיתי של הלקוח הוא החשיפה למניות על פני <b>כל</b> הנכסים - פנסיה, בנקים, תיקים מנוהלים, חו"ל - ולא בכל מוצר בנפרד. ${pen ? `הפנסיה נלקחה מקובץ המסלקה (${money(pen.value)}).` : 'כדי לכלול את הפנסיה, העלו קובץ מסלקה בכרטסת תיק פנסיוני.'}</div>
+        <div class="drop"><input type="file" id="assets-input" accept=".pdf" multiple><div class="drop-hint"><b>אישורי יתרות מהבנקים (PDF).</b> אפשר כמה קבצים, מכמה בנקים. כרגע מזוהה "ריכוז יתרות" של בנק הפועלים; בנקים נוספים יזוהו אחרי שנקבל דוגמאות.</div></div>
+        ${a.status ? `<div class="status-line">${esc(a.status)}</div>` : ''}
+        ${banks}
+        <div class="subhead">שאלון קצר</div>
+        <div class="netgrid assets-q">${qs}</div>
+        ${result}
+    </div>`;
+}
+
 function renderRecommendationStep() {
     return `${renderTaxAlternatives()}
         ${renderAlloc()}
@@ -2466,7 +2548,7 @@ function render() {
         ${isNif ? acc('nifraim', `${numNif} נפרעים צפויים לפי חברת ביטוח`, state.nif.parsed ? 'קובץ נטען' : '', renderNifraimBody({ nif: state.nif, portfolio: null }), true) : ''}
         ${state.mode === 'life' ? renderLifeTab(state) : ''}
         ${state.mode === 'health' ? renderHealthTab(state) : ''}
-        ${state.mode === 'calc' ? renderCalcTab(state) : ''}
+        ${state.mode === 'calc' ? renderCalcTab(state) + renderAssetsCard() : ''}
         ${isRet ? acc('step2', `${numStep2} טופס 161 (PDF)`, badgeStep2(), renderStep2()) : ''}
         ${isRet ? acc('kibua', `${numKibua} נתוני הקיבוע (טופס 161ד)`, badgeKibuaStep(), renderKibuaStep()) : ''}
         ${isRet ? acc('questions', `${numQuestions} שאלות לפני החלטה`, missBadge(RS_IDS.questions), renderQuestionsStep()) : ''}
@@ -2712,6 +2794,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (t.id === 'diff-input') { void onDiffFiles(t.files); return; }
         if (t.id === 'nif-input') { void onNifFiles(t.files); return; }
         if (t.id.startsWith('doc-input-')) { void onDoc(t.id.slice('doc-input-'.length), t.files); return; }
+        if (t.id === 'assets-input') { void onAssetFiles(t.files); return; }
+        if (t.dataset.asq) { state.assets.q[t.dataset.asq] = t.value; render(); return; }
+        if (t.dataset.asrow) { const [b, r, f] = t.dataset.asrow.split('|'); const row = state.assets.banks[+b] && state.assets.banks[+b].rows[+r]; if (row) { if (f === 'include') row.include = t.checked; else if (f === 'amount') { const n = parseFloat(String(t.value).replace(/[,\s₪]/g, '')); row.amount = isFinite(n) ? n : 0; } else row[f] = t.value; } render(); return; }
         if (t.id === 'enc-input') { encState.file = t.files && t.files[0] ? t.files[0] : null; return; }
         if (t.dataset.benSrc !== undefined) { state.beneficiaries[+t.dataset.benSrc].source = t.value; composeFamilyValue(); render(); return; }
         if (t.id === 'eq-slider' || t.dataset.eqSlider !== undefined) { state.targetEq = parseInt(t.value); render(); return; }
@@ -3098,6 +3183,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addDocCandidates(key, getDoc(key).candidates.map((_, i) => i));
             render(); return;
         }
+        if (t.dataset.action && t.dataset.action.startsWith('asrm|')) { state.assets.banks.splice(+t.dataset.action.split('|')[1], 1); render(); return; }
         if (t.dataset.action === 'benadd') {
             state.beneficiaries.push({ name: '', relation: '', source: 'הזנה ידנית - ללא מסמך' });
             render(); return;
