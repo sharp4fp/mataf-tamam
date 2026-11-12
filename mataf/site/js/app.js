@@ -1370,13 +1370,14 @@ function badgeRg() {
 function rgFlags() {
     const r = state.riskgoals;
     const num = (v) => { const n = parseFloat(v); return isFinite(n) ? n : null; };
-    const B = num(r.balance), E = num(r.equity);
+    const auto = rgAuto();
+    const B = num(r.balance) ?? (auto ? auto.balance : null), E = num(r.equity) ?? (auto ? auto.equity : null);
     const flags = [];
     const now = new Date();
     const miss = (t) => flags.push({ lv: 'miss', t });
-    if (E !== null && !(r.equitySrc && r.equitySrc.trim())) flags.push({ lv: 'warn', t: 'חשיפת המניות הוזנה ללא מקור ותאריך דיווח - מתייחסים אליה כנתון לא מאומת; המערכת אינה מתקנת אותה אוטומטית.' });
-    if (!r.willing) miss('נכונות לסיכון לא הוזנה - מסומן כחסר, לא כאפס.');
-    if (!r.behavior) miss('התנהגות בירידות בעבר לא הוזנה - מסומן כחסר.');
+    if (num(r.equity) !== null && auto && auto.equity !== null && Math.abs(num(r.equity) - auto.equity) >= 5) flags.push({ lv: 'warn', t: 'החשיפה למניות שהוזנה ידנית (' + num(r.equity) + '%) שונה מהחשיפה לפי המסלקה (' + auto.equity + '%) - כדאי לוודא מה המקור.' });
+    if (!r.willing) miss('לא סומן כמה סיכון הלקוח מוכן לקחת.');
+    if (!r.behavior) miss('לא סומן מה הלקוח עשה בירידה הקודמת.');
     let anyGoal = false;
     const L0 = num(r.liq);
     const avail = B === null ? null : Math.max(0, B - (L0 || 0));
@@ -1430,40 +1431,69 @@ function updateRgFlags() { const el = document.getElementById('rg-flags'); if (e
 function rgSel(name, val, opts) {
     return '<select data-rg="' + name + '">' + opts.map(o => '<option value="' + o[0] + '"' + (val === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select>';
 }
+// פושט 12.11.2026 16:06 (בקשת הבעלים: "שיהיה יותר מובן לסוכן"): יתרה וחשיפה מהמסלקה, רשימות נגללות, מטרה נוספת נפתחת רק אחרי הקודמת
+const RG_GOALS = ['הון לילדים / עזרה בדירה', 'ירושה', 'השלמת הכנסה בפרישה', 'נסיעות ופנאי בפרישה', 'שיפוץ או רכישת דירה', 'כרית ביטחון', 'אחר'];
+const RG_RESOURCES = ['אין', 'נדל"ן מניב', 'קרן השתלמות / גמל להשקעה', 'חסכונות ופיקדונות בבנק', 'עסק', 'כמה מהם'];
+// יתרה וחשיפה משוקללת מהמסלקה (רק מסלולים עם חשיפה ידועה נכנסים לחשיפה)
+function rgAuto() {
+    if (!view || !view.holdings || !view.holdings.length) return null;
+    let bal = 0, eqBal = 0, eqSum = 0, est = false;
+    for (const h of view.holdings) {
+        const b = h.track.balance || 0; bal += b;
+        if (h.equityPct !== null) { eqBal += b; eqSum += b * h.equityPct; }
+        else if (h.estimate) { eqBal += b; eqSum += b * (h.estimate.lo + h.estimate.hi) / 2; est = true; } // הערכה לפי שם המסלול
+    }
+    return bal > 0 ? { balance: Math.round(bal), equity: eqBal > 0 ? Math.round(eqSum / eqBal) : null, coverage: Math.round(eqBal / bal * 100), estimated: est } : null;
+}
+// מועד כ"בעוד N שנים" - נשמר כ-YYYY-MM כדי שהבדיקות הקיימות יעבדו
+function rgYearsSel(key, val) {
+    const now = new Date(), mm = String(now.getMonth() + 1).padStart(2, '0');
+    const cur = val ? (parseInt(String(val).slice(0, 4)) - now.getFullYear()) : null;
+    const opts = [['', 'בחרו...'], ...Array.from({ length: 31 }, (_, n) => [`${now.getFullYear() + n}-${mm}`, n === 0 ? 'השנה' : n === 1 ? 'בעוד שנה' : `בעוד ${n} שנים`])];
+    return '<select data-rg="' + key + '">' + opts.map(([v, l], i) => '<option value="' + v + '"' + ((i > 0 && cur === i - 1) || (i === 0 && cur === null) ? ' selected' : '') + '>' + l + '</option>').join('') + '</select>';
+}
+function rgListSel(key, val, list) {
+    const opts = [['', 'בחרו...'], ...list.map(x => [x, x]), ...(val && !list.includes(val) ? [[val, val]] : [])];
+    return '<select data-rg="' + key + '">' + opts.map(([v, l]) => '<option value="' + esc(v) + '"' + (val === v ? ' selected' : '') + '>' + esc(l) + '</option>').join('') + '</select>';
+}
 function renderRiskGoals() {
     const r = state.riskgoals;
+    const auto = rgAuto();
+    const shownGoal = (i) => i === 0 || !!(r.goals[i - 1].desc || r.goals[i - 1].amount);
     const goalBlock = (i) => {
+        if (!shownGoal(i)) return '';
         const g = r.goals[i];
-        return '<div class="kibres"><div class="track-line"><span><b>מטרה ' + (i + 1) + '</b></span></div><div class="netgrid">'
-            + '<label>תיאור המטרה<input type="text" data-rg="g' + i + 'desc" value="' + esc(g.desc) + '" placeholder="למשל: הוני לילדים"></label>'
-            + '<label>סכום יעד (₪)<input type="number" min="0" step="10000" data-rg="g' + i + 'amount" value="' + esc(g.amount) + '"></label>'
-            + '<label>מועד שימוש משוער<input type="month" data-rg="g' + i + 'date" value="' + esc(g.date) + '"></label>'
-            + '<label>חשיבות' + rgSel('g' + i + 'importance', g.importance, [['', 'לא הוזן'], ['flex', 'גמישה'], ['important', 'חשובה'], ['critical', 'קריטית']]) + '</label>'
-            + '<label>גמישות בסכום/מועד' + rgSel('g' + i + 'flex', g.flex, [['', 'לא הוזן'], ['flexible', 'גמיש'], ['partial', 'גמיש חלקית'], ['rigid', 'קשיח']]) + '</label>'
-            + '<label>הון מוקצה למטרה זו (₪, הקצאה מפורשת של הסוכן; בלי הקצאה לא תוצג בדיקת מימון למטרה)<input type="number" min="0" step="10000" data-rg="g' + i + 'alloc" value="' + esc(g.alloc) + '"></label>'
+        const isOther = g.desc && !RG_GOALS.slice(0, -1).includes(g.desc);
+        return '<div class="kibres"><div class="track-line"><span><b>מטרה ' + (i + 1) + (i > 0 ? ' (לא חובה)' : '') + '</b></span></div><div class="netgrid">'
+            + '<label>מה המטרה' + rgListSel('g' + i + 'desc', isOther && g.desc !== 'אחר' ? 'אחר' : g.desc, RG_GOALS) + (isOther ? '<input type="text" data-rg="g' + i + 'desc" value="' + esc(g.desc === 'אחר' ? '' : g.desc) + '" placeholder="פירוט המטרה">' : '') + '</label>'
+            + '<label>כמה כסף צריך (₪)<input type="number" min="0" step="10000" data-rg="g' + i + 'amount" value="' + esc(g.amount) + '"></label>'
+            + '<label>מתי צריך את הכסף' + rgYearsSel('g' + i + 'date', g.date) + '</label>'
+            + '<label>כמה זה חשוב ללקוח' + rgSel('g' + i + 'importance', g.importance, [['', 'בחרו...'], ['flex', 'נחמד שיהיה'], ['important', 'חשוב'], ['critical', 'חייב לקרות']]) + '</label>'
+            + '<label>אפשר לדחות או להקטין?' + rgSel('g' + i + 'flex', g.flex, [['', 'בחרו...'], ['flexible', 'כן, בקלות'], ['partial', 'קצת'], ['rigid', 'לא']]) + '</label>'
+            + '<label>כמה מהתיק מיועד למטרה הזו (₪, לא חובה)<input type="number" min="0" step="10000" data-rg="g' + i + 'alloc" value="' + esc(g.alloc) + '"></label>'
             + '</div></div>';
     };
     return '<div class="card intake">'
-        + '<div class="track-line"><span><b>בחינת התאמת סיכון למטרות</b></span><span class="small muted">דף עבודה פנימי לסוכן - איכותני בלבד</span></div>'
-        + '<div class="muted small">דף עבודה זה מפריד בין <b>נכונות לסיכון</b>, <b>יכולת לסיכון</b> ו<b>מידת מימון המטרות</b>, ומפיק שאלות איכותניות לבחינה ("כדאי לבחון") מתוך הקלט בלבד. אין כאן ציון, אין הקצאת יעד ואין המלצה אוטומטית; שדה ריק מסומן כחסר ולא כאפס. בסיס מושגי: <a href="https://www.kitces.com/blog/separating-risk-tolerance-from-risk-capacity-just-because-you-can-afford-to-take-risk-doesnt-mean-you-should/" target="_blank" rel="noopener">Kitces - הפרדת נכונות מיכולת</a> ו<a href="https://www.morningstar.com/financial-advisors/risk-capacity-is-more-than-just-time-frame" target="_blank" rel="noopener">Morningstar - יכולת סיכון היא יותר מאופק זמן</a>. היוריסטיקת יישום פנימית, לא מודל מספרי מאומת. בשלב זה אין התאמות בגין מקדמים מובטחים או בונוסים - האימות המחקרי עדיין פתוח.</div>'
-        + '<div class="subhead">מטרות (עד 3)</div>'
+        + '<div class="track-line"><span><b>האם רמת הסיכון מתאימה למטרות הלקוח?</b></span><span class="small muted">דף עבודה פנימי לסוכן - לא נכנס לדוח</span></div>'
+        + '<div class="muted small">ממלאים את המטרות של הלקוח ואת היחס שלו לסיכון, והדף מציף <b>שאלות לבדיקה</b> (למשל: "הלקוח אמר שהוא שמרן, אבל 70% מהתיק במניות"). אין כאן ציון ואין המלצה אוטומטית; שדה ריק מסומן "חסר". הבסיס: הפרדה בין <b>מה הלקוח רוצה</b> (נכונות), <b>מה הוא יכול</b> (יכולת) ו<b>האם המטרות ממומנות</b> (<a href="https://www.kitces.com/blog/separating-risk-tolerance-from-risk-capacity-just-because-you-can-afford-to-take-risk-doesnt-mean-you-should/" target="_blank" rel="noopener">Kitces</a>, <a href="https://www.morningstar.com/financial-advisors/risk-capacity-is-more-than-just-time-frame" target="_blank" rel="noopener">Morningstar</a>).</div>'
+        + '<div class="subhead">1. המטרות של הלקוח</div>'
         + goalBlock(0) + goalBlock(1) + goalBlock(2)
-        + '<div class="subhead">נכסים, חשיפה בפועל ומקורות</div>'
+        + '<div class="subhead">2. התיק והכסף שנדרש בקרוב</div>'
+        + (auto ? '<div class="note small">מקובץ המסלקה: יתרה <b>₪' + auto.balance.toLocaleString('he-IL') + '</b>, חשיפה משוקללת למניות <b>' + (auto.equity === null ? 'לא ידועה' : auto.equity + '%') + '</b>' + (auto.estimated ? ' (חלקה הערכה לפי שם המסלול)' : '') + (auto.equity !== null && auto.coverage < 100 ? ' (על ' + auto.coverage + '% מהיתרה שהמסלול שלה מזוהה)' : '') + '. אפשר לתקן בשדות למטה.</div>' : '<div class="muted small">אין קובץ מסלקה - הזינו את היתרה והחשיפה ידנית.</div>')
         + '<div class="netgrid">'
-        + '<label>יתרת התיק הכוללת (₪)<input type="number" min="0" step="10000" data-rg="balance" value="' + esc(r.balance) + '"></label>'
-        + '<label>חשיפה מדווחת בפועל למניות (%)<input type="number" min="0" max="100" step="1" data-rg="equity" value="' + esc(r.equity) + '"></label>'
-        + '<label>מקור ותאריך דיווח החשיפה<input type="text" data-rg="equitySrc" value="' + esc(r.equitySrc) + '" placeholder="למשל: דוח קופה 09/2026"></label>'
-        + '<label>הכנסה קבועה צפויה (קצבה/אחר, ₪/חודש)<input type="number" min="0" step="500" data-rg="income" value="' + esc(r.income) + '"></label>'
-        + '<label>משאבים נוספים יציבים<input type="text" data-rg="resources" value="' + esc(r.resources) + '" placeholder="למשל: נדלן מניב, קרן השתלמות"></label>'
-        + '<label>משיכות/צורכי נזילות מתוכננים (₪)<input type="number" min="0" step="10000" data-rg="liq" value="' + esc(r.liq) + '"></label>'
-        + '<label>מועד המשיכות המתוכננות<input type="month" data-rg="liqDate" value="' + esc(r.liqDate) + '"></label>'
+        + '<label>יתרת התיק (₪)<input type="number" min="0" step="10000" data-rg="balance" value="' + esc(r.balance) + '" placeholder="' + (auto ? auto.balance + ' (מסלקה)' : '') + '"></label>'
+        + '<label>חשיפה למניות (%)<input type="number" min="0" max="100" step="1" data-rg="equity" value="' + esc(r.equity) + '" placeholder="' + (auto && auto.equity !== null ? auto.equity + ' (מסלקה)' : '') + '"></label>'
+        + '<label>הכנסה קבועה צפויה בחודש (קצבה ועוד, ₪)<input type="number" min="0" step="500" data-rg="income" value="' + esc(r.income) + '"></label>'
+        + '<label>משאבים יציבים נוספים' + rgListSel('resources', r.resources, RG_RESOURCES) + '</label>'
+        + '<label>כסף שיימשך מהתיק בקרוב (₪)<input type="number" min="0" step="10000" data-rg="liq" value="' + esc(r.liq) + '"></label>'
+        + '<label>מתי' + rgYearsSel('liqDate', r.liqDate) + '</label>'
         + '</div>'
-        + '<div class="subhead">נכונות לסיכון (בנפרד מיכולת)</div>'
+        + '<div class="subhead">3. היחס של הלקוח לסיכון</div>'
         + '<div class="netgrid">'
-        + '<label>נכונות לסיכון מוצהרת' + rgSel('willing', r.willing, [['', 'לא הוזן'], ['low', 'נמוכה'], ['mid', 'בינונית'], ['high', 'גבוהה']]) + '</label>'
-        + '<label>התנהגות בירידות בעבר' + rgSel('behavior', r.behavior, [['', 'לא הוזן'], ['sold', 'מכר בירידות'], ['held', 'לא שינה'], ['bought', 'קנה בירידות'], ['unknown', 'לא ידוע']]) + '</label>'
+        + '<label>כמה סיכון הלקוח אומר שהוא מוכן לקחת' + rgSel('willing', r.willing, [['', 'בחרו...'], ['low', 'מעט - שמרן'], ['mid', 'בינוני'], ['high', 'הרבה']]) + '</label>'
+        + '<label>מה עשה בירידה הקודמת בשווקים' + rgSel('behavior', r.behavior, [['', 'בחרו...'], ['sold', 'מכר'], ['held', 'לא שינה כלום'], ['bought', 'קנה עוד'], ['unknown', 'לא ידוע']]) + '</label>'
         + '</div>'
-        + '<div class="subhead">שאלות איכותניות לבחינה (נגזרות מהקלט בלבד; בדיקת מימון למטרה מוצגת רק מול הקצאה מפורשת שהוזנה, וההערכה המאוחדת אינה מקצה כסף למטרה מסוימת)</div>'
+        + '<div class="subhead">שאלות לבדיקה עם הלקוח</div>'
         + '<div id="rg-flags">' + rgFlagsHtml() + '</div>'
         + '</div>';
 }
@@ -2885,6 +2915,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (t.dataset.survclass !== undefined) { state.netin.survClass = t.value; const _sy = window.scrollY; render(); window.scrollTo(0, _sy); return; }
         if (t.dataset.survassume !== undefined) { state.netin.survAssumeOk = t.checked; const _sy = window.scrollY; render(); window.scrollTo(0, _sy); return; }
+        if (t.dataset.rg) { setRg(t.dataset.rg, t.value); const _sy = window.scrollY; render(); window.scrollTo(0, _sy); return; } // מטרה נוספת / שדה "אחר" נפתחים אחרי בחירה
         if (t.dataset.f161 || t.dataset.grant || t.dataset.intake || t.dataset.goalText || t.dataset.net || t.dataset.netcheck !== undefined) {
             // Commit (blur/change) of edit fields: refresh derived panels (161 analysis, retirement, notices).
             // Typing stays re-render-free to preserve focus; accordions stay open via state.open; restore scroll.
