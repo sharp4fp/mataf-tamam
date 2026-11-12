@@ -289,6 +289,7 @@ body {
 .altstbl tbody tr.alts-sect-peers td { background: #f5f7fa; color: #1e3a5f; border-top: 2.5px solid #c9a227; }
 /* החלופה הראשונה בדירוג מודגשת בירוק; שאר החלופות ללא הדגשה (כלל זה אחרון בכוונה כדי לגבור על פסי הזברה) */
 .altstbl tbody tr.lead td { background: #ddefe0; }
+.altstbl[data-taxalts] td:nth-child(2) { min-width: 240px; }
 .altstbl tbody tr.lead td:first-child { border-inline-start: 3px solid #12805c; }
 .alts-how { margin-top: 8px; }
 .alts-how > summary { cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #1e3a5f; }

@@ -11,6 +11,7 @@ import { renderTransferRules } from './transfer-rules.js';
 import { renderDiffBody, diffPortfolios, renderNifraimBody, parseNifraimText, matchNifraim } from './diffnifraim.js';
 import { renderLifeTab, renderHealthTab, insInit, insApply, emptyInsState } from './insurance.js';
 import { renderCalcTab, calcApply } from './calc.js';
+import { evaluateRetirement } from './retire-engine.js';
 
 const fmt = (n) => Math.round(n).toLocaleString('he-IL');
 const pct = (n) => (Math.round(n * 10) / 10).toLocaleString('he-IL') + '%';
@@ -66,6 +67,7 @@ const state = {
     reports: [],
     busy: false,
     f161: { ...EMPTY_161, grants: [] },
+    retEng: {},
     kibua: { eligDate: '', payers: '1', grantExempt: '', grantYears: '', grantYear: '', grantIndexed: '', sim2026: '', hivunPast: '', hivunPlan: '', empHistory: '' },
     alloc: { objective: '', horizon: '' },
     riskgoals: { balance: '', equity: '', equitySrc: '', income: '', resources: '', liq: '', liqDate: '', willing: '', behavior: '', goals: [{ desc: '', amount: '', date: '', importance: '', flex: '', alloc: '' }, { desc: '', amount: '', date: '', importance: '', flex: '', alloc: '' }, { desc: '', amount: '', date: '', importance: '', flex: '', alloc: '' }] },
@@ -165,7 +167,7 @@ function packVault() {
     for (const [k, d] of Object.entries(rawVault.docs)) push('doc:' + k, d.name, d.bytes);
     const manifest = {
         v: 1, savedAt: new Date().toISOString(), mode: state.mode, files,
-        manual: { netin: state.netin, kibua: state.kibua, alloc: state.alloc, mekIn: state.mekIn, mekManual: state.mekManual, goals: state.goals, f161: state.f161Tried ? state.f161 : null }, // קלטים מופרדים (pendingClient) אינם נשמרים בתוך קובץ הלקוח החדש - ייצוא נפרד בלבד
+        manual: { netin: state.netin, kibua: state.kibua, retEng: state.retEng, alloc: state.alloc, mekIn: state.mekIn, mekManual: state.mekManual, goals: state.goals, f161: state.f161Tried ? state.f161 : null }, // קלטים מופרדים (pendingClient) אינם נשמרים בתוך קובץ הלקוח החדש - ייצוא נפרד בלבד
         planner: plannerSnapshotOf(state),
     };
     const head = new TextEncoder().encode(JSON.stringify(manifest));
@@ -249,6 +251,7 @@ async function loadEncryptedPortfolio() {
         const safeObj = (o) => (o && typeof o === 'object' && !Array.isArray(o)) ? o : null;
         if (safeObj(m.netin)) Object.assign(state.netin, m.netin);
         if (safeObj(m.kibua)) Object.assign(state.kibua, m.kibua);
+        if (safeObj(m.retEng)) state.retEng = { ...m.retEng };
         if (safeObj(m.alloc)) Object.assign(state.alloc, m.alloc);
         if (safeObj(m.mekIn)) { state.mekIn = m.mekIn; if (state.mekIn.companyBy !== 'user') { delete state.mekIn.company; delete state.mekIn.companyBy; } /* בחירה שאינה מפורשת (או מגרסה קודמת) מזוהה מחדש מהתיק */ }
         if (typeof m.mekManual === 'string') state.mekManual = m.mekManual;
@@ -1553,8 +1556,101 @@ function badgePensionStep() {
     return state.mekLast && state.mekLast.pension ? `אומדן ₪${fmt(state.mekLast.pension)} לחודש` : 'חסר: מקדם ואומדן קצבה';
 }
 
+
+// M-045 שלב 2: דירוג חלופות המס במענק ובקצבה (מנוע retire-engine.js). כל שדה ריק מתמלא אוטומטית מהמסמכים ומסומן.
+function retEngAuto() {
+    const f = state.f161 || {}, ni = state.netin || {}, k = state.kibua || {};
+    const n = (v) => { const x = parseFloat(String(v ?? '').replace(/[^\d.]/g, '')); return isFinite(x) ? x : null; };
+    const rd = String(f.retireDate || '').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    const salary = n(f.salarySeverance) ?? n(f.salaryFull);
+    const by = n(state.mekIn && state.mekIn.birthYear);
+    const retireYear = rd ? +rd[3] : 2026;
+    const guaranteed = ((state.portfolio && state.portfolio.accounts) || []).map(a => a.annuityFactor).filter(x => x && x.pensionFromGuaranteed);
+    const pension = (state.mekLast && state.mekLast.pension ? state.mekLast.pension : 0) + guaranteed.reduce((t, x) => t + x.pensionFromGuaranteed, 0);
+    return {
+        grant: { v: n(f.totalGrant), src: 'טופס 161' },
+        workYears: { v: parseWorkYears(f.workYears) || null, src: 'טופס 161' },
+        lastSalary: { v: salary, src: 'טופס 161' },
+        retireYear: { v: retireYear, src: rd ? 'טופס 161' : 'ברירת מחדל' },
+        retireMonth: { v: rd ? +rd[2] : 12, src: rd ? 'טופס 161' : 'ברירת מחדל' },
+        retireDay: { v: rd ? +rd[1] : 31, src: rd ? 'טופס 161' : 'ברירת מחדל' },
+        sex: { v: state.mekIn && state.mekIn.gender === 'f' ? 'female' : 'male', src: 'שלב הקצבה' },
+        age: { v: by ? retireYear - by : 66, src: by ? 'שנת לידה' : 'הנחת עבודה (66)' },
+        pensionMonthly: { v: pension ? Math.round(pension) : null, src: 'אומדן הקצבה (שלב 5)' },
+        annuityFactor: { v: state.mekLast && state.mekLast.k ? state.mekLast.k : null, src: 'מקדם מטבלת התקנון (שלב 5)' },
+        pensionStartYear: { v: k.eligDate ? +String(k.eligDate).slice(0, 4) : retireYear + 1, src: k.eligDate ? 'חודש הזכאות (שלב 3)' : 'שנה אחרי הפרישה' },
+        retireYearIncome: { v: salary && rd ? Math.round(salary * Math.min(12, +rd[2])) : null, src: 'משכורת × חודשי עבודה (הערכה)' },
+        futureIncome: { v: n(ni.otherMain) ? n(ni.otherMain) * 12 : 0, src: 'הכנסה אחרת (שלב 5)' },
+        creditPoints: { v: n(ni.pointsMain) ?? 2.25, src: 'נקודות זיכוי (שלב 5)' },
+        priorExempt: { v: n(k.grantExempt) || 0, src: 'מענקים פטורים קודמים (שלב 3)' },
+    };
+}
+function retEngInput() {
+    const a = retEngAuto(), u = state.retEng || {}, used = {};
+    const pick = (key) => { const raw = u[key]; if (raw !== undefined && raw !== '') { used[key] = 'הוזן'; return raw; } used[key] = a[key] ? a[key].src : ''; return a[key] ? a[key].v : null; };
+    const num = (key) => { const v = pick(key); const x = parseFloat(v); return isFinite(x) ? x : null; };
+    const inp = {
+        retireYear: num('retireYear'), retireMonth: num('retireMonth'), retireDay: num('retireDay'), sex: pick('sex') || 'male', age: num('age'),
+        grant: num('grant'), workYears: num('workYears'), lastSalary: num('lastSalary') || 0, pensionMonthly: num('pensionMonthly') || 0,
+        annuityFactor: num('annuityFactor'), pensionStartYear: num('pensionStartYear'), retireYearIncome: num('retireYearIncome') || 0,
+        futureIncome: num('futureIncome') || 0, creditPoints: num('creditPoints') ?? 2.25,
+        priorExemptGrants: num('priorExempt') ? [{ amount: num('priorExempt'), workYears: num('workYears') || 0 }] : [],
+        newEmployerWithinYear: u.newEmployer === '1', discountRate: (parseFloat(u.discount) || 3) / 100,
+    };
+    const past = {};
+    for (let i = 1; i <= 5; i++) { const v = parseFloat(u['past' + i]); if (isFinite(v) && inp.retireYear) past[inp.retireYear - i] = v; }
+    inp.incomeByYear = past;
+    return { inp, used, auto: a };
+}
+function taxAltsResultHtml() {
+    const { inp, used } = retEngInput();
+    if (!(inp.grant > 0) || !(inp.workYears > 0)) return '<div class="note small">חסרים סכום המענק ושנות העבודה. הם נלקחים אוטומטית מטופס 161 (שלב 2), או אפשר להזין אותם כאן.</div>';
+    let r;
+    try { r = evaluateRetirement(inp); } catch (e) { return `<div class="note small">החישוב נכשל: ${esc(String(e && e.message || e))}</div>`; }
+    const money = (x) => x === null || x === undefined ? '—' : '₪' + fmt(Math.round(x));
+    const rows = r.ranked.map(a => `<tr${a.rank === 1 ? ' class="lead"' : ''}><td><b>${a.rank}</b></td><td>${esc(a.id)}. ${esc(a.name)}<div class="muted small">${esc(a.explain || '')}</div></td>
+        <td>${money(a.cashNow)}</td><td>${money(a.pensionMonthly)}<div class="muted small">פטור ${money(a.exemption.monthlyExempt)}</div></td><td>${money(a.taxNow)}</td><td>${money(a.taxNominal)}</td><td><b>${money(a.taxPV)}</b></td><td>${money(a.netPV)}${r.bestNet && r.bestNet.id === a.id ? '<div class="muted small">הנטו הגבוה ביותר</div>' : ''}</td></tr>`).join('');
+    const off = r.alternatives.filter(a => !a.available || a.conditional).map(a => `<li><b>${esc(a.id)}. ${esc(a.name)}</b>: ${esc(a.reason || a.explain || '')}</li>`).join('');
+    const best = r.recommended;
+    const head = best ? `<div class="note"><b>החלופה עם חבות המס הנמוכה ביותר: ${esc(best.id)}. ${esc(best.name)}</b>. מס בערך נוכחי ${money(best.taxPV)}${r.savingVsNext === null ? '' : r.savingVsNext >= 1 ? `, חיסכון של ${money(r.savingVsNext)} לעומת החלופה הבאה` : ', זהה במס לחלופה הבאה - הדירוג ביניהן לפי הנטו'}.${r.bestNet && r.bestNet.id !== best.id ? ` <br>שימו לב: הנטו הגבוה ביותר (מה שהלקוח מקבל אחרי מס) הוא בחלופה ${esc(r.bestNet.id)} - פחות מס אינו תמיד יותר כסף.` : ''}</div>` : '';
+    const autoList = Object.entries(used).filter(([, v]) => v && v !== 'הוזן').map(([k2, v]) => `${RENG_LABEL[k2] || k2}: ${v}`).join(' · ');
+    return `${head}
+        <div class="alts-scroll"><table class="altstbl" data-taxalts><thead><tr><th>דירוג</th><th>חלופה</th><th>מזומן עכשיו</th><th>קצבה חודשית</th><th>מס בשנת הפרישה</th><th>מס כולל (נומינלי)</th><th>מס בערך נוכחי</th><th>נטו בערך נוכחי</th></tr></thead><tbody>${rows}</tbody></table></div>
+        ${off ? `<div class="subhead">לא נכללו בדירוג</div><ul class="small">${off}</ul>` : ''}
+        <div class="muted small">מענק ${money(r.grant.exempt + r.grant.taxable)}: פטור ${money(r.grant.exempt)} (${money(r.grant.perYear)} לשנה × ${inp.workYears}), חייב ${money(r.grant.taxable)}. תקופת ההשוואה עד ${r.endYear} (תוחלת חיים ${r.lifeExpectancy} שנים, למ"ס). ריבית היוון ${(inp.discountRate * 100).toFixed(1)}%.</div>
+        ${r.warnings.length ? `<div class="note small">${r.warnings.map(esc).join('<br>')}</div>` : ''}
+        ${autoList ? `<div class="muted small"><b>מולא אוטומטית:</b> ${esc(autoList)}. אפשר לתקן בשדות למעלה.</div>` : ''}
+        <div class="muted small">המקורות: ${esc(Object.values(r.refs).join(' · '))}. החישוב בערכי 2026; המס לכל שנה מחושב מעל ההכנסה האחרת של אותה שנה. אינו כולל ביטוח לאומי ומס בריאות. הבחירה עצמה נעשית בטופסי 161א, 116ג ו-161ד.</div>`;
+}
+const RENG_LABEL = { grant: 'מענק', workYears: 'שנות עבודה', lastSalary: 'משכורת אחרונה', retireYear: 'שנת פרישה', retireMonth: 'חודש פרישה', retireDay: 'יום', sex: 'מין', age: 'גיל בפרישה', pensionMonthly: 'קצבה חודשית', annuityFactor: 'מקדם', pensionStartYear: 'שנת תחילת קצבה', retireYearIncome: 'הכנסה בשנת הפרישה', futureIncome: 'הכנסה שנתית אחרת', creditPoints: 'נקודות זיכוי', priorExempt: 'מענקים פטורים קודמים' };
+function renderTaxAlternatives() {
+    const auto = retEngAuto();
+    const u = state.retEng || {};
+    const f = (key, label, extra = '') => `<label>${label}<input type="number" data-reng="${key}" value="${esc(u[key] ?? '')}" placeholder="${auto[key] && auto[key].v !== null && auto[key].v !== undefined ? esc(String(auto[key].v)) + ' (' + esc(auto[key].src) + ')' : 'חסר'}" ${extra}></label>`;
+    return fold('taxalts', 'דירוג חלופות המס: מענק הפרישה והקצבה', `<div class="muted small">המערכת משווה את כל הדרכים לטפל במענק הפרישה (רצף קצבה, משיכה פטורה, פריסה קדימה ואחורה, משיכה פטורה חלקית, רצף פיצויים ושילובים) ומדרגת לפי חבות המס הכוללת בערך נוכחי - המס עכשיו, בשנות הפריסה ועל הקצבה עד תוחלת החיים. שדה ריק מתמלא מהמסמכים; הערך שבשימוש מופיע בתוך השדה.</div>
+        <div class="netgrid">
+            ${f('grant', 'מענק פרישה כולל (₪)', 'min="0" step="1000"')}
+            ${f('workYears', 'שנות עבודה', 'min="0" max="60" step="0.01"')}
+            ${f('lastSalary', 'משכורת חודשית אחרונה (₪)', 'min="0"')}
+            ${f('retireYear', 'שנת הפרישה', 'min="2020" max="2040"')}
+            ${f('retireMonth', 'חודש הפרישה (1-12)', 'min="1" max="12"')}
+            ${f('age', 'גיל בפרישה', 'min="50" max="90"')}
+            ${f('pensionMonthly', 'קצבה חודשית צפויה מהחיסכון הקיים (₪)', 'min="0"')}
+            ${f('annuityFactor', 'מקדם המרה לקצבה (לכסף שנשאר בקופה)', 'min="50" max="400" step="0.01"')}
+            ${f('pensionStartYear', 'שנת תחילת הקצבה', 'min="2020" max="2050"')}
+            ${f('retireYearIncome', 'הכנסה חייבת בשנת הפרישה בלי המענק (₪)', 'min="0"')}
+            ${f('futureIncome', 'הכנסה חייבת שנתית אחרת בשנים הבאות (₪)', 'min="0"')}
+            ${f('priorExempt', 'מענקים פטורים קודמים ב-32 השנים (₪)', 'min="0"')}
+            ${[1, 2, 3, 4, 5].map(i => `<label>הכנסה חייבת לפני ${i} ${i === 1 ? 'שנה' : 'שנים'} (טופס 106, לפריסה אחורה)<input type="number" min="0" data-reng="past${i}" value="${esc(u['past' + i] ?? '')}" placeholder="ריק = הערכה לפי שנת הפרישה"></label>`).join('')}
+            <label>ריבית היוון (%)<input type="number" min="0" max="10" step="0.1" data-reng="discount" value="${esc(u.discount ?? '')}" placeholder="3"></label>
+            <label class="chk"><input type="checkbox" data-reng="newEmployer"${u.newEmployer === '1' ? ' checked' : ''}> יתחיל לעבוד אצל מעסיק חדש תוך שנה (רצף פיצויים)</label>
+        </div>
+        <div id="reng-result">${taxAltsResultHtml()}</div>`);
+}
+
 function renderRecommendationStep() {
-    return `${renderAlloc()}
+    return `${renderTaxAlternatives()}
+        ${renderAlloc()}
         ${view ? fold('retirement', 'פירוט: ניתוח טופס 161 (קודי משלם, פגיעה בסל, שנות פריסה)', renderRetirement()) : ''}`;
 }
 
@@ -2719,6 +2815,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (t.dataset.netcheck) { state.netin[t.dataset.netcheck] = t.checked; updateNetResult(); return; }
         if (t.dataset.net) { state.netin[t.dataset.net] = t.value; if (t.dataset.net === 'pointsSpouse' || t.dataset.net === 'otherSpouse') state.netin.survAssumeOk = false; updateNetResult(); return; }
         if (t.dataset.kib) { state.kibua[t.dataset.kib] = t.value; updateKibua(); return; }
+        if (t.dataset.reng) { state.retEng[t.dataset.reng] = t.type === 'checkbox' ? (t.checked ? '1' : '') : t.value; const el = document.getElementById('reng-result'); if (el) el.innerHTML = taxAltsResultHtml(); return; }
         if (t.dataset.allocHorizon !== undefined) { state.alloc.horizon = t.value; const sc = document.getElementById('alloc-scenarios'); if (sc) sc.innerHTML = allocScenariosHtml(); return; }
         if (t.dataset.alloc) { state.alloc[t.dataset.alloc] = t.value; const _sy = window.scrollY; render(); window.scrollTo(0, _sy); return; }
         if (t.dataset.rg) { setRg(t.dataset.rg, t.value); updateRgFlags(); return; }

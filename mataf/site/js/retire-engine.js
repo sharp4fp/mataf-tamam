@@ -227,7 +227,8 @@ export function evaluateRetirement(input) {
             if (bf) add('G', `שילוב: משיכה פטורה חלקית + פריסת החלק החייב ${bf.o.kind === 'back' ? 'אחורה' : 'קדימה'}, ${spreadLabel(bf.o)}`, 'משיכה פטורה רק עד מה שהקצבה לא מנצלת, שאר הפטור לקצבה, והחלק החייב נפרס.', { exemptWithdraw: gFree, taxable: bf.o }, { refs: [REFS.basket, REFS.spreadFwd, REFS.spreadBack] });
         }
     }
-    const ranked = alts.filter(a => a.available && !a.conditional).sort((a, b) => a.taxPV - b.taxPV);
+    // מס זהה (בהפרש של עד שקל): מקדימים את החלופה שבה הלקוח מקבל יותר נטו
+    const ranked = alts.filter(a => a.available && !a.conditional).sort((a, b) => (Math.abs(a.taxPV - b.taxPV) < 1 ? b.netPV - a.netPV : a.taxPV - b.taxPV));
     ranked.forEach((a, i) => { a.rank = i + 1; });
     const bestNet = ranked.slice().sort((a, b) => b.netPV - a.netPV)[0];
     const warnings = [];

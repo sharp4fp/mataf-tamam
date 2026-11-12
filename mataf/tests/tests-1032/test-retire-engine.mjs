@@ -61,7 +61,11 @@ const D1 = r1.alternatives.find(a => a.id === 'D');
 ok(D1 && near(D1.taxNow, 15358) && D1.cashNow === 300000, 'alt-D-hand-calc-tax-now-15358', D1 && String(D1.taxNow));
 const C1 = r1.alternatives.find(a => a.id === 'C1');
 ok(C1 && C1.available && C1.taxNominal < D1.taxNominal, 'forward-spread-cheaper-than-no-spread', C1 && `${C1.taxNominal} vs ${D1.taxNominal}`);
-ok(r1.ranked.every((a, i, arr) => i === 0 || arr[i - 1].taxPV <= a.taxPV), 'ranking-ascending-by-tax-pv');
+ok(r1.ranked.every((a, i, arr) => i === 0 || arr[i - 1].taxPV <= a.taxPV + 1), 'ranking-ascending-by-tax-pv');
+// מס זהה (למשל 0 כשנקודות הזיכוי מכסות): מי שמקבל יותר נטו קודם
+const tie = E.evaluateRetirement({ retireYear: 2026, sex: 'male', age: 66, grant: 550000, workYears: 27, lastSalary: 18500, pensionMonthly: 6000, annuityFactor: 200, retireYearIncome: 0 });
+const zero = tie.ranked.filter(a => a.taxPV < 1);
+ok(zero.length >= 2 && zero.every((a, i) => i === 0 || zero[i - 1].netPV >= a.netPV), 'tax-tie-broken-by-higher-net', zero.map(a => a.id + ':' + a.netPV).join(','));
 ok(r1.alternatives.find(a => a.id === 'E').available === false, 'rezef-pitzuyim-unavailable-without-new-employer');
 
 // 7. תנאים: פחות מ-6 שנים - אין פריסה קדימה; בלי מקדם - אין חלופות רצף קצבה
