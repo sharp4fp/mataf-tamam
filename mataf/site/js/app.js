@@ -12,7 +12,7 @@ import { renderDiffBody, diffPortfolios, renderNifraimBody, parseNifraimText, ma
 import { renderLifeTab, renderHealthTab, insInit, insApply, emptyInsState } from './insurance.js';
 import { renderCalcTab, calcApply } from './calc.js';
 import { evaluateRetirement } from './retire-engine.js';
-import { AMOUNT_RANGES, EQUITY_RANGES, QUESTIONS, parseBalanceItems, computeTotal } from './assets.js';
+import { AMOUNT_RANGES, EQUITY_RANGES, FEE_RANGES, RENT_RANGES, SECTIONS, parseBalanceItems, computeTotal } from './assets.js';
 
 const fmt = (n) => Math.round(n).toLocaleString('he-IL');
 const pct = (n) => (Math.round(n * 10) / 10).toLocaleString('he-IL') + '%';
@@ -1696,27 +1696,38 @@ function renderAssetsCard() {
     const eqOpts = [['', 'חשיפה למניות...'], ...EQUITY_RANGES.map(r => [r.id, r.label])];
     const banks = a.banks.map((b, bi) => `<div class="card intake"><div class="subhead small">${esc(b.bank || 'בנק לא מזוהה')} ${b.date ? '· נכון ל-' + esc(b.date) : ''} <span class="muted small">(${esc(b.file)})</span> <button type="button" class="ghostbtn" data-action="asrm|${bi}">הסרה</button></div>
         <div class="alts-scroll"><table class="altstbl" data-asbank="${bi}"><thead><tr><th>לכלול</th><th>סוג</th><th>יתרה (₪)</th><th>חשיפה למניות</th></tr></thead><tbody>
-        ${b.rows.map((r, ri) => `<tr><td><input type="checkbox" data-asrow="${bi}|${ri}|include"${r.include !== false ? ' checked' : ''}></td><td>${esc(r.label)}<div class="muted small">${esc(r.source)} (עמ' ${r.page})</div></td>
+        ${b.rows.map((r, ri) => `<tr><td><input type="checkbox" data-asrow="${bi}|${ri}|include"${r.include !== false ? ' checked' : ''}></td><td>${esc(r.label)}<div class="muted small">${esc(r.source)}${r.page !== '-' ? ` (עמ' ${r.page})` : ''}</div></td>
             <td><input type="text" inputmode="decimal" data-asrow="${bi}|${ri}|amount" value="${esc(String(r.amount))}" style="width:9em"></td>
             <td>${r.cat === 'liability' ? 'התחייבות' : r.eq !== null && r.eq !== undefined ? r.eq + '%' : `<select data-asrow="${bi}|${ri}|eqRange">${EQUITY_RANGES.map(e => `<option value="${e.id}"${r.eqRange === e.id ? ' selected' : ''}>${esc(e.label)}</option>`).join('')}</select>`}</td></tr>`).join('')}
         </tbody></table></div>${b.reportedNet !== null && b.reportedNet !== undefined ? `<div class="muted small">סה"כ נטו לפי הבנק (בלי משכנתא): ${money(b.reportedNet)}</div>` : ''}</div>`).join('');
-    const qs = QUESTIONS.map(x => {
-        if (x.id === 'q6v' || x.id === 'q6m') { if (q.q6 !== 'yes') return ''; }
-        const ctl = x.kind === 'choice' ? sel(x.id, x.options, q[x.id]) : sel(x.id, amountOpts, q[x.id]) + (x.kind === 'amount+eq' && q[x.id] && q[x.id] !== '0' ? sel(x.id + 'eq', eqOpts, q[x.id + 'eq']) : '');
-        return `<label>${esc(x.label)}${x.why ? `<span class="muted small">${esc(x.why)}</span>` : ''}${ctl}</label>`;
-    }).join('');
+    const listFor = (type) => type === 'eq' ? [['', 'חשיפה למניות...'], ...EQUITY_RANGES.map(r => [r.id, r.label])]
+        : type === 'fee' ? [['', 'דמי ניהול...'], ...FEE_RANGES.map(r => [r.id, r.label])]
+        : type === 'rent' ? [['', 'שכירות נטו...'], ...RENT_RANGES.map(r => [r.id, r.label])]
+        : null;
+    const qs = SECTIONS.map(sec => `<tr class="alts-sect alts-sect-peers"><td colspan="2">${esc(sec.title)}</td></tr>` + sec.rows.map(row => {
+        const [mainKey, mainType] = row.fields[0];
+        const open = mainType !== 'amount' || (q[mainKey] && q[mainKey] !== '0');
+        const ctl = row.fields.map(([key, type, label, opts], i) => {
+            if (i > 0 && !open) return '';
+            if (type === 'choice') return sel(key, label ? [['', label + '...'], ...opts.slice(1)] : opts, q[key]);
+            if (type === 'amount' || type === 'debt') return sel(key, i === 0 ? amountOpts : [['', (label || 'סכום') + '...'], ...AMOUNT_RANGES.map(r => [r.id, (label ? label + ': ' : '') + r.label])], q[key]);
+            return sel(key, listFor(type), q[key]);
+        }).join('');
+        return `<tr><td>${esc(row.label)}</td><td class="asq-ctl">${ctl}</td></tr>`;
+    }).join('')).join('');
     const pen = pensionSummary();
     const r = computeTotal({ banks: a.banks, q, pension: pen });
     const answered = Object.values(q).filter(Boolean).length + a.banks.length + (pen ? 1 : 0);
     const verdict = r.verdict === 'above' ? 'מעל מה שהלקוח אמר שהוא יכול לשאת' : r.verdict === 'below' ? 'מתחת למה שהלקוח מוכן לשאת - יש מקום להגדיל' : r.verdict === 'within' ? 'בתוך הטווח שהלקוח מוכן לשאת' : '';
     const result = !answered ? '<div class="muted small">העלו אישור יתרות או ענו על השאלון כדי לראות את התמונה.</div>' : `
         <div class="note" data-assets-result><b>אחוז המניות האמיתי על כל הנכסים הפיננסיים: ${rng(r.equity.lo, r.equity.hi)}</b>${r.pensionEquity ? ` (בפנסיה לבד: ${rng(r.pensionEquity.lo, r.pensionEquity.hi)})` : ''}.
-            <br>כולל נדל"ן להשקעה, עסק וקריפטו כנכסי סיכון: ${rng(r.risky.lo, r.risky.hi)} מהנכסים.${verdict ? `<br>לפי תשובה 12: ${verdict}${r.tolerance ? ` (${r.tolerance[0]}-${r.tolerance[1]}% מניות)` : ''}.` : ''}${r.capacityNote ? `<br>${esc(r.capacityNote)}.` : ''}</div>
+            <br>כולל נדל"ן להשקעה, עסק וקריפטו כנכסי סיכון: ${rng(r.risky.lo, r.risky.hi)} מהנכסים.${verdict ? `<br>לפי השאלה על ירידה של 20%: ${verdict}${r.tolerance ? ` (${r.tolerance[0]}-${r.tolerance[1]}% מניות)` : ''}.` : ''}${r.capacityNote ? `<br>${esc(r.capacityNote)}.` : ''}</div>
         <div class="alts-scroll"><table class="altstbl" data-assets-table><thead><tr><th>נכס</th><th>שווי</th><th>חשיפה למניות</th><th>נזיל</th></tr></thead><tbody>
-            ${r.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.lo === i.hi ? money(i.lo) : money(i.lo) + ' - ' + money(i.hi)}</td><td>${i.risky ? 'נכס סיכון (לא מניות)' : rng(i.eqLo, i.eqHi)}</td><td>${i.liquid ? 'כן' : 'לא'}</td></tr>`).join('')}
+            ${r.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.lo === i.hi ? money(i.lo) : money(i.lo) + ' - ' + money(i.hi)}</td><td>${i.kind === 'risk' ? 'נכס סיכון (לא מניות)' : rng(i.eqLo, i.eqHi)}</td><td>${i.liquid ? 'כן' : 'לא'}</td></tr>`).join('')}
             ${r.totals.home ? `<tr><td>דירת מגורים (במאזן בלבד)</td><td>${money(r.totals.home.lo)} - ${money(r.totals.home.hi)}</td><td>לא נספר</td><td>לא</td></tr>` : ''}
         </tbody></table></div>
-        <div class="muted small">סך נכסים: ${money(r.totals.assetsLo)}${r.totals.assetsHi !== r.totals.assetsLo ? ' - ' + money(r.totals.assetsHi) : ''} · התחייבויות: ${money(r.totals.debtsLo)}${r.totals.debtsHi !== r.totals.debtsLo ? ' - ' + money(r.totals.debtsHi) : ''} · נזיל (אמצע הטווחים): ${money(r.liquid)}${r.need ? ` מול צורך של ${money(r.need.lo)}-${money(r.need.hi)} ב-3 שנים${r.liquid < r.need.lo ? ' - <b>הנזילות לא מכסה את הצורך</b>' : ''}` : ''} · חשיפה למט"ח: ${r.fxPct === null ? '—' : r.fxPct + '%'}${r.concentration.length ? ` · <b>ריכוזיות:</b> ${esc(r.concentration.join(', '))} מעל 25% מהנכסים` : ''}</div>
+        <div class="muted small">סך נכסים: ${money(r.totals.assetsLo)}${r.totals.assetsHi !== r.totals.assetsLo ? ' - ' + money(r.totals.assetsHi) : ''} · התחייבויות: ${money(r.totals.debtsLo)}${r.totals.debtsHi !== r.totals.debtsLo ? ' - ' + money(r.totals.debtsHi) : ''} · נזיל (אמצע הטווחים): ${money(r.liquid)}${r.need ? ` מול צורך של ${money(r.need.lo)}-${money(r.need.hi)} ב-3 שנים${r.liquid < r.need.lo ? ' - <b>הנזילות לא מכסה את הצורך</b>' : ''}` : ''} · חשיפה למט"ח: ${r.fxPct === null ? '—' : r.fxPct + '%'}${r.concentration.length ? ` · <b>ריכוזיות:</b> ${esc(r.concentration.join(', '))} מעל 25% מהנכסים` : ''}${r.feeCost ? ` · דמי ניהול בתיקים: ${money(r.feeCost.lo)}-${money(r.feeCost.hi)} בשנה` : ''}${r.rentYear ? ` · שכירות נטו: ${money(r.rentYear.lo)}-${money(r.rentYear.hi)} בשנה` : ''}${r.leveragePct !== null ? ` · מינוף: ${r.leveragePct}% מהנכסים הפיננסיים` : ''}</div>
+        ${r.notes.length ? `<ul class="small">${r.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
         <div class="muted small">החשיפה למניות מחושבת על ערכי האמצע של טווחי הסכום, ולכן היא טווח. הפנסיה מגיעה מהמסלקה (כרטסת תיק פנסיוני), עם החשיפה של כל מסלול; מסלול שלא זוהה נספר כ-0-100%. דירת המגורים במאזן בלבד (החלטת הבעלים 12.11).</div>`;
     return `<div class="card" id="assets-card">
         <div class="group-label">5 · תמונת נכסים וסיכון כולל</div>
@@ -1724,8 +1735,9 @@ function renderAssetsCard() {
         <div class="drop"><input type="file" id="assets-input" accept=".pdf" multiple><div class="drop-hint"><b>אישורי יתרות מהבנקים (PDF).</b> אפשר כמה קבצים, מכמה בנקים. כרגע מזוהה "ריכוז יתרות" של בנק הפועלים; בנקים נוספים יזוהו אחרי שנקבל דוגמאות.</div></div>
         ${a.status ? `<div class="status-line">${esc(a.status)}</div>` : ''}
         ${banks}
-        <div class="subhead">שאלון קצר</div>
-        <div class="netgrid assets-q">${qs}</div>
+        <button type="button" class="ghostbtn" data-action="asmanual">הזנה ידנית של יתרות מדויקות (בלי אישור מהבנק)</button>
+        <div class="subhead">שאלון - דף אחד, טווחים בלבד</div>
+        <table class="altstbl assets-q" data-assets-q><tbody>${qs}</tbody></table>
         ${result}
     </div>`;
 }
@@ -3183,6 +3195,12 @@ document.addEventListener('DOMContentLoaded', () => {
             addDocCandidates(key, getDoc(key).candidates.map((_, i) => i));
             render(); return;
         }
+        if (t.dataset.action === 'asmanual') { state.assets.banks.push({ file: 'הזנה ידנית', bank: 'הזנה ידנית', date: '', manual: true, rows: [
+            { key: 'cashIls', label: 'עו"ש ופיקדונות', source: 'הזנה ידנית', cat: 'cash', amount: 0, eq: 0, page: '-', include: true },
+            { key: 'sec', label: 'תיק ני"ע', source: 'הזנה ידנית', cat: 'securities', amount: 0, eq: null, eqRange: 'u', page: '-', include: true },
+            { key: 'managed', label: 'תיק מנוהל', source: 'הזנה ידנית', cat: 'securities', amount: 0, eq: null, eqRange: 'u', page: '-', include: true },
+            { key: 'cashFx', label: 'מט"ח', source: 'הזנה ידנית', cat: 'cash', amount: 0, eq: 0, fx: true, page: '-', include: true },
+            { key: 'credit', label: 'אשראי והלוואות בבנק', source: 'הזנה ידנית', cat: 'liability', amount: 0, eq: 0, page: '-', include: true }] }); render(); return; }
         if (t.dataset.action && t.dataset.action.startsWith('asrm|')) { state.assets.banks.splice(+t.dataset.action.split('|')[1], 1); render(); return; }
         if (t.dataset.action === 'benadd') {
             state.beneficiaries.push({ name: '', relation: '', source: 'הזנה ידנית - ללא מסמך' });

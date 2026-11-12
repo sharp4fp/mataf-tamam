@@ -45,20 +45,27 @@ ok(near(r1.equity.lo, 63.6) && near(r1.equity.hi, 67.4), 'true-equity-range-over
 ok(r1.pensionEquity.lo === 70, 'pension-alone-shown-for-comparison');
 ok(near(r1.totals.debtsLo, 86175.31, 0.01), 'bank-credit-counted-as-debt', String(r1.totals.debtsLo));
 
-// שאלון: תיק מנוהל 300-600 אלף מנייתי; דירת מגורים 2-5 מיליון (במאזן בלבד); נדל"ן להשקעה 1-2 מיליון
-const q = { q2: 'd', q2eq: 'm', q6: 'yes', q6v: 'g', q5: 'f', q10: 'c', q12: 'sell', q11: 'pension' };
+// שאלון (7 נושאים): תיק בישראל 300-600 אלף מנייתי עם דמי ניהול 1-1.5%; דירה 2-5 מיליון (במאזן בלבד);
+// נדל"ן מניב 1-2 מיליון עם שכירות 5-10 אלף; מניות ממקום העבודה 150-300 אלף; VC/PE 150-300 אלף + Capital Calls עד 50 אלף
+const q = { il: 'd', ilEq: 'm', ilFee: 'f3', home: 'g', homeDebt: 'c', reIl: 'f', reIlRent: 'r2', emp: 'c', alt: 'c', altCalls: 'a', need: 'c', tol: 'sell', income: 'pension', lev: 'b', struct: 'holding', bizPlan: 'exit', biz: 'd' };
 const r2 = A.computeTotal({ banks, q, pension: { value: 1000000, eqLo: 70, eqHi: 70 } });
-ok(r2.items.some(i => i.group === 'managed' && i.lo === 300000 && i.hi === 600000 && i.eqLo === 80), 'managed-portfolio-range-and-equity');
+ok(r2.items.some(i => i.group === 'il' && i.lo === 300000 && i.hi === 600000 && i.eqLo === 80 && i.fee.lo === 1), 'securities-range-equity-and-fee');
 ok(r2.totals.home && r2.totals.home.lo === 2000000 && !r2.items.some(i => i.group === 'home'), 'home-in-balance-sheet-not-in-risk (owner decision)');
-const finMid = 1378973.98 + 450000;
-ok(near(r2.equity.lo, (877500 + 450000 * 0.8) / finMid * 100), 'questionnaire-uses-range-midpoints', JSON.stringify(r2.equity));
-ok(r2.risky.lo > r2.equity.lo * 0 && r2.items.find(i => i.group === 're').risky, 'real-estate-counted-as-risk-asset-not-equity');
+const finMid = 1378973.98 + 450000 + 225000;
+ok(near(r2.equity.lo, (877500 + 450000 * 0.8 + 225000) / finMid * 100), 'employer-stock-is-100pct-equity; range-midpoints', JSON.stringify(r2.equity));
+ok(r2.items.find(i => i.group === 'reIl').kind === 'risk' && r2.items.find(i => i.group === 'alt').liquid === false, 'real-estate-and-alternatives-risk-not-liquid');
+ok(r2.feeCost.lo === 3000 && r2.feeCost.hi === 9000, 'annual-fee-cost-range', JSON.stringify(r2.feeCost));
+ok(r2.rentYear.lo === 60000 && r2.rentYear.hi === 120000, 'rent-income-per-year', JSON.stringify(r2.rentYear));
+ok(r2.need.lo === 150001 && r2.need.hi === 350000, 'capital-calls-added-to-liquidity-need', JSON.stringify(r2.need));
+ok(near(r2.totals.debtsLo, 86175.31 + 150000 + 50000, 0.01), 'debts-include-mortgage-leverage-and-bank-credit', String(r2.totals.debtsLo));
+ok(r2.leveragePct > 0 && r2.notes.some(n => /Margin/.test(n)) && r2.notes.some(n => /אקזיט/.test(n)) && r2.notes.some(n => /סיכון כפול/.test(n)) && r2.notes.some(n => /נאמנות/.test(n)), 'leverage-exit-employer-structure-notes');
 ok(r2.verdict === 'above' && r2.tolerance[1] === 30, 'tolerance-sell-on-20pct-drop -> above', r2.verdict);
 ok(/קצבה/.test(r2.capacityNote), 'capacity-note-for-pensioner');
-ok(r2.concentration.includes('נדל"ן להשקעה'), 'concentration-over-25pct-flagged', r2.concentration.join());
-// לא יודע = 0-100%
-const r3 = A.computeTotal({ banks: [], q: { q3: 'b', q3eq: 'u' } });
+ok(r2.concentration.includes('נדל"ן מניב בישראל'), 'concentration-over-25pct-flagged', r2.concentration.join());
+const r3 = A.computeTotal({ banks: [], q: { abroad: 'b', abroadEq: 'u' } });
 ok(r3.equity.lo === 0 && r3.equity.hi === 100 && r3.fxPct === 100, 'unknown-equity-is-0-100-and-abroad-is-fx');
 ok(A.computeTotal({ banks: [], q: {} }).equity.lo === null, 'empty-input-no-fake-number');
+ok(A.SECTIONS.length === 7 && A.SECTIONS.reduce((n, s) => n + s.rows.length, 0) <= 20, 'questionnaire-7-sections-max-20-rows (one page)');
+ok(A.AMOUNT_RANGES.some(r => r.id === 'j') && A.FEE_RANGES.length === 5 && A.RENT_RANGES.length === 6, 'ranges-cover-high-net-worth-fees-and-rent');
 console.log(`assets: PASS=${pass} FAIL=${fail}`);
 process.exit(fail ? 1 : 0);

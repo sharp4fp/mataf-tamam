@@ -39,13 +39,15 @@ ok(rows.includes('פיקדון לזמן קצוב=160000') && rows.includes('יש
 const setSel = (sel, v) => page.evaluate((sel, v) => { const s = document.querySelector(sel); s.value = v; s.dispatchEvent(new Event('change', { bubbles: true })); }, sel, v);
 await setSel('[data-asbank="0"] select[data-asrow="0|2|eqRange"]', 'm'); await wait(200);
 await setSel('[data-asbank="1"] select[data-asrow="1|1|eqRange"]', 'g'); await wait(200);
-// שאלון: תיק מנוהל 300-600 אלף כללי; דירה 2-5 מיליון; ירידה 20% - אחכה
-await setSel('select[data-asq="q2"]', 'd'); await wait(200);
-await setSel('select[data-asq="q2eq"]', 'g'); await wait(200);
-await setSel('select[data-asq="q6"]', 'yes'); await wait(200);
-ok(await page.evaluate(() => !!document.querySelector('select[data-asq="q6v"]')), 'home-value-appears-only-after-yes');
-await setSel('select[data-asq="q6v"]', 'g'); await wait(200);
-await setSel('select[data-asq="q12"]', 'wait'); await wait(300);
+// שאלון: תיק בישראל 300-600 אלף כללי; דירה 2-5 מיליון; ירידה 20% - אחכה
+ok(await page.evaluate(() => !document.querySelector('select[data-asq="ilEq"]')), 'extra-fields-hidden-until-amount-chosen');
+await setSel('select[data-asq="il"]', 'd'); await wait(200);
+ok(await page.evaluate(() => !!document.querySelector('select[data-asq="ilEq"]') && !!document.querySelector('select[data-asq="ilFee"]')), 'equity-and-fee-appear-after-amount');
+await setSel('select[data-asq="ilEq"]', 'g'); await wait(200);
+await setSel('select[data-asq="ilFee"]', 'f2'); await wait(200);
+await setSel('select[data-asq="home"]', 'g'); await wait(200);
+await setSel('select[data-asq="tol"]', 'wait'); await wait(300);
+ok(await page.evaluate(() => document.querySelectorAll('[data-assets-q] .alts-sect').length) === 7, 'seven-sections');
 const res = await page.evaluate(() => document.querySelector('[data-assets-result]').innerText);
 // מניות: lo = (300,000×80% + 90,000×35% + 450,000×35%) / (40,000+160,000+300,000+10,000+90,000+450,000) = 429,000/1,050,000 = 40.9%
 //        hi = (300,000 + 90,000×60% + 450,000×60%) / 1,050,000 = 624,000/1,050,000 = 59.4%
@@ -53,10 +55,15 @@ ok(/41-59%/.test(res), 'true-equity-range-shown', res);
 ok(/בתוך הטווח/.test(res), 'tolerance-verdict-shown');
 const tbl = await page.evaluate(() => document.querySelector('[data-assets-table]').innerText);
 ok(/דירת מגורים \(במאזן בלבד\)/.test(tbl) && /לא נספר/.test(tbl), 'home-in-balance-only');
-ok(/התחייבויות: ₪12,000/.test(await page.evaluate(() => document.getElementById('assets-card').innerText)), 'credit-as-debt');
+const cardText = await page.evaluate(() => document.getElementById('assets-card').innerText);
+ok(/התחייבויות: ₪12,000/.test(cardText), 'credit-as-debt');
+ok(/דמי ניהול בתיקים: ₪1,500-₪6,000/.test(cardText), 'fee-cost-shown', (cardText.match(/דמי ניהול בתיקים[^·]*/) || [''])[0]);
+// הזנה ידנית
+await page.evaluate(() => document.querySelector('[data-action="asmanual"]').click()); await wait(300);
+ok(await page.evaluate(() => [...document.querySelectorAll('[data-asbank]')].length) === 3, 'manual-entry-block-added');
 // הסרת אישור
 await page.evaluate(() => document.querySelector('[data-action="asrm|1"]').click()); await wait(300);
-ok(await page.evaluate(() => document.querySelectorAll('[data-asbank]').length) === 1, 'remove-confirmation');
+ok(await page.evaluate(() => document.querySelectorAll('[data-asbank]').length) === 2, 'remove-confirmation');
 // טלפון
 await page.setViewport({ width: 380, height: 900 }); await wait(400);
 const sw = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
