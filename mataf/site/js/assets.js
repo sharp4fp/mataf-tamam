@@ -86,20 +86,34 @@ export const SECTIONS = [
 // --- פענוח אישור יתרות ---
 // תוויות מוכרות -> קטגוריה. eq: חשיפה ידועה (באחוזים) או null = צריך לבחור טווח. נלמד מ"ריכוז יתרות לסוף שנה" של בנק הפועלים;
 // בנקים אחרים יתווספו לפי דוגמאות.
+// תוויות מוכרות -> קטגוריה. eq: חשיפה ידועה (באחוזים) או null = צריך לבחור טווח. הסדר חשוב: ספציפי לפני כללי.
+// נלמד מ"ריכוז יתרות" של הפועלים (2 אישורים אמיתיים) ומדוגמאות מושחרות שמפרסמת האוניברסיטה הפתוחה לסטודנטים
+// (לאומי - 2 תבניות, דיסקונט - ריכוז יתרות וריכוז תיק השקעות, מזרחי טפחות, מרכנתיל, אוצר החייל), 12.11.2026.
 export const BANK_LABELS = [
-    { re: /עו"ש\s*שקל|עובר ושב/, key: 'cashIls', label: 'עו"ש שקל', cat: 'cash', eq: 0 },
-    { re: /עו"ש\s*מט"ח/, key: 'cashFx', label: 'עו"ש מט"ח', cat: 'cash', eq: 0, fx: true },
+    { re: /עו"ש\s*מט"ח|שווי מט"ח עו"ש|^מטבע חוץ$|עו"ש במטבע חוץ/, key: 'cashFx', label: 'עו"ש מט"ח', cat: 'cash', eq: 0, fx: true },
+    { re: /מט"ח פקדון|פקדון מט"ח|פיקדון מט"ח|פקדונות מט"ח|פיקדונות במט"ח/, key: 'fxDeposit', label: 'פיקדון מט"ח', cat: 'deposit', eq: 0, fx: true },
+    { re: /עו"ש\s*שקל|עובר ושב|חשבון עו"ש|עו"ש קרדיטורי|יתרה \+ ניכוי להיום|^עו"ש(\s|$|\()/, key: 'cashIls', label: 'עו"ש שקל', cat: 'cash', eq: 0 },
     { re: /פקדון לזמן קצוב|פיקדון לזמן קצוב|פק"מ/, key: 'deposit', label: 'פיקדון לזמן קצוב', cat: 'deposit', eq: 0 },
     { re: /פר"י/, key: 'pri', label: 'פר"י', cat: 'deposit', eq: 0 },
     { re: /תוכנ\.?\s*חסכון מקושרות/, key: 'savLinked', label: 'תוכניות חיסכון מקושרות', cat: 'deposit', eq: 0 },
-    { re: /תוכנית חסכון|תכנית חיסכון/, key: 'saving', label: 'תוכנית חיסכון', cat: 'deposit', eq: 0 },
-    { re: /מט"ח פקדון|פקדון מט"ח/, key: 'fxDeposit', label: 'פיקדון מט"ח', cat: 'deposit', eq: 0, fx: true },
+    { re: /תוכנית חסכון|תכנית חיסכון|תוכניות חסכון|תוכניות חיסכון|תכניות חסכון/, key: 'saving', label: 'תוכניות חיסכון', cat: 'deposit', eq: 0 },
+    { re: /פקדונות וחסכונות|פיקדונות וחסכונות|פקדונות שקליים|פיקדונות שקליים|^פקדונות$|^פיקדונות$|פקדונות מובנים|פיקדונות מובנים/, key: 'deposits', label: 'פיקדונות', cat: 'deposit', eq: 0 },
     { re: /קרנות נאמנות/, key: 'funds', label: 'קרנות נאמנות', cat: 'securities', eq: null },
-    { re: /ניירות ערך לא סחירים/, key: 'secNon', label: 'ניירות ערך לא סחירים', cat: 'securities', eq: null },
-    { re: /ניירות ערך סחירים/, key: 'sec', label: 'ניירות ערך סחירים', cat: 'securities', eq: null },
+    { re: /ני"ע בחו"ל|ניירות ערך בחו"ל|ני"ע הנסחרים בחו"ל/, key: 'secAbroad', label: 'ניירות ערך בחו"ל', cat: 'securities', eq: null, fx: true },
+    { re: /ניירות ערך לא סחירים|ני"ע לא סחיר/, key: 'secNon', label: 'ניירות ערך לא סחירים', cat: 'securities', eq: null },
+    { re: /^מניות$/, key: 'stocks', label: 'מניות', cat: 'securities', eq: 100 },
+    { re: /^אג"ח$|^אגרות חוב$/, key: 'bonds', label: 'אג"ח', cat: 'securities', eq: 0 },
+    { re: /ניירות ערך סחירים|תיק ני"ע|^ניירות ערך$|תיק השקעות/, key: 'sec', label: 'ניירות ערך', cat: 'securities', eq: null },
     { re: /מעוף לונג|מעוף שורט/, key: 'maof', label: 'אופציות מעו"ף', cat: 'derivatives', eq: null },
-    { re: /אשראי שקל|ישראכרט חובה|ויזה חובה|כרטיס.*חובה|הלוואות|אשראי ספק|ערבויות/, key: 'credit', label: 'אשראי והלוואות', cat: 'liability', eq: 0 },
+    // קופות גמל וקרנות השתלמות שמוצגות בבנק - כבר בקובץ המסלקה; מוצגות לא מסומנות כדי לא לספור פעמיים
+    { re: /קופות גמל|קופת גמל|קה"ל|קרן השתלמות|קרנות השתלמות/, key: 'pensionDup', label: 'גמל / השתלמות (כבר במסלקה)', cat: 'pensionDup', eq: null },
+    { re: /אשראי שקל|ישראכרט חובה|ויזה חובה|כרטיס.*חובה|כרטיסי אשראי|הלוואות|הלוואה|אשראי ספק|ערבויות|ניכיונות/, key: 'credit', label: 'אשראי והלוואות', cat: 'liability', eq: 0 },
 ];
+// שורות שאינן יתרה: מסגרת אשראי, יתרה לניצול, תשואה ואחוזים
+const SKIP_RE = /סה"כ|סה''כ|סך הכל|מסגרת אשראי|מסגרות אשראי|יתרה לניצול|מרכיב|%/;
+// באיזו עמודה היתרה: בפועלים ובאוצר החייל/הבינלאומי היתרה היא העמודה השמאלית (לידה "קרן"/"סכום");
+// בלאומי, דיסקונט, מרכנתיל ומזרחי היא הימנית מבין המספרים (משמאל לה "מרכיב %" או "יתרה ליום קודם")
+const LEFTMOST_BANKS = ['בנק הפועלים', 'הבינלאומי', 'אוצר החייל'];
 // סכום: 1,234.56 עם מינוס לפני או אחרי (בטקסט מימין לשמאל המינוס מופיע לפעמים בסוף), ₪ אופציונלי
 const NUM_RE = /^[-−]?₪?\s*[-−]?(\d{1,3}(,\d{3})*|\d+)(\.\d{1,2})?\s*[-−]?$/;
 const toNum = (s) => { const t = String(s).replace(/−/g, '-'); const n = parseFloat(t.replace(/[₪\s,-]/g, '')); return isFinite(n) ? (t.includes('-') ? -n : n) : null; };
@@ -120,21 +134,27 @@ function toLines(items) {
 export function parseBalanceItems(items) {
     const lines = toLines(items);
     const text = lines.map(l => l.items.map(i => i.str).join(' ')).join('\n');
-    const bank = /הפועלים|bankhapoalim/.test(text) ? 'בנק הפועלים' : /לאומי|leumi/i.test(text) ? 'בנק לאומי' : /דיסקונט|discount/i.test(text) ? 'בנק דיסקונט'
-        : /מזרחי|טפחות|mizrahi/i.test(text) ? 'מזרחי טפחות' : /הבינלאומי|fibi/i.test(text) ? 'הבינלאומי' : /בנק\s+12\b/.test(text) ? 'בנק הפועלים' : '';
-    const dm = text.match(/נכון לתאריך\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/) || text.match(/(\d{1,2}\/\d{1,2}\/\d{4})\s*נכון לתאריך/) || text.match(/לסוף שנת\s*(\d{4})/);
+    const bank = /הפועלים|bankhapoalim/.test(text) ? 'בנק הפועלים' : /אוצר החייל|otsar/i.test(text) ? 'אוצר החייל' : /מרכנתיל|mercantile/i.test(text) ? 'מרכנתיל'
+        : /לאומי|leumi/i.test(text) ? 'בנק לאומי' : /דיסקונט|discount/i.test(text) ? 'בנק דיסקונט'
+        : /מזרחי|טפחות|mizrahi/i.test(text) ? 'מזרחי טפחות' : /הבינלאומי|fibi/i.test(text) ? 'הבינלאומי' : /בנק ירושלים/.test(text) ? 'בנק ירושלים'
+        : /בנק יהב/.test(text) ? 'בנק יהב' : /מסד/.test(text) ? 'בנק מסד' : /פאג"י|פועלי אגודת/.test(text) ? 'פאג"י' : /בנק\s+12\b/.test(text) ? 'בנק הפועלים' : '';
+    const leftmost = LEFTMOST_BANKS.includes(bank) || !bank;
+    const dm = text.match(/נכון לתאריך\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/) || text.match(/ריכוז יתרות לתאריך\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/) || text.match(/(\d{1,2}\/\d{1,2}\/\d{4})\s*נכון לתאריך/) || text.match(/לסוף שנת\s*(\d{4})/);
     const rows = [];
     let zeros = 0;
     for (const l of lines) {
         const lt = l.items.map(i => i.str).join(' ');
-        const def = BANK_LABELS.find(d => d.re.test(lt));
-        if (!def || /סה"כ|סה''כ|סך הכל/.test(lt)) continue;
+        if (SKIP_RE.test(lt)) continue;
+        // התווית = הטקסט שאינו מספר ואינו תאריך (לבדיקת התאמה מדויקת כמו "מניות")
+        const label = l.items.filter(i => !NUM_RE.test(i.str.trim()) && !/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(i.str.trim()) && !/^ש"ח$|^₪$/.test(i.str.trim())).map(i => i.str.trim()).join(' ').replace(/^\d+\.\s*/, '').trim();
+        const def = BANK_LABELS.find(d => d.re.test(label));
+        if (!def) continue;
         const nums = l.items.filter(i => NUM_RE.test(i.str.trim())).sort((a, b) => a.x - b.x);
         if (!nums.length) continue;
-        const amount = toNum(nums[0].str);
+        const amount = toNum((leftmost ? nums[0] : nums[nums.length - 1]).str);
         if (amount === null) continue;
         if (amount === 0) { zeros++; continue; } // שורות אפס לא מוצגות; נספרות להודעה
-        const shown = def.key === 'credit' || def.key === 'maof' ? lt.match(def.re)[0] : def.label;
+        const shown = def.key === 'credit' || def.key === 'maof' ? label.match(def.re)[0] : def.label;
         rows.push({ key: def.key, label: shown, source: lt.replace(/\s+/g, ' ').slice(0, 80), cat: def.cat, amount, eq: def.eq, fx: !!def.fx, page: l.page });
     }
     const tm = text.match(/בניכוי התח[י]?יבויות[^\n]*\n?[^\n]*?(-?₪?\s*-?[\d,]+\.\d{2})/);

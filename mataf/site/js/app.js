@@ -1710,7 +1710,7 @@ async function onAssetFiles(files) {
             const r = parseBalanceItems(items);
             if (!r.rows.length && r.zeros) { msgs.push(`${name}: כל ${r.zeros} השורות שזוהו${r.bank ? ' (' + r.bank + ')' : ''} הן 0 ₪`); continue; }
             if (!r.rows.length) { msgs.push(`${name}: לא זוהו שורות יתרה מוכרות. מבנה האישור של הבנק הזה עוד לא נלמד - שלחו דוגמה, ובינתיים הזינו בשאלה 1`); continue; }
-            state.assets.banks.push({ file: name, bank: r.bank, date: r.date, reportedNet: r.reportedNet, rows: r.rows.map(x => ({ ...x, include: true, eqRange: x.eq === null ? 'u' : '' })) });
+            state.assets.banks.push({ file: name, bank: r.bank, date: r.date, reportedNet: r.reportedNet, rows: r.rows.map(x => ({ ...x, include: x.cat !== 'pensionDup', eqRange: x.eq === null ? 'u' : '' })) });
             msgs.push(`${name}: זוהו ${r.rows.length} שורות עם יתרה${r.zeros ? ` (ועוד ${r.zeros} שורות 0 ₪ שלא מוצגות)` : ''}${r.bank ? ' - ' + r.bank : ''}${r.date ? ', נכון ל-' + r.date : ''}`);
         } catch (e) { msgs.push(`${name}: הקריאה נכשלה (${(e && e.message) || 'שגיאה'})`); }
     }
@@ -1761,7 +1761,7 @@ function renderAssetsCard(on = true) {
     return `<div class="card" id="assets-card" data-calcsub-card="assets"${on ? '' : ' hidden'}>
         <div class="group-label">תמונת נכסים וסיכון כולל</div>
         <div class="muted small">אחוז הסיכון האמיתי של הלקוח הוא החשיפה למניות על פני <b>כל</b> הנכסים - פנסיה, בנקים, תיקים מנוהלים, חו"ל - ולא בכל מוצר בנפרד. ${pen ? `הפנסיה נלקחה מקובץ המסלקה (${money(pen.value)}).` : 'כדי לכלול את הפנסיה, העלו קובץ מסלקה בכרטסת תיק פנסיוני.'}</div>
-        <div class="drop"><input type="file" id="assets-input" accept=".pdf" multiple><div class="drop-hint"><b>אישורי יתרות מהבנקים (PDF).</b> אפשר כמה קבצים, מכמה בנקים. כרגע מזוהה "ריכוז יתרות" של בנק הפועלים; בנקים נוספים יזוהו אחרי שנקבל דוגמאות.</div></div>
+        <div class="drop"><input type="file" id="assets-input" accept=".pdf" multiple><div class="drop-hint"><b>אישורי יתרות מהבנקים (PDF).</b> אפשר כמה קבצים, מכמה בנקים. מזוהים "ריכוז יתרות" של הפועלים, לאומי, דיסקונט, מזרחי טפחות, מרכנתיל ואוצר החייל / הבינלאומי (PDF מאתר הבנק; סריקה עדיין לא נקראת). גמל והשתלמות שמופיעים באישור לא נספרים, כי הם כבר במסלקה.</div></div>
         ${a.status ? `<div class="status-line">${esc(a.status)}</div>` : ''}
         ${banks}
         <button type="button" class="ghostbtn" data-action="asmanual">הזנה ידנית של יתרות מדויקות (בלי אישור מהבנק)</button>

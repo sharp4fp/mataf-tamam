@@ -37,6 +37,27 @@ ok(tm.rows[0] && tm.rows[0].amount === -12000, 'trailing-minus-rtl', JSON.string
 ok(p.zeros === 1 && !p.rows.some(r => r.amount === 0), 'zero-rows-counted-not-shown');
 ok(p.rows.some(r => r.label === 'ישראכרט חובה'), 'credit-row-keeps-bank-label');
 
+// תבניות בנקים נוספים (לפי דוגמאות מושחרות שפורסמו; ערכים סינתטיים)
+const L = (rows, head) => { let yy = 700; const out = head.map((t, k) => ({ page: 1, x: 400, y: 790 - k * 8, str: t })); for (const r of rows) { yy -= 20; r.forEach(([x, str]) => out.push({ page: 1, x, y: yy, str })); } return out; };
+// לאומי: סוג פעילות | נכון לתאריך | יתרה בש"ח
+const le = A.parseBalanceItems(L([[[500, 'עובר ושב'], [300, '22/07/12'], [150, '1,804.46']], [[500, 'פקדונות וחסכונות'], [300, '22/07/12'], [150, '4,303.92']], [[500, 'כרטיסי אשראי'], [300, '22/07/12'], [150, '-3,299.90']], [[500, 'סה"כ:'], [150, '1,714.23']]], ['בנק לאומי - ריכוז יתרות']));
+ok(le.bank === 'בנק לאומי' && le.rows.map(r => r.key + '=' + r.amount).join() === 'cashIls=1804.46,deposits=4303.92,credit=-3299.9', 'leumi-layout', JSON.stringify(le.rows.map(r => [r.key, r.amount])));
+// לאומי (תבנית ישנה): ניירות ערך, חשבון עו"ש, מסגרות אשראי (לא יתרה!), פקדונות שקליים
+const le2 = A.parseBalanceItems(L([[[500, 'ניירות ערך'], [200, '23,947.00']], [[500, 'חשבון עו"ש'], [200, '1,092.04']], [[500, 'מסגרות אשראי'], [200, '10,000.00']], [[500, 'פקדונות שקליים'], [200, '2,506.41']]], ['leumi', 'ריכוז יתרות']));
+ok(le2.rows.length === 3 && !le2.rows.some(r => r.amount === 10000) && le2.rows.find(r => r.key === 'sec').eq === null, 'credit-line-is-not-a-balance', JSON.stringify(le2.rows.map(r => [r.key, r.amount])));
+// דיסקונט - ריכוז תיק השקעות: מרכיב % | שווי בש"ח | תווית -> השווי הוא הימני מבין המספרים
+const di = A.parseBalanceItems(L([[[520, 'פק"מ שקלי'], [300, '952.64'], [200, '.23']], [[520, 'מניות'], [300, '120,000.00'], [200, '29.00']], [[520, 'אג"ח'], [300, '80,000.00'], [200, '19.00']], [[520, 'קופות גמל'], [300, '408,836.14'], [200, '99.77']], [[520, 'סה"כ ניירות ערך'], [300, '200,000.00']]], ['דיסקונט', 'ריכוז תיק השקעות']));
+ok(di.bank === 'בנק דיסקונט' && di.rows.map(r => r.key + '=' + r.amount).join() === 'deposit=952.64,stocks=120000,bonds=80000,pensionDup=408836.14', 'discount-investment-layout (value not percent)', JSON.stringify(di.rows.map(r => [r.key, r.amount])));
+ok(di.rows.find(r => r.key === 'stocks').eq === 100 && di.rows.find(r => r.key === 'bonds').eq === 0, 'stocks-100-bonds-0');
+// מזרחי: יתרות ליום קודם | יתרות מעודכנות -> המעודכנות (ימנית); מסגרת אשראי מדולגת
+const mz = A.parseBalanceItems(L([[[520, 'יתרה + ניכוי להיום:'], [330, '-590.41'], [230, '-590.41']], [[520, 'מסגרת אשראי:'], [330, '4,500.00'], [230, 'הריבה']], [[520, 'תיק ני"ע (סחירים):'], [330, '268.56'], [230, '267.90']]], ['מזרחי טפחות', 'ריכוז יתרות']));
+ok(mz.rows.map(r => r.key + '=' + r.amount).join() === 'cashIls=-590.41,sec=268.56', 'mizrahi-layout-updated-column', JSON.stringify(mz.rows.map(r => [r.key, r.amount])));
+// מרכנתיל: "1. עו"ש (ערבות פלת"ש)" ממוספר
+const me = A.parseBalanceItems(L([[[520, '1. עו"ש'], [250, '1,571.29']], [[520, '1. פיקדונות שקליים (מכל הסוגים)'], [250, '0.00']]], ['מרכנתיל', 'ריכוז יתרות לתאריך 30/11/2017']));
+ok(me.bank === 'מרכנתיל' && me.date === '30/11/2017' && me.rows.length === 1 && me.rows[0].amount === 1571.29 && me.zeros === 1, 'mercantile-numbered-rows', JSON.stringify(me));
+// אוצר החייל (הבינלאומי): מהות | הערות | סכום | שווי -> שווי (שמאלי)
+const oz = A.parseBalanceItems(L([[[520, 'עו"ש קרדיטורי'], [300, '5,000.00'], [150, '5,000.00']], [[520, 'הלוואה שקלית באינטרנט (פריים) עד 4'], [300, '30,000.00'], [150, '-21,500.00']]], ['אוצר החייל', 'הודעת ריכוז יתרות רבעוני']));
+ok(oz.bank === 'אוצר החייל' && oz.rows.map(r => r.amount).join() === '5000,-21500', 'otzar-hahayal-value-column', JSON.stringify(oz.rows.map(r => [r.key, r.amount])));
 // חישוב: פנסיה 1,000,000 ב-70% מניות; בנק: עו"ש 28,973.98, פיקדון 100,000, קרנות 50,000 (כללי 35-60), ני"ע 200,000 (מנייתי 80-100)
 const banks = [{ bank: p.bank, rows: p.rows.map(r => ({ ...r, include: true, eqRange: r.key === 'funds' ? 'g' : r.key === 'sec' ? 'm' : '' })) }];
 const r1 = A.computeTotal({ banks, q: {}, pension: { value: 1000000, eqLo: 70, eqHi: 70 } });
