@@ -1737,6 +1737,7 @@ function renderAssetsCard(on = true) {
         ${banks}
         <button type="button" class="ghostbtn" data-action="asmanual">הזנה ידנית של יתרות מדויקות (בלי אישור מהבנק)</button>
         <div class="subhead">שאלון - דף אחד, טווחים בלבד</div>
+        <div class="muted small">כל סכום כולל את ההון הפרטי ואת ההון שבחברה יחד, אם יש.</div>
         <table class="altstbl assets-q" data-assets-q><tbody>${qs}</tbody></table>
         ${result}
     </div>`;

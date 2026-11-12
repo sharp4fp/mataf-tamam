@@ -75,8 +75,8 @@ export const SECTIONS = [
     { title: 'התחייבויות', rows: [
         { id: 'debts', label: 'הלוואות, ערבויות אישיות וחובות מס צפויים (מס שבח, רווחי הון, שומות) - בלי משכנתאות', fields: [['debts', 'amount'], ['lev', 'amount', 'מתוכם הלוואה כנגד תיק השקעות (מינוף)']] },
     ] },
-    { title: 'מבנה, צרכים וסבילות', rows: [
-        { id: 'struct', label: 'איך מוחזק ההון', fields: [['struct', 'choice', '', [['', 'לא נבחר'], ['private', 'פרטית בלבד'], ['holding', 'גם דרך חברת אחזקות (ארנק)'], ['trust', 'גם דרך נאמנות (Trust)'], ['partner', 'גם דרך שותפות'], ['mixed', 'שילוב של כמה']]]] },
+    { title: 'צרכים וסבילות', rows: [
+        // שאלת מבנה האחזקות הוסרה (החלטת הבעלים 12.11 13:18): מניחים שהסכומים כוללים את ההון הפרטי ואת ההון בחברה יחד
         { id: 'need', label: 'כמה כסף נדרש ב-3 השנים הקרובות', fields: [['need', 'amount']] },
         { id: 'income', label: 'מקור ההכנסה העיקרי', fields: [['income', 'choice', '', [['', 'לא נבחר'], ['stable', 'שכיר יציב'], ['self', 'עצמאי / הכנסה משתנה'], ['pension', 'פנסיונר עם קצבה'], ['capital', 'חי מההון / מהעסק'], ['none', 'ללא הכנסה קבועה']]]] },
         { id: 'tol', label: 'התיק ירד 20% - מה תעשה?', fields: [['tol', 'choice', '', [['', 'לא נבחר'], ['sell', 'אמכור כדי לעצור את ההפסד'], ['wait', 'אחכה שיתאושש'], ['buy', 'אקנה עוד']]]] },
@@ -210,7 +210,6 @@ export function computeTotal(inp) {
     if (amountOf(q.emp) && amountOf(q.emp).hi > 0) notes.push('מניות ממקום העבודה: סיכון כפול - ההכנסה וההון תלויים באותה חברה');
     if (lev.hi > 0) notes.push('הלוואה כנגד תיק (מינוף): ירידה בשווקים עלולה לחייב מכירה בהפסד (Margin Call)');
     if (calls && calls.hi > 0) notes.push('התחייבות להזרמת הון (Capital Calls) נוספה לצורך הנזילות');
-    if (['holding', 'trust', 'partner', 'mixed'].includes(q.struct)) notes.push('החזקה דרך חברה, נאמנות או שותפות: לבדוק השלכות מס ודיווח, וסמכות חתימה וירושה');
     return {
         items,
         totals: { assetsLo: sum(items, i => i.lo) + (home ? home.lo : 0), assetsHi: sum(items, i => i.hi) + (home ? home.hi : 0), debtsLo, debtsHi, home: home && home.hi > 0 ? { lo: home.lo, hi: home.hi } : null },
