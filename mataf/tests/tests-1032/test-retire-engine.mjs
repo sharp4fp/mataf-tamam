@@ -94,5 +94,14 @@ ok(near(big.lifeExpectancy, 18.6) && big.endYear === 2026 + 19, 'horizon-from-cb
 const r4 = E.evaluateRetirement({ ...base, newEmployerWithinYear: true });
 const e4 = r4.alternatives.find(a => a.id === 'E');
 ok(e4.available && e4.conditional && !r4.ranked.includes(e4), 'rezef-pitzuyim-available-conditional-not-ranked');
+// 11. מענק בפטירה (9(7א)(ב)): שתי משכורות לשנה, עד 27,520
+const gd = E.grantExemption({ grant: 400000, workYears: 10, lastSalary: 20000, death: true });
+ok(gd.perYear === 27520 && gd.exempt === 275200 && gd.taxable === 124800, 'death-grant-2-salaries-cap-27520', JSON.stringify(gd));
+ok(E.grantExemption({ grant: 400000, workYears: 10, lastSalary: 10000, death: true }).perYear === 20000, 'death-grant-2-salaries-lower');
+// 12. מחשבון הפיצויים בכרטסת מחשבונים משתמש במנוע
+const C = await import(path.join(ROOT, 'calc.js'));
+const html = C.renderCalcTab({ calc: { s_grant: '600000', s_years: '27', s_salary: '18500' }, calcSub: 'severance' }).replace(/<[^>]+>/g, ' ');
+ok(/החלק הפטור\s+371,250/.test(html) && /החלק החייב במס\s+228,750/.test(html) && /עד 6 שנות מס/.test(html) && /ל-2,638/.test(html), 'severance-calculator-personal-result', html.match(/החלק הפטור[^₪]*₪/)?.[0] || '');
+ok(/הזינו מענק ושנות עבודה/.test(C.renderCalcTab({ calc: {}, calcSub: 'severance' })), 'severance-calculator-empty-prompt');
 console.log(`retire-engine: PASS=${pass} FAIL=${fail}`);
 process.exit(fail ? 1 : 0);

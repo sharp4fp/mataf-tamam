@@ -2,6 +2,7 @@
 // פעיל: דמי ניהול לאורך זמן (אריתמטיקה על נתוני משתמש). הסבר בלבד ללא חישוב אישי: פיצויים, קצבה מוכרת (מודול חינוכי), גיל פרישה (טבלת מקור).
 // מושהים לאימות מקור: קצבה מוכרת, גיל פרישה - מוצג הסבר בלבד, בלי נוסחה שאומצה בלי גיבוב.
 import { EXEMPT_CAP_2026 } from './analysis.js';
+import { grantExemption, forwardSpreadYears, pensionExemption, DEATH_CAP_PER_YEAR, K as RK } from './retire-engine.js';
 
 const escC = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const fmtC = (n) => Math.round(n).toLocaleString('he-IL');
@@ -50,7 +51,7 @@ function has(state, key) { const v = state.calc[key]; return v !== undefined && 
 // כל מחשבון עומד בפני עצמו (בקשת הבעלים 12.11 12:42): לשונית משנה לכל מחשבון, ורק הנבחר מוצג.
 // כל הכרטיסים נשארים ב-DOM (hidden) כדי שקישור, שמירה ובדיקות יעבדו בלי תלות בלשונית.
 export const CALC_SUBS = [
-    ['fees', 'דמי ניהול לאורך זמן'], ['severance', 'פיצויים - תקרת הפטור'], ['mukeret', 'קצבה מוכרת'],
+    ['fees', 'דמי ניהול לאורך זמן'], ['severance', 'פיצויים - פטור על המענק'], ['mukeret', 'קצבה מוכרת'],
     ['retage', 'גיל פרישה'], ['assets', 'תמונת נכסים וסיכון כולל'],
 ];
 // פס הלשוניות המשניות - מוצג בכותרת מתחת לכרטסות הראשיות כשכרטסת מחשבונים פתוחה (בקשת הבעלים 12.11 13:00)
@@ -72,6 +73,30 @@ export function renderCalcTab(state, extra = {}) {
             <div class="muted small">צבירה עם דמי ניהול: ${fmtC(r.withFees)} ₪ מול ${fmtC(r.zeroFee)} ₪ באפס דמי ניהול, לאורך ${r.months} חודשים. ההפרש הוא איבוד תשואה מצטברת על הדמי, לא רק סכום הדמי שנגבו.</div>`;
     }
     // פיצויים - תצוגת תקרה והסבר בלבד (ללא תוצאה אישית מחושבת עד אכיפת כל תנאי הסף)
+    // פיצויים - מחשבון אישי (בקשת הבעלים 12.11 14:27): פטור, חייב, שנות פריסה והשפעה על סל הפטור לקצבה
+    let sevRes = '';
+    const sevKind = c.s_kind === 'death' ? 'death' : 'retire';
+    if (num(state, 's_grant') > 0 && num(state, 's_years') > 0) {
+        const g = grantExemption({ grant: num(state, 's_grant'), workYears: num(state, 's_years'), lastSalary: num(state, 's_salary'), death: sevKind === 'death' });
+        const lines = [
+            ['החלק הפטור', `${fmtC(g.exempt)} ₪`],
+            ['החלק החייב במס', `${fmtC(g.taxable)} ₪`],
+            ['תקרת הפטור לשנה שהופעלה', `${fmtC(g.perYear)} ₪ × ${num(state, 's_years')} שנים = ${fmtC(g.cap)} ₪`],
+        ];
+        let extraNote = '';
+        if (sevKind === 'retire') {
+            const n = forwardSpreadYears(num(state, 's_years'));
+            lines.push(['פריסה קדימה של החלק החייב', g.taxable > 0 ? (n ? `עד ${n} שנות מס` : 'לא מותרת - פחות מ-6 שנות עבודה') : 'אין חלק חייב']);
+            const before = pensionExemption({}), after = pensionExemption({ exemptGrants: [{ amount: g.exempt, workYears: num(state, 's_years') }] });
+            lines.push(['אם מושכים את כל החלק הפטור - הפטור החודשי על הקצבה', `יורד מ-${fmtC(before.monthlyExempt)} ₪ ל-${fmtC(after.monthlyExempt)} ₪ (${after.rate}%)`]);
+            extraNote = `כל שקל פטור שנמשך מקטין את סל הפטור לקצבה פי ${RK.GRANT_FACTOR} (סל 2026: ${fmtC(RK.BASKET)} ₪; מענק בגין יותר מ-32 שנה נלקח ביחס 32/שנים). ההשוואה בין משיכה, רצף קצבה ופריסה - בכרטסת תכנון פרישה, שלב 6 "דירוג חלופות המס".`;
+        } else {
+            extraNote = `במוות: עד שתי משכורות אחרונות לכל שנת עבודה, ולא יותר מ-${fmtC(DEATH_CAP_PER_YEAR)} ₪ לשנה (סעיף 9(7א)(ב)). פקיד השומה רשאי לפטור עודף לפי הנסיבות.`;
+        }
+        sevRes = lines.map(([k, v]) => `<div class="track-line"><span>${k}</span><b>${v}</b></div>`).join('')
+            + `<div class="muted small">${extraNote}</div>`
+            + `<div class="muted small"><b>לבדוק מול טופס 161 לפני שמסתמכים על התוצאה:</b> יחסי העבודה הסתיימו בפועל · שנות העבודה כוללות חלקי שנה יחסית · מענקים פטורים קודמים בגין אותן שנים מקטינים את הפטור · שאר תנאי הסף בהערות הטופס (הערה 28).</div>`;
+    }
     // קצבה מוכרת - מודול חינוכי: פטור מלא ב-9א(ב1) רק עם סיווג קופה + עובדת זכאות; אחרת מצב לא-ידוע
     let recRes = '';
     if (has(state, 'r_amount') && num(state, 'r_amount') > 0) {
@@ -100,9 +125,15 @@ export function renderCalcTab(state, extra = {}) {
             <div class="muted small">מקור: חישוב אריתמטי בלבד על ערכי המשתמש (תשואה קבועה להדמיה, חיוב דמי צבירה חודשי). נוסחה נבדקה 10.11.2026. כדי להזין את דמי הניהול בפועל של הלקוח, ראו תיק הנכסים בכרטסת תיק פנסיוני.</div>
         </div>
         ${card('severance')}
-            <div class="group-label">פיצויים - תקרת הפטור (הסבר, ללא חישוב אישי עדיין)</div>
-            <div class="muted small">תקרת הפטור על מענק פיצויים ב-2026: <b>${fmtC(EXEMPT_CAP_2026)} ₪ לכל שנת עבודה</b> (סעיף 9(7א)(א) לפקודה; לוח הניכויים הרשמי של רשות המסים ל-2026, עמ׳ 13). לפי טופס 161 הרשמי (הערה 28): הפטור הוא מינימום המענק בפועל מול מינימום(שכר אחרון x1.5, התקרה השנתית) כפול תקופת העבודה - בכפוף לכל תנאי הסף שבטופס (כולל שבע הכתובות בחלופה ב׳), לחלקי שנים יחסית, ובמקרה פטירה תקרה אחרת (27,520 ₪ לשנה).</div>
-            <div class="muted small"><b>מחשבון אישי אינו פעיל עדיין</b> - לא יוצג פטור אישי מחושב בלי אכיפת כל התנאים. הבחירה בין פטור עכשיו, רצף קצבה, רצף פיצויים ופריסת מס מחושבת בכרטסת תכנון פרישה מתוך טופס 161. מקורות: <a href="https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2026.pdf" target="_blank" rel="noopener">לוח הניכויים 2026</a> · <a href="https://www.gov.il/BlobFolder/service/notice-of-retirement/he/tofes-161.pdf" target="_blank" rel="noopener">טופס 161 הרשמי</a> (gov.il), נקראו 10.11.2026.</div>
+            <div class="group-label">פיצויים - הפטור על מענק הפרישה</div>
+            <div class="ins-grid">
+                ${cField(state, 's_grant', 'מענק הפיצויים (₪)', 'min="0" step="1000"')}
+                ${cField(state, 's_years', 'שנות עבודה (כולל חלקי שנה)', 'min="0" max="60" step="0.01"')}
+                ${cField(state, 's_salary', 'משכורת חודשית אחרונה (₪)', 'min="0" step="100"')}
+                <label class="ins-field">סיבת התשלום<select data-calc="s_kind"><option value="retire"${sevKind === 'retire' ? ' selected' : ''}>פרישה</option><option value="death"${sevKind === 'death' ? ' selected' : ''}>פטירה (מענק לשאירים)</option></select></label>
+            </div>
+            ${sevRes || '<div class="muted small">הזינו מענק ושנות עבודה כדי לראות את החישוב.</div>'}
+            <div class="muted small">תקרת הפטור על מענק פרישה ב-2026: <b>${fmtC(EXEMPT_CAP_2026)} ₪ לכל שנת עבודה</b>, והנמוך מבינה לבין פי 1.5 מהמשכורת האחרונה (סעיף 9(7א)(א) לפקודה; לוח הניכויים 2026, עמ׳ 13; טופס 161, הערה 28). פריסה: חוזר מס הכנסה 2/2022, סעיפים 4.3.3-4.3.4. קיזוז מהקצבה: מדריך 161ד 2026, עמ' 6-7. מקורות: <a href="https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2026.pdf" target="_blank" rel="noopener">לוח הניכויים 2026</a> · <a href="https://www.gov.il/BlobFolder/service/notice-of-retirement/he/tofes-161.pdf" target="_blank" rel="noopener">טופס 161 הרשמי</a> (gov.il).</div>
         </div>
         ${card('mukeret')}
             <div class="group-label">קצבה מוכרת</div>

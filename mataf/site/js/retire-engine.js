@@ -49,8 +49,11 @@ export function annualTax(income, year, creditPoints = 2.25) {
 }
 
 // --- פטור על מענק פרישה: הנמוך מ-1.5 משכורות אחרונות לשנה ומהתקרה, כפול שנות העבודה ---
-export function grantExemption({ grant = 0, workYears = 0, lastSalary = 0 }) {
-    const perYear = lastSalary > 0 ? Math.min(lastSalary * 1.5, K.GRANT_CAP_PER_YEAR) : K.GRANT_CAP_PER_YEAR;
+// פטירה (9(7א)(ב)): עד שתי משכורות אחרונות לכל שנת עבודה, ובשום מקרה לא מעל 27,520 ₪ לשנה (נוסח מאוחד, עמ' 20)
+export const DEATH_CAP_PER_YEAR = 27520;
+export function grantExemption({ grant = 0, workYears = 0, lastSalary = 0, death = false }) {
+    const mult = death ? 2 : 1.5, capY = death ? DEATH_CAP_PER_YEAR : K.GRANT_CAP_PER_YEAR;
+    const perYear = lastSalary > 0 ? Math.min(lastSalary * mult, capY) : capY;
     const cap = perYear * workYears;
     const exempt = Math.min(grant, cap);
     return { perYear, cap: r2(cap), exempt: r2(exempt), taxable: r2(Math.max(0, grant - exempt)) };
