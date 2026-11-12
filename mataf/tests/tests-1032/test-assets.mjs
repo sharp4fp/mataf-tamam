@@ -65,7 +65,7 @@ ok(r2.concentration.includes('נדל"ן מניב בישראל'), 'concentration-
 const r3 = A.computeTotal({ banks: [], q: { abroad: 'b', abroadEq: 'u' } });
 ok(r3.equity.lo === 0 && r3.equity.hi === 100 && r3.fxPct === 100, 'unknown-equity-is-0-100-and-abroad-is-fx');
 ok(A.computeTotal({ banks: [], q: {} }).equity.lo === null, 'empty-input-no-fake-number');
-ok(A.SECTIONS.length === 7 && A.SECTIONS.reduce((n, s) => n + s.rows.length, 0) <= 20, 'questionnaire-7-sections-max-20-rows (one page)');
+ok(A.SECTIONS.length === 7 && A.SECTIONS.reduce((n, s) => n + s.rows.length, 0) <= 19 && !A.SECTIONS.some(s => s.rows.some(r => r.id === 'pen')), 'questionnaire-7-sections-19-rows; pension only from maslaka (owner 12.11 12:36)');
 ok(A.AMOUNT_RANGES.some(r => r.id === 'j') && A.FEE_RANGES.length === 5 && A.RENT_RANGES.length === 6, 'ranges-cover-high-net-worth-fees-and-rent');
 console.log(`assets: PASS=${pass} FAIL=${fail}`);
 process.exit(fail ? 1 : 0);

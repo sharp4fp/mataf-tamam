@@ -67,8 +67,8 @@ export const SECTIONS = [
         { id: 'biz', label: 'חברה או עסק בבעלות המשפחה', fields: [['biz', 'amount'], ['bizPlan', 'choice', 'תכנית', [['', 'תכנית לעסק...'], ['none', 'אין שינוי צפוי'], ['exit', 'אקזיט או הנפקה תוך 3 שנים'], ['transfer', 'העברה בין-דורית'], ['other', 'אחר']]]] },
         { id: 'emp', label: 'מניות ואופציות ממקום העבודה (RSU, ESPP)', fields: [['emp', 'amount']] },
     ] },
+    // פנסיה, גמל, השתלמות וביטוח מנהלים - רק מהמסלקה (החלטת הבעלים 12.11 12:36); כאן רק פוליסות פיננסיות שלא מופיעות בה
     { title: 'פנסיה וביטוח', rows: [
-        { id: 'pen', label: 'פנסיה, גמל, השתלמות וביטוח מנהלים שאינם בקובץ המסלקה', fields: [['pen', 'amount'], ['penEq', 'eq']] },
         { id: 'pol', label: 'פוליסות חיסכון וגמל להשקעה שאינם במסלקה', fields: [['pol', 'amount'], ['polEq', 'eq']] },
     ] },
     { title: 'התחייבויות', rows: [
@@ -177,7 +177,6 @@ export function computeTotal(inp) {
     add('reAbroad', 'נדל"ן בחו"ל', { eq: 0, liquid: false, kind: 'risk', fx: true });
     add('biz', 'חברה / עסק משפחתי', { eq: 0, liquid: false, kind: 'risk' });
     add('emp', 'מניות ממקום העבודה', { eq: 100 });
-    add('pen', 'פנסיה וגמל שאינם במסלקה', { liquid: false });
     add('pol', 'פוליסות חיסכון וגמל להשקעה', {});
     const home = amountOf(q.home);
     const debtKeys = ['homeDebt', 'reIlDebt', 'reAbroadDebt', 'lev', 'loans', 'taxDebt'];
