@@ -112,6 +112,15 @@ const state = {
 };
 
 // Accordion: כל חלק נפתח/נסגר בלחיצה על הכותרת. המצב נשמר ב-state.open כך שרינדור מחדש לא סוגר חלקים.
+// רשימה נגללת של מספרים (בקשת הבעלים 12.11 15:11 - "איפה שאפשר חלון גלילה"); ערך ישן שאינו ברשימה נשמר
+function numSel(attr, from, to, step, cur, ph, fmtv = (v) => String(v)) {
+    const vals = [];
+    for (let v = from; v <= to + 1e-9; v += step) vals.push(Math.round(v * 100) / 100);
+    const c = cur === undefined || cur === null ? '' : String(cur);
+    const opts = vals.map(String);
+    if (c && !opts.includes(c)) opts.push(c);
+    return `<select ${attr}><option value="">${esc(ph)}</option>${opts.map(v => `<option value="${esc(v)}"${v === c ? ' selected' : ''}>${esc(fmtv(v))}</option>`).join('')}</select>`;
+}
 function acc(id, titleHtml, badge, body, forceOpen = false, aside = '') {
     const isOpen = forceOpen || state.open[id] === undefined ? (forceOpen || false) : state.open[id];
     return `<section class="card acc${aside ? ' acc-has-aside' : ''}" id="acc-${id}">${aside ? `<div class="acc-aside">${aside}</div>` : ''}
@@ -555,7 +564,7 @@ function renderStep3() {
     const chk = (key, label) => `<label><input type="checkbox" data-goal="${key}" ${g[key] ? 'checked' : ''}> ${label}</label>`;
     return `
         <div class="fldgrid">
-            <label class="fld"><span>אופק (שנים לקצבה)</span><input data-goal-text="horizon" value="${esc(g.horizon)}"></label>
+            <label class="fld"><span>כמה שנים נשארו עד תחילת הקצבה</span>${numSel('data-goal-text="horizon"', 0, 45, 1, g.horizon, 'בחרו...', (v) => v === '0' ? 'כבר מקבל / השנה' : v === '1' ? 'שנה אחת' : v + ' שנים')}</label>
         </div>
         <div class="checks">
             ${chk('keepExemption', 'שמירה על הפטור החודשי על הקצבה')}
@@ -866,14 +875,14 @@ function renderNetBlock(grossMain) {
             <label>שיעור הפטור מאישור קיבוע הזכויות בפועל (%, כולל הקצאה בין המשלמים; ריק = אין אישור) - המבוטח<input type="number" min="0" max="57.5" step="0.5" data-net="certRateMain" value="${esc(ni.certRateMain)}" placeholder="מהאישור"></label>
             <label>בלי אישור קיבוע - בחירת הנחיית הדמיה מפורשת (המבוטח)<select data-net="simMain">${simOptions(ni.simMain)}</select></label>
             <label>% ניצול מסל הפטור בגין מענקים פטורים והיוון קצבה בעבר (הערכה גסה בלבד; הגשת הקיבוע עצמה אינה צורכת פטור; מקבל שברי אחוז) - המבוטח<input type="number" min="0" max="100" step="0.0001" data-net="kibuaMain" value="${esc(ni.kibuaMain)}"></label>
-            <label>נקודות זיכוי - המבוטח<input type="number" min="0" max="10" step="0.25" data-net="pointsMain" value="${esc(ni.pointsMain)}"></label>
+            <label>נקודות זיכוי - המבוטח${numSel('data-net="pointsMain"', 0, 10, 0.25, ni.pointsMain, 'בחרו...')}</label>
             <label>הכנסה חודשית נוספת מיגיעה אישית בלבד - המבוטח (משכורת/עסק; לא שכירות או רווחי הון - משטרי המס שלהם שונים ואינם נתמכים) (₪)<input type="number" min="0" step="100" data-net="otherMain" value="${esc(ni.otherMain)}"></label>
             <label>קצבה ברוטו - בן/בת זוג (₪, 0 אם אין)<input type="number" min="0" step="100" data-net="grossSpouse" value="${esc(ni.grossSpouse)}"></label>
             <label class="netcheck"><input type="checkbox" data-netcheck="eligSpouse"${ni.eligSpouse ? ' checked' : ''}> הקצבה של בן/בת הזוג סווגה כקצבה מזכה והזכאות אומתה (לא חל על קצבת שאירים או קצבה מוכרת)</label>
             <label>שיעור הפטור מאישור קיבוע הזכויות בפועל (%, כולל הקצאה בין המשלמים; ריק = אין אישור) - בן/בת זוג<input type="number" min="0" max="57.5" step="0.5" data-net="certRateSpouse" value="${esc(ni.certRateSpouse)}" placeholder="מהאישור"></label>
             <label>בלי אישור קיבוע - בחירת הנחיית הדמיה מפורשת (בן/בת זוג)<select data-net="simSpouse">${simOptions(ni.simSpouse)}</select></label>
             <label>% ניצול מסל הפטור בגין מענקים פטורים והיוון קצבה בעבר (הערכה גסה בלבד, רק כשאין אישור קיבוע; מקבל שברי אחוז) - בן/בת זוג<input type="number" min="0" max="100" step="0.0001" data-net="kibuaSpouse" value="${esc(ni.kibuaSpouse)}"></label>
-            <label>נקודות זיכוי - בן/בת זוג<input type="number" min="0" max="10" step="0.25" data-net="pointsSpouse" value="${esc(ni.pointsSpouse)}"></label>
+            <label>נקודות זיכוי - בן/בת זוג${numSel('data-net="pointsSpouse"', 0, 10, 0.25, ni.pointsSpouse, 'בחרו...')}</label>
             <label>הכנסה נוספת מיגיעה אישית בלבד - בן/בת זוג (₪)<input type="number" min="0" step="100" data-net="otherSpouse" value="${esc(ni.otherSpouse)}"></label>
         </div>
         <div id="net-result">${netResultHtml(grossMain)}</div>
@@ -1166,7 +1175,7 @@ function renderKibua() {
             <label>מענקי פרישה פטורים ממס שהתקבלו (₪, סכום מצטבר - כמודפס באישורים; ההקטנה ל-32 שנים מחושבת למטה)<input type="number" min="0" step="1000" data-kib="grantExempt" value="${esc(k.grantExempt)}"></label>
             <label>שנות העבודה שבגינן שולמו המענקים (ריק = לפי טופס 161${parseWorkYears(state.f161 && state.f161.workYears) ? ': ' + parseWorkYears(state.f161.workYears) : ''}; מעל 32 - הפגיעה מוקטנת ביחס 32/שנים)<input type="number" min="0" max="60" step="0.01" data-kib="grantYears" value="${esc(k.grantYears)}"></label>
             <label>האם סכום המענקים ממודד לתחילת שנת הזכאות? (המערכת אינה ממדדת - בלי הצהרה לא יחושב)<select data-kib="grantIndexed"><option value=""${k.grantIndexed === '' ? ' selected' : ''}>לא נבחר</option><option value="yes"${k.grantIndexed === 'yes' ? ' selected' : ''}>כן - הסכום ממודד (מתוך אישורי המעסיק/הקופה)</option><option value="no"${k.grantIndexed === 'no' ? ' selected' : ''}>לא - סכום נומינלי; המידוד ייעשה מול מקור רשמי</option></select></label>
-            <label>שנת קבלת המענקים (לתיעוד בלבד מול פקיד השומה)<input type="number" min="1980" max="2026" step="1" data-kib="grantYear" value="${esc(k.grantYear)}"></label>
+            <label>שנת קבלת המענקים (לתיעוד בלבד מול פקיד השומה)${numSel('data-kib="grantYear"', 1980, 2026, 1, k.grantYear, 'בחרו...')}</label>
             <label>היוון קצבה פטור שבוצע בעבר (₪, לפי מסמך המשלם)<input type="number" min="0" step="1000" data-kib="hivunPast" value="${esc(k.hivunPast)}"></label>
             <label>היוון קצבה מתוכנן להדמיה (₪ - בחירה עתידית בטופס הרשמי, לא מומלץ כאן)<input type="number" min="0" step="1000" data-kib="hivunPlan" value="${esc(k.hivunPlan)}"></label>
             <label>בסיס חישוב כשגיל הזכאות אינו ב-2026<select data-kib="sim2026"><option value=""${k.sim2026 === '' ? ' selected' : ''}>ללא - חשבו רק בקבועי שנת הזכאות (חסמו אחרת)</option><option value="yes"${k.sim2026 === 'yes' ? ' selected' : ''}>הדמיית 2026 מפורשת - קבועי 2026 בלבד, לא תקף לשנת אחרת</option></select></label>
@@ -1648,18 +1657,19 @@ const RENG_LABEL = { grant: 'מענק', workYears: 'שנות עבודה', lastSa
 function renderTaxAlternatives() {
     const auto = retEngAuto();
     const u = state.retEng || {};
+    const fs = (key, label, from, to) => `<label>${label}${numSel(`data-reng="${key}"`, from, to, 1, u[key], auto[key] && auto[key].v !== null && auto[key].v !== undefined ? 'אוטומטי: ' + auto[key].v + ' (' + auto[key].src + ')' : 'בחרו...')}</label>`;
     const f = (key, label, extra = '') => `<label>${label}<input type="number" data-reng="${key}" value="${esc(u[key] ?? '')}" placeholder="${auto[key] && auto[key].v !== null && auto[key].v !== undefined ? esc(String(auto[key].v)) + ' (' + esc(auto[key].src) + ')' : 'חסר'}" ${extra}></label>`;
     return fold('taxalts', 'דירוג חלופות המס: מענק הפרישה והקצבה', `<div class="muted small">המערכת משווה את כל הדרכים לטפל במענק הפרישה (רצף קצבה, משיכה פטורה, פריסה קדימה ואחורה, משיכה פטורה חלקית, רצף פיצויים ושילובים) ומדרגת לפי חבות המס הכוללת בערך נוכחי - המס עכשיו, בשנות הפריסה ועל הקצבה עד תוחלת החיים. שדה ריק מתמלא מהמסמכים; הערך שבשימוש מופיע בתוך השדה.</div>
         <div class="netgrid">
             ${f('grant', 'מענק פרישה כולל (₪)', 'min="0" step="1000"')}
             ${f('workYears', 'שנות עבודה', 'min="0" max="60" step="0.01"')}
             ${f('lastSalary', 'משכורת חודשית אחרונה (₪)', 'min="0"')}
-            ${f('retireYear', 'שנת הפרישה', 'min="2020" max="2040"')}
+            ${fs('retireYear', 'שנת הפרישה', 2020, 2045)}
             <label>חודש הפרישה<select data-reng="retireMonth"><option value="">${auto.retireMonth && auto.retireMonth.v ? 'אוטומטי: ' + HEB_MONTHS[auto.retireMonth.v - 1] + ' (' + esc(auto.retireMonth.src) + ')' : 'בחרו...'}</option>${HEB_MONTHS.map((m, j) => `<option value="${j + 1}"${String(u.retireMonth || '') === String(j + 1) ? ' selected' : ''}>${m}</option>`).join('')}</select></label>
-            ${f('age', 'גיל בפרישה', 'min="50" max="90"')}
+            ${fs('age', 'גיל בפרישה', 50, 90)}
             ${f('pensionMonthly', 'קצבה חודשית צפויה מהחיסכון הקיים (₪)', 'min="0"')}
             ${f('annuityFactor', 'מקדם המרה לקצבה (לכסף שנשאר בקופה)', 'min="50" max="400" step="0.01"')}
-            ${f('pensionStartYear', 'שנת תחילת הקצבה', 'min="2020" max="2050"')}
+            ${fs('pensionStartYear', 'שנת תחילת הקצבה', 2020, 2055)}
             ${f('retireYearIncome', 'הכנסה חייבת בשנת הפרישה בלי המענק (₪)', 'min="0"')}
             ${f('futureIncome', 'הכנסה חייבת שנתית אחרת בשנים הבאות (₪)', 'min="0"')}
             ${f('priorExempt', 'מענקים פטורים קודמים ב-32 השנים (₪)', 'min="0"')}

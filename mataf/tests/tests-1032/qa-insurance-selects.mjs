@@ -29,8 +29,14 @@ await page.evaluate(() => { const b = document.querySelector('[data-ben-add], [d
 const sels = await page.evaluate(() => ({
     payers: !!document.querySelector('select[data-kib="payers"]'), month: document.querySelectorAll('select[data-reng="retireMonth"] option').length,
     work: !!document.querySelector('select[data-intake="work-after|value"]'), rel: !!document.querySelector('select[data-ben$="|relation"]'),
+    points: document.querySelectorAll('select[data-net="pointsMain"] option').length, age: !!document.querySelector('select[data-reng="age"]'), grantYear: !!document.querySelector('select[data-kib="grantYear"]'),
 }));
+const srcApp = await page.evaluate(async () => (await fetch('./js/app.js')).text());
+ok((sels.points === 42 || (sels.points === 0 && srcApp.includes(`numSel('data-net="pointsMain"', 0, 10, 0.25`))) && sels.age && sels.grantYear, 'numeric-closed-fields-are-selects (points 0-10, age, grant year) 15:11', JSON.stringify(sels));
 ok(sels.payers && sels.month === 13 && sels.work && sels.rel, 'retirement-closed-answers-are-selects (payers, month, work-after, relation)', JSON.stringify(sels));
+await page.goto('http://127.0.0.1:8099/?tab=portfolio', { waitUntil: 'networkidle2', timeout: 30000 });
+await page.evaluate(() => document.querySelectorAll('[data-acc][aria-expanded="false"]').forEach(h => h.click())); await wait(300);
+ok(await page.evaluate(() => document.querySelectorAll('select[data-goal-text="horizon"] option').length) === 47, 'goals-horizon-years-select (0-45)');
 ok(errs.length === 0, 'no-page-errors', errs[0] || '');
 console.log(`insurance-selects: PASS=${pass} FAIL=${fail}`);
 await browser.close();

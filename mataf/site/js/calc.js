@@ -119,7 +119,7 @@ export function renderCalcTab(state, extra = {}) {
                 ${cField(state, 'f_feeacc', 'דמי ניהול מצבירה (%)', 'min="0" max="100" step="0.001"')}
                 ${cField(state, 'f_direct', 'הוצאות ישירות (₪ לשנה)', 'min="0"')}
                 ${cField(state, 'f_ret', 'תשואה שנתית להדמיה (%)', 'step="0.1"')}
-                ${cField(state, 'f_years', 'שנים עד הפרישה', 'min="0" max="50"')}
+                <label class="ins-field">שנים עד הפרישה<select data-calc="f_years"><option value="">בחרו...</option>${Array.from({ length: 50 }, (_, k) => String(k + 1)).map(v => `<option value="${v}"${String(state.calc.f_years || '') === v ? ' selected' : ''}>${v}</option>`).join('')}</select></label>
             </div>
             ${feeRes}
             <div class="muted small">מקור: חישוב אריתמטי בלבד על ערכי המשתמש (תשואה קבועה להדמיה, חיוב דמי צבירה חודשי). נוסחה נבדקה 10.11.2026. כדי להזין את דמי הניהול בפועל של הלקוח, ראו תיק הנכסים בכרטסת תיק פנסיוני.</div>
