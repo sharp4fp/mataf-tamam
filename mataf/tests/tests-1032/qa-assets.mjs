@@ -27,7 +27,7 @@ const page = await browser.newPage();
 await page.setViewport({ width: 1100, height: 1300 });
 const errs = [];
 page.on('pageerror', e => errs.push(String(e)));
-await page.goto('http://127.0.0.1:8099/?tab=calc', { waitUntil: 'networkidle2', timeout: 30000 });
+await page.goto('http://127.0.0.1:8099/?tab=calc&calc=assets', { waitUntil: 'networkidle2', timeout: 30000 });
 ok(await page.evaluate(() => !!document.getElementById('assets-card') && document.getElementById('assets-input').multiple), 'assets-card-with-multi-file-upload');
 await (await page.$('#assets-input')).uploadFile(f1, f2);
 await wait(2500);
@@ -68,6 +68,13 @@ ok(await page.evaluate(() => document.querySelectorAll('[data-asbank]').length) 
 await page.setViewport({ width: 380, height: 900 }); await wait(400);
 const sw = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 ok(sw <= 1, 'phone-no-horizontal-page-scroll', String(sw));
+// לשוניות משנה: כל מחשבון בפני עצמו
+await page.setViewport({ width: 1100, height: 1300 });
+await page.goto('http://127.0.0.1:8099/?tab=calc', { waitUntil: 'networkidle2', timeout: 30000 });
+const visible = () => page.evaluate(() => [...document.querySelectorAll('[data-calcsub-card]')].filter(c => !c.hidden).map(c => c.dataset.calcsubCard));
+ok((await visible()).join() === 'fees' && await page.evaluate(() => document.querySelectorAll('.subtabs .subtab').length) === 5, 'calc-subtabs-default-one-card', (await visible()).join());
+await page.evaluate(() => document.querySelector('[data-action="calcsub|mukeret"]').click()); await wait(300);
+ok((await visible()).join() === 'mukeret' && await page.evaluate(() => document.querySelector('.subtab.on').dataset.action === 'calcsub|mukeret'), 'calc-subtab-switch', (await visible()).join());
 ok(errs.length === 0, 'no-page-errors', errs[0] || '');
 fs.rmSync(dir, { recursive: true, force: true });
 console.log(`assets-qa: PASS=${pass} FAIL=${fail}`);

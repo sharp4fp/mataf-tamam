@@ -1687,7 +1687,7 @@ async function onAssetFiles(files) {
     }
     state.assets.status = msgs.join(' · '); render();
 }
-function renderAssetsCard() {
+function renderAssetsCard(on = true) {
     const a = state.assets, q = a.q;
     const money = (x) => '₪' + fmt(Math.round(x));
     const rng = (lo, hi, unit = '%') => lo === null ? '—' : (Math.abs(hi - lo) < 0.5 ? `${Math.round(lo)}${unit}` : `${Math.round(lo)}-${Math.round(hi)}${unit}`);
@@ -1729,8 +1729,8 @@ function renderAssetsCard() {
         <div class="muted small">סך נכסים: ${money(r.totals.assetsLo)}${r.totals.assetsHi !== r.totals.assetsLo ? ' - ' + money(r.totals.assetsHi) : ''} · התחייבויות: ${money(r.totals.debtsLo)}${r.totals.debtsHi !== r.totals.debtsLo ? ' - ' + money(r.totals.debtsHi) : ''} · נזיל (אמצע הטווחים): ${money(r.liquid)}${r.need ? ` מול צורך של ${money(r.need.lo)}-${money(r.need.hi)} ב-3 שנים${r.liquid < r.need.lo ? ' - <b>הנזילות לא מכסה את הצורך</b>' : ''}` : ''} · חשיפה למט"ח: ${r.fxPct === null ? '—' : r.fxPct + '%'}${r.concentration.length ? ` · <b>ריכוזיות:</b> ${esc(r.concentration.join(', '))} מעל 25% מהנכסים` : ''}${r.feeCost ? ` · דמי ניהול בתיקים: ${money(r.feeCost.lo)}-${money(r.feeCost.hi)} בשנה` : ''}${r.rentYear ? ` · שכירות נטו: ${money(r.rentYear.lo)}-${money(r.rentYear.hi)} בשנה` : ''}${r.leveragePct !== null ? ` · מינוף: ${r.leveragePct}% מהנכסים הפיננסיים` : ''}</div>
         ${r.notes.length ? `<ul class="small">${r.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
         <div class="muted small">החשיפה למניות מחושבת על ערכי האמצע של טווחי הסכום, ולכן היא טווח. הפנסיה מגיעה מהמסלקה (כרטסת תיק פנסיוני), עם החשיפה של כל מסלול; מסלול שלא זוהה נספר כ-0-100%. דירת המגורים במאזן בלבד (החלטת הבעלים 12.11).</div>`;
-    return `<div class="card" id="assets-card">
-        <div class="group-label">5 · תמונת נכסים וסיכון כולל</div>
+    return `<div class="card" id="assets-card" data-calcsub-card="assets"${on ? '' : ' hidden'}>
+        <div class="group-label">תמונת נכסים וסיכון כולל</div>
         <div class="muted small">אחוז הסיכון האמיתי של הלקוח הוא החשיפה למניות על פני <b>כל</b> הנכסים - פנסיה, בנקים, תיקים מנוהלים, חו"ל - ולא בכל מוצר בנפרד. ${pen ? `הפנסיה נלקחה מקובץ המסלקה (${money(pen.value)}).` : 'כדי לכלול את הפנסיה, העלו קובץ מסלקה בכרטסת תיק פנסיוני.'}</div>
         <div class="drop"><input type="file" id="assets-input" accept=".pdf" multiple><div class="drop-hint"><b>אישורי יתרות מהבנקים (PDF).</b> אפשר כמה קבצים, מכמה בנקים. כרגע מזוהה "ריכוז יתרות" של בנק הפועלים; בנקים נוספים יזוהו אחרי שנקבל דוגמאות.</div></div>
         ${a.status ? `<div class="status-line">${esc(a.status)}</div>` : ''}
@@ -2536,7 +2536,7 @@ function render() {
                 : state.mode === 'health'
                 ? 'ביטוח בריאות: דף עבודה לבחינה ידנית של כיסויי הבריאות של הלקוח (שב"ן ופרטי), על בסיס דוח הר הביטוח או הפוליסות. אין ייעוץ רפואי או המלצת זכאות, וכל הנתונים נמחקים ברענון.'
                 : state.mode === 'calc'
-                ? 'מחשבונים ממוקדים: דמי ניהול לאורך זמן, תקרת פטור פיצויים, קצבה מוכרת וגיל פרישה - כל מחשבון עם תווית מקור משלו. כל החישוב בדפדפן שלך בלבד.'
+                ? 'מחשבונים ממוקדים: דמי ניהול לאורך זמן, תקרת פטור פיצויים, קצבה מוכרת, גיל פרישה ותמונת נכסים וסיכון כולל - כל מחשבון בלשונית משלו, עם תווית מקור. כל החישוב בדפדפן שלך בלבד.'
                 : state.mode === 'nifraim'
                 ? 'נפרעים צפויים לפי חברת ביטוח: מעלים דוחות כספת של חברות הביטוח והמערכת תציג כמה נפרעים צפוי להגיע מכל חברה וסה"כ (בבנייה - כרגע קריאת הדוח בלבד). כל העיבוד מתבצע בדפדפן שלך בלבד: קבצים לא נשמרים, לא נשלחים ולא מוזנים לאף מערכת, ורענון העמוד מנקה את הנתונים.'
                 : 'תכנון פרישה: טופס 161, תרחישי פרישה ומסמכים רשמיים משלימים. הנתונים שהוזנו בבדיקת התיק נשמרים גם כאן. כל העיבוד מתבצע בדפדפן שלך בלבד: קבצי הלקוח לא נשמרים, לא נשלחים ולא מוזנים לאף מערכת, ורענון העמוד מנקה את נתוני הלקוח. יוצא דופן יחיד: פרטי הסוכן לדוח (שם/טלפון/מותג) נשמרים מקומית בדפדפן שלך בלבד ואינם נשלחים.'}</p>
@@ -2560,7 +2560,7 @@ function render() {
         ${isNif ? acc('nifraim', `${numNif} נפרעים צפויים לפי חברת ביטוח`, state.nif.parsed ? 'קובץ נטען' : '', renderNifraimBody({ nif: state.nif, portfolio: null }), true) : ''}
         ${state.mode === 'life' ? renderLifeTab(state) : ''}
         ${state.mode === 'health' ? renderHealthTab(state) : ''}
-        ${state.mode === 'calc' ? renderCalcTab(state) + renderAssetsCard() : ''}
+        ${state.mode === 'calc' ? renderCalcTab(state, { assets: (on) => renderAssetsCard(on) }) : ''}
         ${isRet ? acc('step2', `${numStep2} טופס 161 (PDF)`, badgeStep2(), renderStep2()) : ''}
         ${isRet ? acc('kibua', `${numKibua} נתוני הקיבוע (טופס 161ד)`, badgeKibuaStep(), renderKibuaStep()) : ''}
         ${isRet ? acc('questions', `${numQuestions} שאלות לפני החלטה`, missBadge(RS_IDS.questions), renderQuestionsStep()) : ''}
@@ -2780,6 +2780,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // קישור עמוק לכרטסת: ?tab=life / health / calc / retirement / nifraim / portfolio
     const urlTab = new URLSearchParams(location.search).get('tab');
     if (['portfolio', 'life', 'health', 'retirement', 'calc', 'nifraim'].includes(urlTab)) state.mode = urlTab;
+    const urlCalc = new URLSearchParams(location.search).get('calc'); // קישור ישיר ללשונית משנה במחשבונים
+    if (urlCalc && /^[a-z]+$/.test(urlCalc)) state.calcSub = urlCalc;
     render();
     const root = document.getElementById('root');
     // שכבת התצוגה המקדימה של הדוח (report-root) היא אחות של root ולכן מטופלת במאזין נפרד
@@ -3195,6 +3197,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addDocCandidates(key, getDoc(key).candidates.map((_, i) => i));
             render(); return;
         }
+        if (t.dataset.action && t.dataset.action.startsWith('calcsub|')) { state.calcSub = t.dataset.action.split('|')[1]; render(); return; }
         if (t.dataset.action === 'asmanual') { state.assets.banks.push({ file: 'הזנה ידנית', bank: 'הזנה ידנית', date: '', manual: true, rows: [
             { key: 'cashIls', label: 'עו"ש ופיקדונות', source: 'הזנה ידנית', cat: 'cash', amount: 0, eq: 0, page: '-', include: true },
             { key: 'sec', label: 'תיק ני"ע', source: 'הזנה ידנית', cat: 'securities', amount: 0, eq: null, eqRange: 'u', page: '-', include: true },

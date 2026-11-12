@@ -692,3 +692,9 @@ details.alts.market .altstbl td:nth-child(2) { min-width: 180px; }
     .assets-q tr, .assets-q td { display: block; width: auto !important; }
     .assets-q td:first-child { border-bottom: none; padding-bottom: 0; font-weight: 600; }
 }
+
+/* לשוניות משנה בכרטסת מחשבונים - כל מחשבון בפני עצמו (12.11) */
+.subtabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; border-bottom: 2px solid #c8a96a; padding-bottom: 6px; }
+.subtab { border: 1px solid #c9d3e0; background: #fff; border-radius: 999px; padding: 5px 12px; font: inherit; font-size: 0.85rem; cursor: pointer; color: inherit; }
+.subtab:hover { background: #f4efe3; }
+.subtab.on { background: #1f4d3f; border-color: #1f4d3f; color: #fff; font-weight: 600; }
