@@ -24,6 +24,7 @@ const suites = [
     ['test-f161-bind', here + '/test-f161-bind.mjs'],
     ['test-alt-baseline', here + '/test-alt-baseline.mjs'],
     ['test-critical-fixes', here + '/test-critical-fixes.mjs'],
+    ['test-retire-engine', here + '/test-retire-engine.mjs'],
 ];
 let bad = 0;
 for (const [name, file] of suites) {

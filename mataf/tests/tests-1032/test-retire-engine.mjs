@@ -1,0 +1,94 @@
+// test-retire-engine.mjs - M-045 שלב 1: מנוע חלופות המס. מספרים צפויים מתוך מקורות הספרייה (עם עמוד) או מחישוב ידני מתועד.
+import path from 'path';
+import fs from 'fs';
+const ROOT = path.resolve(process.env.BUILD || 'site/js');
+const E = await import(path.join(ROOT, 'retire-engine.js'));
+const D = await import(path.join(ROOT, 'retire-data.js'));
+let pass = 0, fail = 0;
+const ok = (c, n, d = '') => { if (c) { pass++; console.log('PASS ' + n); } else { fail++; console.log('FAIL ' + n + (d ? ' :: ' + d : '')); } };
+const near = (a, b, eps = 0.01) => typeof a === 'number' && Math.abs(a - b) <= eps;
+
+// 1. הנתונים במנוע זהים לקבצי הספרייה (אין עריכה ידנית)
+const here = path.dirname(new URL(import.meta.url).pathname);
+const lib = path.resolve(here, '../../knowledge/sources/mataf-library-20261109/prepared-increments/engine-data-20261111');
+if (fs.existsSync(lib)) {
+    const t = JSON.parse(fs.readFileSync(path.join(lib, 'tax-brackets-2020-2026.json'), 'utf8'));
+    let same = true;
+    for (const y of Object.keys(t).filter(k => k !== '_meta')) {
+        const a = D.TAX_TABLES[y];
+        same = same && a && a.creditPointAnnual === t[y].creditPointAnnual && a.surtax[0] === t[y].surtax.threshold && a.surtax[1] === t[y].surtax.rate
+            && JSON.stringify(a.brackets) === JSON.stringify(t[y].brackets.map(b => [b.upTo, b.rate]));
+    }
+    ok(same, 'retire-data tax tables == library tax-brackets-2020-2026.json');
+    const l = JSON.parse(fs.readFileSync(path.join(lib, 'life-expectancy-cbs.json'), 'utf8'));
+    ok(['male', 'female'].every(s => Object.keys(l[s]).every(a => D.LIFE_EXPECTANCY[s][a] === l[s][a].ex)), 'retire-data life table == library life-expectancy-cbs.json');
+} else { ok(true, 'library not in tree (deploy artifact) - data check skipped'); }
+
+// 2. מס שנתי 2026: 100,000 ₪, 2.25 נקודות: 84,120×10% + 15,880×14% − 2.25×2,904 = 4,101.20
+ok(near(E.annualTax(100000, 2026, 2.25), 4101.2), 'annual-tax-2026-100k', String(E.annualTax(100000, 2026, 2.25)));
+ok(E.annualTax(30000, 2026, 2.25) === 0, 'annual-tax-credit-points-not-negative');
+ok(near(E.annualTax(800000, 2026, 0) - E.annualTax(721560, 2026, 0), (800000 - 721560) * 0.5), 'surtax-3pct-above-threshold-on-top-of-47');
+ok(E.taxTable(2031).year === 2026 && E.taxTable(2031).exact === false, 'future-years-use-2026-table');
+
+// 3. קיבוע - מדריך 161ד 2026 (המדריך מעגל את הפטור החודשי לשקל לפני חישוב השיעור: 2,122/9,430 = 22.50%)
+ok(E.K.BASKET === 976005 && near(E.K.MONTHLY_EXEMPT_MAX, 5422.25), '161d-basket-976005-and-max-5422 (p.4,6)');
+const dani = E.pensionExemption({ exemptGrants: [{ amount: 550000, workYears: 40 }] });
+ok(near(dani.basketUsed, 594000) && near(dani.basketLeft, 382005) && near(dani.monthlyExempt, 2122.25) && near(dani.rate, 22.5, 0.02), '161d-example-1-dani (p.6-7): 594,000 / 382,005 / 2,122 / 22.5%', JSON.stringify(dani));
+const daniela = E.pensionExemption({ exemptGrants: [{ amount: 300000, workYears: 30 }] });
+ok(near(daniela.basketUsed, 405000) && near(daniela.basketLeft, 571005) && near(daniela.monthlyExempt, 3172.25) && near(daniela.rate, 33.64), '161d-example-2-daniela (p.7): 405,000 / 571,005 / 3,172 / 33.64%', JSON.stringify(daniela));
+ok(near(E.pensionExemption({}).monthlyExempt, 5422.25), '161d-avraham-no-grants-full-exemption (p.3)');
+
+// 4. פטור מענק: הנמוך מ-1.5 משכורות ומ-13,750, כפול שנים
+const g1 = E.grantExemption({ grant: 600000, workYears: 40, lastSalary: 20000 });
+ok(g1.exempt === 550000 && g1.taxable === 50000, 'grant-exemption-cap-13750x40', JSON.stringify(g1));
+const g2 = E.grantExemption({ grant: 600000, workYears: 40, lastSalary: 8000 });
+ok(g2.perYear === 12000 && g2.exempt === 480000, 'grant-exemption-1.5-salary-lower', JSON.stringify(g2));
+
+// 5. פריסה - חוזר 2/2022
+ok([[12, 3], [32, 6], [15, 4], [21, 5], [10, 3], [5, 0], [6, 2]].every(([y, n]) => E.forwardSpreadYears(y) === n), '2/2022 4.3.3-4.3.4: 12→3, 32→6, 15→4, 21→5, 10→3, <6→0');
+const nov = E.forwardSpreadOptions(12, 2020, 11).map(o => o.years.join(','));
+ok(nov.includes('2020,2021,2022') && nov.includes('2021,2022,2023'), '2/2022 4.3.5 example: Nov-2020, 12y → 2020-22 or 2021-23', nov.join(' | '));
+const jul = E.forwardSpreadOptions(10, 2020, 7).map(o => o.years.join(','));
+ok(jul.includes('2020,2021,2022') && jul.includes('2021,2022') && !jul.includes('2021,2022,2023'), '2/2022 4.3.6 example: Jul-2020, 10y → 2020-22 or 2021-22 only', jul.join(' | '));
+const bk = E.backSpreadOptions(24, 2021).map(o => o.years.join(','));
+ok(bk.includes('2016,2017,2018,2019,2020,2021') && !bk.some(s => s.split(',').length > 6), '2/2022 4.2.1: back ≤ 6 years ending receipt year');
+
+// 6. חישוב ידני - חלופה ד': מענק 300,000, 10 שנים, משכורת 30,000, בלי הכנסה אחרת
+// פטור 137,500; חייב 162,500 בשנת 2026: 8,412 + 5,124 + 41,780×20% − 6,534 = 15,358
+const base = { retireYear: 2026, retireMonth: 6, sex: 'male', age: 66, grant: 300000, workYears: 10, lastSalary: 30000, pensionMonthly: 0, annuityFactor: 200, retireYearIncome: 0, futureIncome: 0, horizonYears: 3 };
+const r1 = E.evaluateRetirement(base);
+const D1 = r1.alternatives.find(a => a.id === 'D');
+ok(D1 && near(D1.taxNow, 15358) && D1.cashNow === 300000, 'alt-D-hand-calc-tax-now-15358', D1 && String(D1.taxNow));
+const C1 = r1.alternatives.find(a => a.id === 'C1');
+ok(C1 && C1.available && C1.taxNominal < D1.taxNominal, 'forward-spread-cheaper-than-no-spread', C1 && `${C1.taxNominal} vs ${D1.taxNominal}`);
+ok(r1.ranked.every((a, i, arr) => i === 0 || arr[i - 1].taxPV <= a.taxPV), 'ranking-ascending-by-tax-pv');
+ok(r1.alternatives.find(a => a.id === 'E').available === false, 'rezef-pitzuyim-unavailable-without-new-employer');
+
+// 7. תנאים: פחות מ-6 שנים - אין פריסה קדימה; בלי מקדם - אין חלופות רצף קצבה
+const r2 = E.evaluateRetirement({ ...base, workYears: 5, grant: 200000 });
+const c1b = r2.alternatives.find(a => a.id === 'C1');
+ok(c1b && c1b.available === false && /4\.3\.3/.test(c1b.reason), 'forward-spread-unavailable-under-6-years', JSON.stringify(c1b));
+const r3 = E.evaluateRetirement({ ...base, annuityFactor: null });
+ok(r3.alternatives.find(a => a.id === 'A').available === false && r3.warnings.some(w => /מקדם/.test(w)), 'no-annuity-factor-rezef-unavailable-and-warned');
+
+// 8. חלופה ו': קצבה קטנה (3,000) לא מנצלת את כל הסל - משיכה פטורה חלקית שומרת על פטור מלא לקצבה
+// מענק 400,000 כולו פטור (30 × 13,750 = 412,500), מקדם 200: 976,005 − 1.35w = 180 × (3,000 + (400,000 − w)/200) → w = 168,900
+const small = E.evaluateRetirement({ retireYear: 2026, sex: 'male', age: 66, grant: 400000, workYears: 30, lastSalary: 25000, pensionMonthly: 3000, annuityFactor: 200, retireYearIncome: 150000, futureIncome: 0 });
+const F = small.alternatives.find(a => a.id === 'F'), B = small.alternatives.find(a => a.id === 'B'), A = small.alternatives.find(a => a.id === 'A');
+ok(F && F.available && near(F.cashNow, 168900, 1) && F.cashNow < B.cashNow, 'alt-F-partial-withdraw-hand-calc-168900', F && String(F.cashNow));
+ok(F && F.exemption.monthlyExempt >= Math.min(F.pensionMonthly, 5422.25) - 1, 'alt-F-keeps-pension-fully-exempt', F && JSON.stringify({ ex: F.exemption.monthlyExempt, p: F.pensionMonthly }));
+ok(F && A && F.taxPV <= A.taxPV + 1, 'alt-F-not-more-tax-than-keeping-all (A)', F && `${F.taxPV} vs ${A.taxPV}`);
+
+// 9. קצבה גדולה (12,000): כל שקל פטור שנמשך פוגע בפטור הקצבה - B מקטין את הפטור החודשי
+const big = E.evaluateRetirement({ retireYear: 2026, sex: 'male', age: 66, grant: 400000, workYears: 30, lastSalary: 30000, pensionMonthly: 12000, annuityFactor: 200, retireYearIncome: 200000 });
+const bB = big.alternatives.find(a => a.id === 'B'), bA = big.alternatives.find(a => a.id === 'A');
+ok(bB.exemption.monthlyExempt < bA.exemption.monthlyExempt && near(bA.exemption.monthlyExempt, 5422.25), 'exempt-withdraw-reduces-pension-exemption (1.35 offset)');
+ok(big.recommended && big.ranked[0].id === big.recommended.id && big.savingVsNext >= 0, 'recommended-is-rank-1-with-saving-vs-next');
+ok(near(big.lifeExpectancy, 18.6) && big.endYear === 2026 + 19, 'horizon-from-cbs-life-table (male 66: 18.6)');
+
+// 10. רצף פיצויים עם מעסיק חדש: זמין, מותנה, לא מדורג
+const r4 = E.evaluateRetirement({ ...base, newEmployerWithinYear: true });
+const e4 = r4.alternatives.find(a => a.id === 'E');
+ok(e4.available && e4.conditional && !r4.ranked.includes(e4), 'rezef-pitzuyim-available-conditional-not-ranked');
+console.log(`retire-engine: PASS=${pass} FAIL=${fail}`);
+process.exit(fail ? 1 : 0);
