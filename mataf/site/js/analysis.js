@@ -555,6 +555,20 @@ export const RULES_SRC = 'ספריית כללים ראשונית 08/11/2026 (כ�
 export const EXEMPT_CAP_2026 = 13750; // ₪ לשנת עבודה, קפוא 2025-2027
 export const KITZBA_MAZKE_2026 = 9430;
 export const EXEMPT_PCT_2026 = 0.575;
+// M-065: שיעור הפטור על קצבה מזכה לפי שנת הזכאות - קבוע בחוק: סעיף 9א(ב) לפקודה (67% - הנוסח הקבוע, משנת 2028)
+// וסעיף 9א(ז)(4)-(6) כנוסחו בתיקון 275 (ס"ח 3336): 2025 57%, 2026 57.5%, 2027 62.5%.
+// ספרייה: ito-consolidation-btl-retained20261109 עמ' 26-27; ito-amendment275-2024 עמ' 2 (נבדקו מול תמונה 14.11.2026).
+// חובה לבדוק בכל ריצת ספרייה שהסעיף לא תוקן (L-030). שנים לפני 2025 - אין כאן תקרות היסטוריות, ולכן null.
+export const EXEMPT_PCT_BY_YEAR = { 2025: 0.57, 2026: 0.575, 2027: 0.625 };
+export const EXEMPT_PCT_FROM_2028 = 0.67;
+export function exemptPctForYear(year) {
+    if (!Number.isFinite(year) || year < 2025) return null;
+    return year >= 2028 ? EXEMPT_PCT_FROM_2028 : EXEMPT_PCT_BY_YEAR[year];
+}
+// M-066: "רצף קצבה ברירת מחדל" - סעיף 9(7א)(ז1): הגבוה מבין 405,900 ש"ח לבין תקרת הפיצויים (3(ה3)) כפול שנות העבודה.
+// "תקרת הפיצויים" - משכורת העובד או 45,600 ש"ח לחודש, הנמוך (3(ה3)); שני הסכומים מתואמים ל-2026 (נוסח מאוחד, עמ' 10 ו-21).
+export const DEFAULT_CONT_CAP_2026 = 405900;
+export const SEVERANCE_CEILING_2026 = 45600;
 
 // --- חישוב נטו 2026 - מקורות רשמיים בלבד ---
 // מדרגות + מס יסף + ערך נקודת זיכוי: רשות המסים, "לוח עזר לחישוב מס הכנסה ממשכורת ושכר עבודה לחודש ינואר 2026 ואילך" (מעודכן לאפריל 2026), gov.il:
@@ -576,14 +590,15 @@ export function monthlyTaxBrackets2026(taxableMonthly) {
 }
 // חישוב נטו חודשי לקצבה: הפטור ניתן רק כשסומנה זכאות (גיל הזכאות + קצבה מזכה) ומופחת ב-% ניצול קיבוע זכויות של אותו בן זוג.
 // המס על הקצבה מחושב שולית: מס על (הכנסה אחרת + קצבה חייבת) פחות מס על ההכנסה האחרת בלבד, כך שמס על הכנסות אחרות לא מיוחס לקצבה.
-export function pensionNetMonthly2026({ gross, eligible = false, kibuaUsedPct = 0, certExemptRatePct = null, simChoice = '', creditPoints = 2.25, otherIncome = 0 }) {
-    const capExempt = Math.round(KITZBA_MAZKE_2026 * EXEMPT_PCT_2026); // 5,422
+export function pensionNetMonthly2026({ gross, eligible = false, kibuaUsedPct = 0, certExemptRatePct = null, simChoice = '', creditPoints = 2.25, otherIncome = 0, exemptPct = EXEMPT_PCT_2026 }) {
+    // exemptPct: שיעור הפטור של שנת הזכאות (exemptPctForYear); ברירת המחדל - 2026
+    const capExempt = Math.round(KITZBA_MAZKE_2026 * exemptPct); // 2026: 5,422
     // הפטור: הקצבה פטורה עד 57.5% מתקרת הקצבה המזכה (5,422 ₪). ניצול סל הפטור (מענקים פטורים/היוון) מקטין קודם את התקרה החודשית - יתרת סל הפטור/180 - ורק אז הפטור מוגבל בקצבה בפועל: מדריך 161ד 2026, דוגמה 1 עמ' 6-7 (יתרת סל 382,005/180=2,122, וקצבה 12,000 ← פטור 2,122). קצבה נמוכה מהתקרה פטורה במלואה (דוגמה 3 עמ' 3).
     // מקור ראשי: שיעור הפטור מאישור קיבוע הזכויות בפועל (אחוז מהתקרה המזכה, כולל הקצאה בין משלמים - סל פטור אחד לכל המשלמים של אותו אדם).
     // בלי אישור: הפטור מחושב רק אחרי בחירה מפורשת של הנחיית הדמיה - סל מלא או ניצול חלקי גס. אין ברירת מחדל שקטה של זכאות מלאה.
     let exemptCapMonthly = 0, exemptSource;
     if (certExemptRatePct !== null && certExemptRatePct !== undefined && isFinite(certExemptRatePct)) {
-        exemptCapMonthly = KITZBA_MAZKE_2026 * Math.min(Math.max(certExemptRatePct, 0), EXEMPT_PCT_2026 * 100) / 100;
+        exemptCapMonthly = KITZBA_MAZKE_2026 * Math.min(Math.max(certExemptRatePct, 0), exemptPct * 100) / 100;
         exemptSource = 'certificate';
     } else if (simChoice === 'full') {
         exemptCapMonthly = capExempt;
@@ -683,7 +698,12 @@ export function insights161(f) {
         const amt = toNum(g.amount) || 0;
         if (g.code === '5' || g.code === '6') ktseva += amt; else if (g.code === '1') direct += amt;
     }
-    const mustFillPartB = direct > 0 || ktseva > 405900;
+    // M-066: התקרה לרצף קצבה ברירת מחדל - הגבוה מבין שתי החלופות שבסעיף 9(7א)(ז1)
+    const insured = toNum(f.salaryInsured);
+    const contCapAlt = years && insured ? Math.min(insured, SEVERANCE_CEILING_2026) * years : null;
+    const contCap = Math.max(DEFAULT_CONT_CAP_2026, contCapAlt ?? 0);
+    const contCapBasis = contCapAlt !== null && contCapAlt > DEFAULT_CONT_CAP_2026 ? 'severance-ceiling' : 'fixed';
+    const mustFillPartB = direct > 0 || ktseva > contCap;
     // M-003: מענק בגין יותר מ-32 שנים - רק החלק היחסי (× 32/שנים), מדריך 161ד 2026 עמ' 6-7
     const ratio32 = grantRatio32(years);
     const kibuah = formExempt !== null ? formExempt * ratio32 * 1.35 / 180 : null;
@@ -696,12 +716,19 @@ export function insights161(f) {
     if (f.workYears && String(f.workYears).trim() && years === null) notes.push(`שדה שנות העבודה ("${String(f.workYears).trim()}") אינו בפורמט מספרי מזוהה (למשל 27 או 12.583) - תקרת הפטור המחושבת ושנות הפריסה לא חושבו. תקנו את השדה מול הטופס.`);
     if (direct > 0) notes.push('קיים מענק מעסיק ישיר (קוד משלם 1): אינו זכאי לרצף קצבה, וחובה למלא חלק ב׳ בטופס 161.');
     if (ktseva > 0) notes.push(`סכומים מקופות (קוד 5/6): ${Math.round(ktseva).toLocaleString('he-IL')} ₪ - זכאים לרצף קצבה עד התקרה.`);
+    if (ktseva > 0) {
+        const fmt = (n) => Math.round(n).toLocaleString('he-IL');
+        const alt = contCapAlt !== null
+            ? `(ב) תקרת הפיצויים × שנות העבודה: ${fmt(Math.min(insured, SEVERANCE_CEILING_2026))} × ${years} = ${fmt(contCapAlt)} ₪`
+            : '(ב) תקרת הפיצויים × שנות העבודה: לא חושבה - חסרים משכורת מבוטחת או שנות עבודה בטופס, ולכן נבדקה רק חלופה (א)';
+        notes.push(`תקרת "רצף קצבה ברירת מחדל" (סעיף 9(7א)(ז1), הגבוה מבין שתי חלופות, סכומי 2026): (א) ${fmt(DEFAULT_CONT_CAP_2026)} ₪; ${alt}. נבחרה: ${fmt(contCap)} ₪ (${contCapBasis === 'severance-ceiling' ? 'חלופה ב' : 'חלופה א'}). הסכומים בקופות ${ktseva > contCap ? 'עולים' : 'אינם עולים'} על התקרה. "תקרת הפיצויים" - המשכורת המבוטחת או ${fmt(SEVERANCE_CEILING_2026)} ₪ לחודש, הנמוך (סעיף 3(ה3)). המעסיק מסמן זאת בחלק א.12 בטופס - הסימון בטופס קובע.`);
+    }
     const eligYearM = f.retireDate && f.retireDate.match(/(19|20)\d{2}/);
     const eligYear = eligYearM ? +eligYearM[0] : null;
-    if (kibuah !== null) notes.push(`ניצול הפטור ההוני מקטין את יתרת הפטור על הקצבה בקיבוע זכויות - הערכה גסה להמחשה בקבועי 2026 בלבד: כ-${Math.round(kibuah).toLocaleString('he-IL')} ₪ לחודש (הסכום הפטור כמודפס בטופס${ratio32 < 1 ? ` × 32/${years}` : ''} × 1.35 / 180). הסכום בטופס נומינלי: הנוסחה הרשמית דורשת מידוד לתחילת שנת הזכאות, וחריגות (כגון מענקים ששולמו למעלה מ-15 שנה לפני הקצבה הראשונה ולא יובאו בקיזוז) לא נבדקו כאן - לכן זו אינה הפחתת הזכויות בפועל; הקביעה מול פקיד השומה בלבד.${eligYear && eligYear !== 2026 ? ` שנת הזכאות לפי הטופס: ${eligYear} - שיעור הפטור לשנת זו שונה (2027: 62.5%, 2028 ואילך: 67%) והתקרה מתמדדת מדי שנה.` : ''} מקור: מדריך רשות המסים לקיבוע זכויות טופס 161ד 2026 (gov.il).`);
+    if (kibuah !== null) notes.push(`ניצול הפטור ההוני מקטין את יתרת הפטור על הקצבה בקיבוע זכויות - הערכה גסה להמחשה בקבועי 2026 בלבד: כ-${Math.round(kibuah).toLocaleString('he-IL')} ₪ לחודש (הסכום הפטור כמודפס בטופס${ratio32 < 1 ? ` × 32/${years}` : ''} × 1.35 / 180). הסכום בטופס נומינלי: הנוסחה הרשמית דורשת מידוד לתחילת שנת הזכאות, וחריגות (כגון מענקים ששולמו למעלה מ-15 שנה לפני הקצבה הראשונה ולא יובאו בקיזוז) לא נבדקו כאן - לכן זו אינה הפחתת הזכויות בפועל; הקביעה מול פקיד השומה בלבד.${eligYear && eligYear !== 2026 ? ` שנת הזכאות לפי הטופס: ${eligYear} - שיעור הפטור לשנה זו שונה לפי החוק (2027: 62.5%, 2028 ואילך: 67%; סעיף 9א(ז) ו-9א(ב)) והתקרה מתמדדת מדי שנה.` : ''} מקור: מדריך רשות המסים לקיבוע זכויות טופס 161ד 2026 (gov.il).`);
     if (spread !== null) notes.push(`פריסת מס קדימה: כ-${spread} שנות פריסה אפשריות לפי ${years} שנות עבודה (שנה על 4 שנות עבודה, עיגון מ-0.5 כלפי מעלה; מקור החוזר בעתק מראה בלבד - לאמת).`);
-    notes.push(`פטור קצבה מזכה 2026: ${Math.round(KITZBA_MAZKE_2026 * EXEMPT_PCT_2026).toLocaleString('he-IL')} ₪ לחודש (57.5% מתקרת ${KITZBA_MAZKE_2026.toLocaleString('he-IL')} ₪), בכפוף לקיבוע זכויות.${eligYear && eligYear !== 2026 ? ` שנת הזכאות לפי הטופס: ${eligYear} - קבועי 2026 כאן להמחשה בלבד.` : ''} מקור רשמי: רשות המסים, מדריך לקיבוע זכויות טופס 161ד לשנת 2026 (gov.il) - לוח הפטורים: 2025 57%, 2026 57.5%, 2027 62.5%, 2028 ואילך 67%.`);
-    return { computedExemptCap: cap, exemptMatchesForm: exemptMatches, ktsevaEligible: ktseva, directEmployer: direct, mustFillPartB, kibuahMonthlyCost: kibuah, spreadYears: spread, notes };
+    notes.push(`פטור קצבה מזכה 2026: ${Math.round(KITZBA_MAZKE_2026 * EXEMPT_PCT_2026).toLocaleString('he-IL')} ₪ לחודש (57.5% מתקרת ${KITZBA_MAZKE_2026.toLocaleString('he-IL')} ₪), בכפוף לקיבוע זכויות.${eligYear && eligYear > 2026 ? ` שנת הפרישה לפי הטופס: ${eligYear} - שיעור הפטור לפי החוק לשנה זו: ${(exemptPctForYear(eligYear) * 100).toLocaleString('he-IL')}%; תקרת הקצבה המזכה לשנה זו טרם פורסמה (מתואמת מדי שנה), ולכן הסכום בש"ח כאן הוא של 2026 בלבד - לא אומת לשנה זו.` : (eligYear && eligYear < 2026 ? ` שנת הפרישה לפי הטופס: ${eligYear} - קבועי 2026 כאן להמחשה בלבד.` : '')} שיעורי הפטור קבועים בחוק: 2025 57%, 2026 57.5%, 2027 62.5%, 2028 ואילך 67% - סעיף 9א(ב) ו-9א(ז) לפקודת מס הכנסה, כנוסחו בתיקון 275 (ס"ח 3336). הסכומים: מדריך רשות המסים לקיבוע זכויות 161ד 2026 (gov.il).`);
+    return { computedExemptCap: cap, exemptMatchesForm: exemptMatches, ktsevaEligible: ktseva, directEmployer: direct, contCap, contCapAlt, contCapBasis, mustFillPartB, kibuahMonthlyCost: kibuah, spreadYears: spread, notes };
 }
 
 // ==================================================================

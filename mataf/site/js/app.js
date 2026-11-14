@@ -4,7 +4,7 @@ import { parseMaslakaXml, KIND_LABEL, normalizeIdNumber } from './maslaka.js';
 import { extract161, EMPTY_161, FIELD_LABELS, contradictions161 } from './pdf161.js';
 import { COMPANIES, SCENARIO_LABELS, GUAR_LABELS, loadCompany, scenariosOf, guaranteesOf, hasSpouse, inferCompany, mekademEstimate, SURV_RATES, SURV_RATE_LABELS, scenarioForRate } from './mekadem.js';
 import { extractDoc } from './pdfdocs.js';
-import { marketCandidates, parentIdOfMatch, pensionFundIdOfMatch, analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, geoEquityShare, solveTopMix, mixCurrentScore, MIX_CATS, MIX_TOLERANCE, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
+import { marketCandidates, parentIdOfMatch, pensionFundIdOfMatch, analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, exemptPctForYear, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, geoEquityShare, solveTopMix, mixCurrentScore, MIX_CATS, MIX_TOLERANCE, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
 import { loadPeerData, periodLabel, findOwnRow, compareTrack, TRANSFER_GATES, EXISTING_VS_FUTURE_NOTE, BASELINE_NOTE, PEERS_SOURCE_NOTE } from './peers.js';
 import { renderReport, renderBeforeAfter, eligibleKeysOf } from './report.js';
 import { renderTransferRules } from './transfer-rules.js';
@@ -1064,7 +1064,7 @@ function renderFamilyScenarios() {
 function kibuaCalc(k) {
     const num = (v) => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
     const rawNum = (v) => { const n = parseFloat(v); return isFinite(n) ? n : null; };
-    const BASKET = 976005, MAZKE = 9430;
+    const MAZKE = 9430; // תקרת הקצבה המזכה 2026 - האחרונה שפורסמה
     // שער נתונים חסרים: שדה ריק אינו אפס. אין חישוב בלי חודש זכאות ובלי הצהרה מפורשת (ערך, כולל 0) בכל שדות המענקים/ההיוון
     const gRaw = rawNum(k.grantExempt), hPRaw = rawNum(k.hivunPast), hFRaw = rawNum(k.hivunPlan);
     const missing = [];
@@ -1073,9 +1073,15 @@ function kibuaCalc(k) {
     if (hPRaw === null) missing.push('היוון שבוצע בעבר (0 = לא בוצע)');
     if (hFRaw === null) missing.push('היוון מתוכנן (0 = לא מתוכנן)');
     if (missing.length) return { missing };
-    // שער שנת זכאות: קבועי 2026 תקפים לשנת זכאות 2026 בלבד (שיעור הפטור עולה ב-2027/2028 לפי המדריך הרשמי, והתקרה מתמדדת מדי שנה)
+    // שער שנת זכאות (M-065): שיעור הפטור לפי שנת הזכאות קבוע בחוק (9א(ב), 9א(ז), תיקון 275) - exemptPctForYear.
+    // לפני 2026 - נעצר (אין בספרייה תקרות היסטוריות). 2027 ואילך - שיעור החוק, ותקרת 2026 כהנחה שלא אומתה (התקרה מתואמת מדי שנה).
+    // "הדמיית 2026" (sim2026) - קבועי 2026 במלואם לכל שנה.
     const eligYear = k.eligDate ? parseInt(k.eligDate.slice(0, 4), 10) : null;
-    if (eligYear && eligYear !== 2026 && k.sim2026 !== 'yes') return { blocked: 'year', eligYear };
+    if (eligYear && eligYear < 2026 && k.sim2026 !== 'yes') return { blocked: 'year', eligYear };
+    const lawYear = eligYear && eligYear > 2026 && k.sim2026 !== 'yes';
+    const pct = lawYear ? exemptPctForYear(eligYear) : 0.575;
+    const ceilingAssumed = !!lawYear;
+    const BASKET = Math.round(MAZKE * pct * 180); // 2026: 976,005
     const grant = num(k.grantExempt);
     // שער מידוד: אין מנוע מדד במערכת - נדרש סכום ממודד מוצהר
     if (grant > 0 && k.grantIndexed !== 'yes') return { blocked: 'indexed' };
@@ -1093,7 +1099,7 @@ function kibuaCalc(k) {
     const remain = Math.max(0, BASKET - used);
     const monthly = remain / 180;
     const rate = monthly / MAZKE * 100;
-    return { ok: true, eligYear, grant, uGrant, ratio32, grantYears, grantYearsFrom, hivP, hivF, used, usedPct, pctRaw: used / BASKET * 100, remain, monthly, rate };
+    return { ok: true, eligYear, pct, basket: BASKET, ceilingAssumed, grant, uGrant, ratio32, grantYears, grantYearsFrom, hivP, hivF, used, usedPct, pctRaw: used / BASKET * 100, remain, monthly, rate };
 }
 function kibuaResultHtml() {
     const k = state.kibua;
@@ -1102,18 +1108,21 @@ function kibuaResultHtml() {
         return '<div class="muted small">לא הוזנו נתונים; אין חישוב. שדה ריק אינו מתפרש כאפס ואינו הצהרה שאין מענקים או היוון. להצגת חישוב יש להשלים: ' + c.missing.join(' · ') + '.</div>';
     }
     if (c.blocked === 'year') {
-        return '<div class="note small"><b>החישוב נעצר:</b> שנת הזכאות שהוזנה היא ' + c.eligYear + '. קבועי 2026 (תקרה 9,430 ₪, סל 976,005 ₪, שיעור 57.5%) אינם תקפים לשנת זכאות זו - שיעור הפטור משתנה לפי שנת הזכאות (2027: 62.5%, 2028 ואילך: 67%, לפי המדריך הרשמי) והתקרה מתמדדת מדי שנה. לחישוב משוער בקבועי 2026 בלבד, בחרו "הדמיית 2026" בשדה הייעודי; אחרת יש להשתמש בקבועים של שנת הזכאות מול מקור רשמי עדכני.</div>';
+        return '<div class="note small"><b>החישוב נעצר:</b> שנת הזכאות שהוזנה היא ' + c.eligYear + ', לפני 2026. שיעור הפטור לשנה זו קבוע בחוק (סעיף 9א(ז)), אבל תקרת הקצבה המזכה ההיסטורית של אותה שנה אינה בספרייה, ולכן אין חישוב. לחישוב משוער בקבועי 2026 בלבד, בחרו "הדמיית 2026" בשדה הייעודי.</div>';
     }
     if (c.blocked === 'indexed') {
         return '<div class="note small"><b>החישוב נעצר:</b> הוזן סכום מענקים ללא הצהרת מידוד. נוסחת הקיזוז דורשת סכום <b>ממודד</b> לתחילת שנת הזכאות, והמערכת אינה מבצעת מידוד. הזינו את הסכום הממודד כפי שמופיע באישורי המעסיק/הקופה ובחרו "הסכום ממודד" בשדה המידוד - אחרת לא יוצג חישוב מספרי של יתרת הזכויות.</div>';
     }
-    const { grant, uGrant, ratio32, grantYears, grantYearsFrom, hivP, hivF, used, usedPct, pctRaw, remain, monthly, rate, eligYear } = c;
+    const { grant, uGrant, ratio32, grantYears, grantYearsFrom, hivP, hivF, used, usedPct, pctRaw, remain, monthly, rate, eligYear, pct, basket, ceilingAssumed } = c;
     const ratioLabel = grant > 0
         ? (ratio32 < 1
             ? ` (× 32/${+grantYears.toFixed(2)} × 1.35 - שנות עבודה ${grantYearsFrom === 'f161' ? 'מטופס 161' : 'כפי שהוזנו'})`
             : (grantYears ? ' (× 1.35; עד 32 שנות עבודה - אין הקטנה יחסית)' : ' (× 1.35; שנות העבודה לא ידועות - אם מעל 32, הפגיעה קטנה יותר)'))
         : ' (× 1.35)';
-    const simNote = (eligYear && eligYear !== 2026) ? '<div class="note small">הדמיית 2026 מפורשת: החישוב להלן משתמש בקבועי 2026 בלבד ואינו תקף לשנת הזכאות ' + eligYear + '.</div>' : '';
+    const pctTxt = (pct * 100).toLocaleString('he-IL');
+    const simNote = ceilingAssumed
+        ? '<div class="note small"><b>שנת זכאות ' + eligYear + ':</b> שיעור הפטור לפי החוק - ' + pctTxt + '% (סעיף 9א(ז) ו-9א(ב) לפקודת מס הכנסה, כנוסחם בתיקון 275). <b>תקרת הקצבה המזכה לשנה זו טרם פורסמה</b> (מתואמת מדי שנה), ולכן החישוב משתמש בתקרת 2026 - 9,430 ₪ - <b>לא אומת לשנה זו</b>. סל הפטור בחישוב: ₪' + basket.toLocaleString('he-IL') + ' (9,430 × ' + pctTxt + '% × 180). מחשבון הנטו בכרטיס הפרישה מחשב עדיין בשיעור 2026.</div>'
+        : ((eligYear && eligYear !== 2026) ? '<div class="note small">הדמיית 2026 מפורשת: החישוב להלן משתמש בקבועי 2026 בלבד ואינו תקף לשנת הזכאות ' + eligYear + '.</div>' : '');
     return simNote + `<div class="kibres">
         <div class="track-line"><span>פגיעה בגין מענקים פטורים ממודדים${ratioLabel}</span><b>₪${Math.round(uGrant).toLocaleString('he-IL')}</b></div>
         <div class="track-line"><span>פגיעה בגין היוון קצבה פטור שבוצע בעבר</span><b>₪${Math.round(hivP).toLocaleString('he-IL')}</b></div>
@@ -1269,7 +1278,7 @@ function allocScenariosHtml() {
     const HORIZON = Math.min(600, Math.max(0, parseInt(state.alloc.horizon, 10) || 0));
     if (!HORIZON) missing.push('תקופת ההשוואה לדירוג בחודשים (בחירה בשלב זה) - אין ברירת מחדל: זו בחירת תכנון שלכם ואינה קשורה למחלק הסל החוקי (180) בנוסחת הקיבוע');
     if (missing.length) return '<div class="muted small">' + caseLabel + ' דירוג התרחישים יוצג לאחר השלמת: ' + missing.join(' · ') + '. אין דירוג מספרי על נתונים חסרים.</div>';
-    if (c.blocked === 'year') return '<div class="note small">הדירוג נעצר: שנת הזכאות שהוזנה בשלב "נתוני הקיבוע" היא ' + c.eligYear + ' וקבועי 2026 אינם תקפים לה. ניתן לבחור "הדמיית 2026" בשלב "נתוני הקיבוע", או לחשב בקבועי שנת הזכאות מול מקור רשמי עדכני.</div>';
+    if (c.blocked === 'year') return '<div class="note small">הדירוג נעצר: שנת הזכאות שהוזנה בשלב "נתוני הקיבוע" היא ' + c.eligYear + ', לפני 2026 - תקרת הקצבה המזכה של אותה שנה אינה בספרייה. ניתן לבחור "הדמיית 2026" בשלב "נתוני הקיבוע".</div>';
     if (c.blocked === 'indexed') return '<div class="note small">הדירוג נעצר: הוזנו מענקים בשלב "נתוני הקיבוע" ללא הצהרת מידוד. הנוסחה הרשמית דורשת סכום ממודד לתחילת שנת הזכאות, והמערכת אינה ממדדת.</div>';
     if (c.grant <= 0) return '<div class="muted small">' + caseLabel + ' הוזן סכום מענקים פטורים 0 - אין משיכה הונית פטורה לשקול, ולכן אין פשרת מס לדרג ברכיב זה. תקרת הפטור החודשית המשוערת: ₪' + Math.round(c.monthly).toLocaleString('he-IL') + ' (כולל ההיוון שהוזן, אם הוזן). המענק החייב ואפשרויות הפריסה/רצף - בטבלת האפשרויות למטה (טרם אומתו, אין דירוג מספרי).</div>';
     const noGrant = kibuaCalc({ ...k, grantExempt: '0' });
@@ -1278,7 +1287,7 @@ function allocScenariosHtml() {
     const capFull = noGrant.monthly, capNow = c.monthly;
     const pts = ni.pointsMain === '' ? 2.25 : num(ni.pointsMain);
     const oth = num(ni.otherMain);
-    const taxAt = (cap) => pensionNetMonthly2026({ gross: pension, eligible: true, certExemptRatePct: cap / MAZKE * 100, creditPoints: pts, otherIncome: oth }).pensionTax;
+    const taxAt = (cap) => pensionNetMonthly2026({ gross: pension, eligible: true, certExemptRatePct: cap / MAZKE * 100, creditPoints: pts, otherIncome: oth, exemptPct: c.pct }).pensionTax;
     const scenarios = [{
         key: 'A', name: 'ללא משיכה הונית - הכסף נשאר לקצבה', cash: 0, cap: capFull,
         explain: 'לא מושכים את המענק הפטור. סל הפטור נשמר במלואו והפטור החודשי על הקצבה נשאר הגבוה ביותר. הכסף נשאר בקופה ומגדיל את הקצבה העתידית (הגידול עצמו אינו ממודל כאן). נזילות: הנמוכה ביותר - אין כסף פנוי עכשיו.'
@@ -1359,7 +1368,7 @@ function renderAlloc() {
         '<div class="alts-scroll"><table class="altstbl"><thead><tr><th>אפשרות</th><th>מס בזמן הקרוב</th><th>השלכה לאורך הפרישה</th><th>מצב אימות</th></tr></thead><tbody>' + routeRows + '</tbody></table></div>' +
         '<div class="subhead">מה חסר לתשובה מלאה (לפי התיק שנטען)</div>' +
         '<div id="alloc-missing">' + allocMissingHtml() + '</div>' +
-        '<div class="muted small">מקורות מאומתים: <a href="https://www.gov.il/BlobFolder/guide/2026-filling-out-form-161d/he/Guides_IncomeTax_filling-out-form-161d-2026.pdf" target="_blank" rel="noopener">מדריך קיבוע זכויות 161ד 2026, רשות המסים (gov.il)</a> · <a href="https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2026.pdf" target="_blank" rel="noopener">לוח עזר לחישוב ניכוי מהשכר 2026, רשות המסים (gov.il)</a> · <a href="https://www.btl.gov.il/Laws1/00_0040_000000.pdf" target="_blank" rel="noopener">חוק פיצויי פיטורים תשכ"ג-1963, נוסח משולב (אתר ביטוח לאומי)</a>. העלאות הפטור הצפויות במדריך (2027: 62.5%, 2028 ואילך: 67%) מוצגות בו כצפויות ולא אומתו בכתבי קליטה - אין לבסס עליהן תכנון קשיח. נוסחת הקיזוז אינה חלה על כל המקרים: ניכיון בגין נכות, פעולות ביטחוניות, מענקים אחרי גיל זכאות ומקרי קצה מלפני 2012 דורשים בדיקה נפרדת ואינם מיושמים כאן.</div>' +
+        '<div class="muted small">מקורות מאומתים: <a href="https://www.gov.il/BlobFolder/guide/2026-filling-out-form-161d/he/Guides_IncomeTax_filling-out-form-161d-2026.pdf" target="_blank" rel="noopener">מדריך קיבוע זכויות 161ד 2026, רשות המסים (gov.il)</a> · <a href="https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2026.pdf" target="_blank" rel="noopener">לוח עזר לחישוב ניכוי מהשכר 2026, רשות המסים (gov.il)</a> · <a href="https://www.btl.gov.il/Laws1/00_0040_000000.pdf" target="_blank" rel="noopener">חוק פיצויי פיטורים תשכ"ג-1963, נוסח משולב (אתר ביטוח לאומי)</a>. שיעורי הפטור לשנים הבאות (2027: 62.5%, 2028 ואילך: 67%) קבועים בחוק - סעיף 9א(ז) ו-9א(ב) לפקודת מס הכנסה, כנוסחם בתיקון 275 (ס"ח 3336); ספריית המקורות בודקת מדי ריצה שלא תוקנו. תקרת הקצבה המזכה לשנים אלה טרם פורסמה. נוסחת הקיזוז אינה חלה על כל המקרים: ניכיון בגין נכות, פעולות ביטחוניות, מענקים אחרי גיל זכאות ומקרי קצה מלפני 2012 דורשים בדיקה נפרדת ואינם מיושמים כאן.</div>' +
     '</div>';
 }
 function setRg(key, val) {

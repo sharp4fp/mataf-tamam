@@ -74,5 +74,34 @@ ok(e100.k > e60.k, 'surv-higher-rate-higher-factor-lower-pension', `${e60.k} vs 
     const far = A.solveTargetPlan(inc, new Set(inc.map(x => x.key)), 2, 45, { totalValue: inc.reduce((s2, x) => s2 + x.bal, 0), estFrozen: [], noBasisVal: 0, frozenKnown: [], unknownAssumption: null }, 'any', { market: true, picks: {} });
     ok(far.status === 'infeasible' && far.closestT != null && far.per.every(x => x.proposal), 'unreachable-target-gives-closest-plan', far.status + ' ' + far.closestT);
 }
+
+// M-065 (14.11.2026): שיעורי הפטור לפי שנת הזכאות קבועים בחוק - 9א(ב), 9א(ז), תיקון 275
+{
+    const A = await import(B + '/analysis.js');
+    ok(A.exemptPctForYear(2025) === 0.57 && A.exemptPctForYear(2026) === 0.575, 'm065-rates-2025-2026');
+    ok(A.exemptPctForYear(2027) === 0.625, 'm065-rate-2027-amendment275');
+    ok(A.exemptPctForYear(2028) === 0.67 && A.exemptPctForYear(2035) === 0.67, 'm065-rate-2028-onward-67');
+    ok(A.exemptPctForYear(2020) === null && A.exemptPctForYear(NaN) === null, 'm065-no-rate-before-2025');
+    const tax = (o) => A.pensionNetMonthly2026({ gross: 20000, eligible: true, certExemptRatePct: 62.5, creditPoints: 0, ...o }).pensionTax;
+    ok(tax({ exemptPct: 0.625 }) < tax({}), 'm065-net-uses-year-rate-not-capped-at-57.5');
+    ok(!app.includes('לא אומתו בכתבי קליטה'), 'm065-no-unverified-claim-for-legislated-rates');
+    ok(app.includes("eligYear < 2026 && k.sim2026 !== 'yes'") && app.includes('exemptPctForYear(eligYear)'), 'm065-kibua-computes-2027-plus-by-law');
+    ok(Math.round(9430 * A.exemptPctForYear(2026) * 180) === 976005, 'm065-basket-2026-unchanged');
+}
+// M-066 (14.11.2026): רצף קצבה ברירת מחדל - הגבוה מבין 405,900 לבין תקרת הפיצויים × שנות העבודה (9(7א)(ז1))
+{
+    const A = await import(B + '/analysis.js');
+    const r1 = A.insights161({ workYears: '30', salaryInsured: '20,000', grants: [{ code: '5', amount: '500,000' }] });
+    ok(r1.contCap === 600000 && r1.contCapBasis === 'severance-ceiling' && r1.mustFillPartB === false, 'm066-alternative-b-higher-no-part-b', JSON.stringify([r1.contCap, r1.mustFillPartB]));
+    const r2 = A.insights161({ workYears: '10', salaryInsured: '20,000', grants: [{ code: '5', amount: '500,000' }] });
+    ok(r2.contCap === 405900 && r2.contCapBasis === 'fixed' && r2.mustFillPartB === true, 'm066-alternative-a-higher-part-b');
+    const r3 = A.insights161({ workYears: '30', salaryInsured: '60,000', grants: [{ code: '5', amount: '1,300,000' }] });
+    ok(r3.contCapAlt === 45600 * 30 && r3.mustFillPartB === false, 'm066-severance-ceiling-capped-45600');
+    const r4 = A.insights161({ workYears: '30', grants: [{ code: '5', amount: '500,000' }] });
+    ok(r4.contCap === 405900 && r4.contCapAlt === null && r4.notes.some(n => n.includes('לא חושבה')), 'm066-missing-insured-salary-flagged');
+    ok(r1.notes.some(n => n.includes('405,900') && n.includes('600,000') && n.includes('חלופה ב')), 'm066-note-shows-both-alternatives');
+    const r5 = A.insights161({ workYears: '30', salaryInsured: '20,000', grants: [{ code: '1', amount: '1,000' }, { code: '5', amount: '100,000' }] });
+    ok(r5.mustFillPartB === true, 'm066-direct-employer-grant-still-part-b');
+}
 console.log(`critical-fixes: PASS=${pass} FAIL=${fail}`);
 process.exit(fail ? 1 : 0);
