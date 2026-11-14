@@ -13,6 +13,22 @@ export const K = {
 K.BASKET = Math.round(K.MAZKE * K.EXEMPT_PCT * K.DIVISOR); // 976,005 (מדריך 161ד עמ' 4, 6)
 K.MONTHLY_EXEMPT_MAX = K.MAZKE * K.EXEMPT_PCT; // 5,422.25
 
+// M-065/M-067: שיעור הפטור על קצבה מזכה לפי שנת המס - קבוע בחוק: סעיף 9א(ב) לפקודה (67% - הנוסח הקבוע, משנת 2028)
+// וסעיף 9א(ז)(4)-(6) כנוסחו בתיקון 275 (ס"ח 3336): 2025 57%, 2026 57.5%, 2027 62.5%.
+// ספרייה: ito-consolidation-btl-retained20261109 עמ' 26-27; ito-amendment275-2024 עמ' 2 (נבדקו מול תמונה 14.11.2026).
+// חובה לבדוק בכל ריצת ספרייה שהסעיף לא תוקן (L-030). לפני 2025 - null (אין כאן תקרות היסטוריות).
+export const EXEMPT_PCT_BY_YEAR = { 2025: 0.57, 2026: 0.575, 2027: 0.625 };
+export const EXEMPT_PCT_FROM_2028 = 0.67;
+export function exemptPctForYear(year) {
+    if (!Number.isFinite(year) || year < 2025) return null;
+    return year >= 2028 ? EXEMPT_PCT_FROM_2028 : EXEMPT_PCT_BY_YEAR[year];
+}
+// תקרת הקצבה המזכה לשנים אחרי 2026 טרם פורסמה; המנוע עובד בערכי 2026 (ריאלי), ולכן התקרה 9,430 לכל שנה.
+function exemptParams(year) {
+    const pct = (year ? exemptPctForYear(year) : null) ?? K.EXEMPT_PCT;
+    return { pct, basket: Math.round(K.MAZKE * pct * K.DIVISOR), max: K.MAZKE * pct };
+}
+
 export const REFS = {
     basket: 'מדריך 161ד 2026, עמ\' 4-7 (tax-161d-2026)',
     grantCap: 'פקודת מס הכנסה 9(7א); לוח ניכויים 2026',
@@ -60,16 +76,18 @@ export function grantExemption({ grant = 0, workYears = 0, lastSalary = 0, death
 }
 
 // --- קיבוע: הפטור החודשי על הקצבה אחרי נוסחת הקיזוז (מדריך 161ד 2026 עמ' 6-7) ---
-// מענק פטור בגין יותר מ-32 שנה נלקח ביחס 32/שנים, כפול 1.35; יתרת הסל חלקי 180, עד 57.5% מהתקרה
-export function pensionExemption({ exemptGrants = [] }) {
+// מענק פטור בגין יותר מ-32 שנה נלקח ביחס 32/שנים, כפול 1.35; יתרת הסל חלקי 180, עד שיעור הפטור של השנה מהתקרה
+// year: שנת המס (ברירת מחדל - 2026). השיעור לפי exemptPctForYear; ההגדלה בשנה מאוחרת מיוחסת לקצבה (חלק ה בטופס 161ד, אפשרות 3).
+export function pensionExemption({ exemptGrants = [], year = null }) {
+    const P = exemptParams(year);
     let used = 0;
     for (const g of exemptGrants) {
         const ratio = g.workYears > K.YEARS_LOOKBACK ? K.YEARS_LOOKBACK / g.workYears : 1;
         used += (g.amount || 0) * ratio * K.GRANT_FACTOR;
     }
-    const basketLeft = Math.max(0, K.BASKET - used);
-    const monthly = Math.min(K.MONTHLY_EXEMPT_MAX, basketLeft / K.DIVISOR);
-    return { basketUsed: r2(used), basketLeft: r2(basketLeft), monthlyExempt: r2(monthly), rate: r2(monthly / K.MAZKE * 100) };
+    const basketLeft = Math.max(0, P.basket - used);
+    const monthly = Math.min(P.max, basketLeft / K.DIVISOR);
+    return { basketUsed: r2(used), basketLeft: r2(basketLeft), monthlyExempt: r2(monthly), rate: r2(monthly / K.MAZKE * 100), exemptPct: P.pct, basket: P.basket };
 }
 
 // --- פריסה (חוזר 2/2022) ---
@@ -114,7 +132,8 @@ function evaluatePlan(inp, plan, ctx) {
     const extraPension = toPension > 0 ? toPension / k : 0;
     const pensionMonthly = (inp.pensionMonthly || 0) + extraPension;
     const grants = (inp.priorExemptGrants || []).concat(plan.exemptWithdraw > 0 ? [{ amount: plan.exemptWithdraw, workYears: inp.workYears }] : []);
-    const ex = pensionExemption({ exemptGrants: grants });
+    const ex = pensionExemption({ exemptGrants: grants, year: inp.eligibilityYear });
+    const exOf = (y) => pensionExemption({ exemptGrants: grants, year: Math.max(y, inp.eligibilityYear) }).monthlyExempt;
     // שיבוץ החלק החייב לשנים
     const grantByYear = {};
     if (T > 0 && plan.taxable !== 'rezef') {
@@ -128,7 +147,7 @@ function evaluatePlan(inp, plan, ctx) {
     for (let y = firstYear; y <= ctx.endYear; y++) {
         const base = ctx.incomeOf(y);
         const pensionGross = y >= inp.pensionStartYear ? pensionMonthly * 12 : 0;
-        const exemptAnnual = y >= inp.pensionStartYear && y >= inp.eligibilityYear ? Math.min(pensionMonthly, ex.monthlyExempt) * 12 : 0;
+        const exemptAnnual = y >= inp.pensionStartYear && y >= inp.eligibilityYear ? Math.min(pensionMonthly, exOf(y)) * 12 : 0;
         const grantPart = grantByYear[y] || 0;
         const taxable = base + grantPart + pensionGross - exemptAnnual;
         const incr = annualTax(taxable, y, inp.creditPoints) - annualTax(base, y, inp.creditPoints);
@@ -151,12 +170,13 @@ function evaluatePlan(inp, plan, ctx) {
 function freeExemptWithdraw(inp, ctx, taxableToPension) {
     const ratio = inp.workYears > K.YEARS_LOOKBACK ? K.YEARS_LOOKBACK / inp.workYears : 1;
     const prior = pensionExemption({ exemptGrants: inp.priorExemptGrants || [] }).basketUsed;
+    const P = exemptParams(inp.eligibilityYear); // בשנת הזכאות - שמרני: ההגדלות המאוחרות רק מגדילות את המרווח
     let w = 0;
     for (let i = 0; i < 30; i++) { // הקצבה תלויה במה שנשאר בקופה - איטרציה קצרה עד התכנסות
         const toPension = (ctx.E - w) + taxableToPension;
         const pension = (inp.pensionMonthly || 0) + (ctx.k > 0 ? toPension / ctx.k : 0);
-        const need = Math.min(pension, K.MONTHLY_EXEMPT_MAX) * K.DIVISOR;
-        const free = Math.max(0, (K.BASKET - prior - need) / (K.GRANT_FACTOR * ratio));
+        const need = Math.min(pension, P.max) * K.DIVISOR;
+        const free = Math.max(0, (P.basket - prior - need) / (K.GRANT_FACTOR * ratio));
         const nw = Math.min(ctx.E, free);
         if (Math.abs(nw - w) < 0.5) { w = nw; break; }
         w = nw;
@@ -238,6 +258,10 @@ export function evaluateRetirement(input) {
     if (!(k > 0)) warnings.push('חסר מקדם המרה לקצבה: חלופות שמשאירות כסף בקופה לא חושבו.');
     for (let y = inp.retireYear - 5; y < inp.retireYear; y++) if (!has(y) && back.some(o => o.years.includes(y))) { warnings.push('בפריסה אחורה ההכנסה בשנים הקודמות היא הערכה - חסרים טופסי 106.'); break; }
     if (!taxTable(endYear).exact) warnings.push('לשנים אחרי 2026 נלקחו מדרגות 2026 (חישוב ריאלי בערכי 2026).');
+    {
+        const pE = exemptPctForYear(inp.eligibilityYear) ?? K.EXEMPT_PCT;
+        warnings.push(`שיעור הפטור על הקצבה המזכה לפי החוק לכל שנת מס (סעיף 9א(ב) ו-9א(ז), תיקון 275): 2026 57.5%, 2027 62.5%, 2028 ואילך 67%. בשנת הזכאות (${inp.eligibilityYear}): ${(pE * 100).toLocaleString('he-IL')}%. ההגדלות שאחרי שנת הזכאות יוחסו כולן לקצבה (חלק ה בטופס 161ד, אפשרות 3 - בחירת הלקוח בטופס). תקרת הקצבה המזכה לשנים אחרי 2026 טרם פורסמה - נלקחה תקרת 2026 (9,430 ₪), בהתאם לחישוב הריאלי בערכי 2026; לא אומת.`);
+    }
     return {
         input: inp, grant: ge, lifeExpectancy: le, endYear, alternatives: alts, ranked,
         recommended: ranked[0] || null, bestNet: bestNet || null,

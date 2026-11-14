@@ -77,14 +77,14 @@ ok(r3.alternatives.find(a => a.id === 'A').available === false && r3.warnings.so
 
 // 8. חלופה ו': קצבה קטנה (3,000) לא מנצלת את כל הסל - משיכה פטורה חלקית שומרת על פטור מלא לקצבה
 // מענק 400,000 כולו פטור (30 × 13,750 = 412,500), מקדם 200: 976,005 − 1.35w = 180 × (3,000 + (400,000 − w)/200) → w = 168,900
-const small = E.evaluateRetirement({ retireYear: 2026, sex: 'male', age: 66, grant: 400000, workYears: 30, lastSalary: 25000, pensionMonthly: 3000, annuityFactor: 200, retireYearIncome: 150000, futureIncome: 0 });
+const small = E.evaluateRetirement({ retireYear: 2026, eligibilityYear: 2026, sex: 'male', age: 66, grant: 400000, workYears: 30, lastSalary: 25000, pensionMonthly: 3000, annuityFactor: 200, retireYearIncome: 150000, futureIncome: 0 });
 const F = small.alternatives.find(a => a.id === 'F'), B = small.alternatives.find(a => a.id === 'B'), A = small.alternatives.find(a => a.id === 'A');
 ok(F && F.available && near(F.cashNow, 168900, 1) && F.cashNow < B.cashNow, 'alt-F-partial-withdraw-hand-calc-168900', F && String(F.cashNow));
 ok(F && F.exemption.monthlyExempt >= Math.min(F.pensionMonthly, 5422.25) - 1, 'alt-F-keeps-pension-fully-exempt', F && JSON.stringify({ ex: F.exemption.monthlyExempt, p: F.pensionMonthly }));
 ok(F && A && F.taxPV <= A.taxPV + 1, 'alt-F-not-more-tax-than-keeping-all (A)', F && `${F.taxPV} vs ${A.taxPV}`);
 
 // 9. קצבה גדולה (12,000): כל שקל פטור שנמשך פוגע בפטור הקצבה - B מקטין את הפטור החודשי
-const big = E.evaluateRetirement({ retireYear: 2026, sex: 'male', age: 66, grant: 400000, workYears: 30, lastSalary: 30000, pensionMonthly: 12000, annuityFactor: 200, retireYearIncome: 200000 });
+const big = E.evaluateRetirement({ retireYear: 2026, eligibilityYear: 2026, sex: 'male', age: 66, grant: 400000, workYears: 30, lastSalary: 30000, pensionMonthly: 12000, annuityFactor: 200, retireYearIncome: 200000 });
 const bB = big.alternatives.find(a => a.id === 'B'), bA = big.alternatives.find(a => a.id === 'A');
 ok(bB.exemption.monthlyExempt < bA.exemption.monthlyExempt && near(bA.exemption.monthlyExempt, 5422.25), 'exempt-withdraw-reduces-pension-exemption (1.35 offset)');
 ok(big.recommended && big.ranked[0].id === big.recommended.id && big.savingVsNext >= 0, 'recommended-is-rank-1-with-saving-vs-next');
@@ -103,5 +103,23 @@ const C = await import(path.join(ROOT, 'calc.js'));
 const html = C.renderCalcTab({ calc: { s_grant: '600000', s_years: '27', s_salary: '18500' }, calcSub: 'severance' }).replace(/<[^>]+>/g, ' ');
 ok(/החלק הפטור\s+371,250/.test(html) && /החלק החייב במס\s+228,750/.test(html) && /עד 6 שנות מס/.test(html) && /ל-2,638/.test(html), 'severance-calculator-personal-result', html.match(/החלק הפטור[^₪]*₪/)?.[0] || '');
 ok(/הזינו מענק ושנות עבודה/.test(C.renderCalcTab({ calc: {}, calcSub: 'severance' })), 'severance-calculator-empty-prompt');
+
+// 10. M-067: שיעור הפטור לפי שנת המס מהחוק (9א(ב), 9א(ז), תיקון 275) - 2027 62.5%, 2028 ואילך 67%; תקרת 2026 (ערכים ריאליים)
+ok(E.exemptPctForYear(2026) === 0.575 && E.exemptPctForYear(2027) === 0.625 && E.exemptPctForYear(2030) === 0.67 && E.exemptPctForYear(2010) === null, 'm067-rate-table');
+ok(near(E.pensionExemption({ year: 2027 }).monthlyExempt, 5893.75) && near(E.pensionExemption({ year: 2028 }).monthlyExempt, 6318.1), 'm067-max-exempt-2027-5893.75-2028-6318.10');
+ok(near(E.pensionExemption({}).monthlyExempt, 5422.25) && near(E.pensionExemption({ year: 2020 }).monthlyExempt, 5422.25), 'm067-default-and-pre-2025-fallback-2026');
+// דני (מדריך 161ד דוגמה 1) בשנת 2028: סל 1,137,258 − 594,000 = 543,258; /180 = 3,018.10
+const dani28 = E.pensionExemption({ exemptGrants: [{ amount: 550000, workYears: 40 }], year: 2028 });
+ok(dani28.basket === 1137258 && near(dani28.monthlyExempt, 3018.1), 'm067-dani-2028-offset-on-67pct-basket', JSON.stringify(dani28));
+// חלופה ו' בשנת זכאות 2027: 1,060,875 − 1.35w = 180 × (3,000 + (400,000 − w)/200) → w = 357,500
+const small27 = E.evaluateRetirement({ retireYear: 2026, eligibilityYear: 2027, sex: 'male', age: 66, grant: 400000, workYears: 30, lastSalary: 25000, pensionMonthly: 3000, annuityFactor: 200, retireYearIncome: 150000, futureIncome: 0 });
+const F27 = small27.alternatives.find(a => a.id === 'F');
+ok(F27 && near(F27.cashNow, 357500, 3), 'm067-alt-F-2027-hand-calc-357500', F27 && String(F27.cashNow));
+// קצבה 12,000, זכאות 2027: פטור 5,893.75 ב-2027, 6,318.10 ב-2028 (ההגדלה לקצבה)
+const big27 = E.evaluateRetirement({ retireYear: 2026, eligibilityYear: 2027, sex: 'male', age: 66, grant: 400000, workYears: 30, lastSalary: 30000, pensionMonthly: 12000, annuityFactor: 200, retireYearIncome: 200000 });
+const A27 = big27.alternatives.find(a => a.id === 'A');
+const row = (y) => A27.rows.find(r => r.year === y);
+ok(near(A27.exemption.monthlyExempt, 5893.75) && near(row(2027).exemptAnnual, 5893.75 * 12, 0.05) && near(row(2028).exemptAnnual, 6318.1 * 12, 0.05), 'm067-yearly-rate-in-rows-2027-2028', JSON.stringify([row(2027), row(2028)]));
+ok(big27.warnings.some(w => w.includes('62.5%') && w.includes('9א(ז)') && w.includes('לא אומת')), 'm067-warning-states-law-and-unverified-ceiling');
 console.log(`retire-engine: PASS=${pass} FAIL=${fail}`);
 process.exit(fail ? 1 : 0);

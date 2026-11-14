@@ -1,4 +1,5 @@
 import { mekipa, klalit, hishtalmut, tagmulim, hashkaa } from './refdata.js';
+import { exemptPctForYear } from './retire-engine.js';
 import { OFFICIAL_PENSION, OFFICIAL_GEMEL, OFFICIAL_INSURANCE, trackCodeParts, boundOfficial, fundIdFromTrackCode } from './official.js';
 
 export const GROUP_LABEL = {
@@ -559,12 +560,8 @@ export const EXEMPT_PCT_2026 = 0.575;
 // וסעיף 9א(ז)(4)-(6) כנוסחו בתיקון 275 (ס"ח 3336): 2025 57%, 2026 57.5%, 2027 62.5%.
 // ספרייה: ito-consolidation-btl-retained20261109 עמ' 26-27; ito-amendment275-2024 עמ' 2 (נבדקו מול תמונה 14.11.2026).
 // חובה לבדוק בכל ריצת ספרייה שהסעיף לא תוקן (L-030). שנים לפני 2025 - אין כאן תקרות היסטוריות, ולכן null.
-export const EXEMPT_PCT_BY_YEAR = { 2025: 0.57, 2026: 0.575, 2027: 0.625 };
-export const EXEMPT_PCT_FROM_2028 = 0.67;
-export function exemptPctForYear(year) {
-    if (!Number.isFinite(year) || year < 2025) return null;
-    return year >= 2028 ? EXEMPT_PCT_FROM_2028 : EXEMPT_PCT_BY_YEAR[year];
-}
+// הטבלה עצמה ב-retire-engine.js (מקור אחד למחשבון הקיבוע ולמנוע הפרישה - M-067)
+export { EXEMPT_PCT_BY_YEAR, EXEMPT_PCT_FROM_2028, exemptPctForYear } from './retire-engine.js';
 // M-066: "רצף קצבה ברירת מחדל" - סעיף 9(7א)(ז1): הגבוה מבין 405,900 ש"ח לבין תקרת הפיצויים (3(ה3)) כפול שנות העבודה.
 // "תקרת הפיצויים" - משכורת העובד או 45,600 ש"ח לחודש, הנמוך (3(ה3)); שני הסכומים מתואמים ל-2026 (נוסח מאוחד, עמ' 10 ו-21).
 export const DEFAULT_CONT_CAP_2026 = 405900;
