@@ -2656,8 +2656,8 @@ function render() {
                     <button type="button" class="modebtn${state.mode === 'retirement' ? ' active' : ''}" data-mode-set="retirement" aria-pressed="${state.mode === 'retirement'}">תכנון פרישה</button>
                     <button type="button" class="modebtn${state.mode === 'calc' ? ' active' : ''}" data-mode-set="calc" aria-pressed="${state.mode === 'calc'}">מחשבונים</button>
                     <button type="button" class="modebtn${state.mode === 'nifraim' ? ' active' : ''}" data-mode-set="nifraim" aria-pressed="${state.mode === 'nifraim'}">התאמת נפרעים <span class="badge-soon">בקרוב</span></button>
+                    <a class="ghostbtn liblink" href="https://mataf-library.pages.dev/" target="_blank" rel="noopener">ספריית המקורות</a>
                 </div>
-                <a class="ghostbtn liblink" href="https://mataf-library.pages.dev/" target="_blank" rel="noopener">ספריית המקורות</a>
             </div>
             ${state.mode === 'calc' ? renderCalcSubtabs(state) : ''}
             ${state.mode === 'portfolio' ? renderLayoutSwitch() : ''}
