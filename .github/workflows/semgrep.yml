@@ -37,7 +37,7 @@ jobs:
     name: סריקה
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: התקנת Semgrep (גרסה קבועה)
         run: pipx install semgrep==1.100.0
       - name: סריקה
