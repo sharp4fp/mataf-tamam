@@ -1,0 +1,47 @@
+# Semgrep - סריקת אבטחה (מחליף את CodeQL, 14.11.2026)
+# CodeQL חינמי רק במאגר ציבורי; לפני שהמאגר הופך לפרטי (בלי תשלום) הסריקה עברה ל-Semgrep CE (חינמי, רץ כאן).
+# סורק את קוד מתה״פ ותמ״מ (JavaScript/TypeScript), את כלי החיפוש של הספרייה (Python), את תהליכי העבודה וסודות שנשכחו בקוד.
+# רץ רק כשקוד משתנה (לא בקלוג/ספרייה), בבקשות עדכון ופעם בשבוע. ממצא חוסם (exit 1). החרגות: .semgrepignore.
+# הממצאים מודפסים ביומן הריצה (במאגר פרטי חינמי אין לשונית Code scanning).
+
+name: Semgrep - סריקת אבטחה
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mataf/site/**'
+      - 'mataf/library-site/**'
+      - 'mataf/tests/**'
+      - 'mataf/knowledge/sources/mataf-library-20261109/search.py'
+      - 'tamam/src/**'
+      - 'tamam/*.json'
+      - 'tamam/*.ts'
+      - '.github/**'
+      - '.semgrepignore'
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '17 3 * * 0'   # כל יום ראשון בבוקר
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: semgrep-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: סריקה
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: התקנת Semgrep (גרסה קבועה)
+        run: pipx install semgrep==1.100.0
+      - name: סריקה
+        run: |
+          ~/.local/bin/semgrep scan --metrics=off --error --quiet \
+            --config p/javascript --config p/typescript --config p/python \
+            --config p/github-actions --config p/secrets

@@ -55,6 +55,7 @@ jobs:
         with:
           name: tamam-dist
           path: tamam/dist
+          retention-days: 1  # מכסת אחסון 500MB במאגר פרטי
 
   deploy:
     name: פריסה

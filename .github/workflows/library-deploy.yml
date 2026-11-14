@@ -19,6 +19,9 @@ on:
       - 'mataf/site/fonts/**'
       - 'mataf/site/css/heebo.css'
       - '.github/workflows/library-deploy.yml'
+      # לא משפיעים על בניית האתר (חיסכון בדקות, תכנית הייעול 14.11.2026): יומנים ומפות מיפוי נושאים
+      - '!mataf/knowledge/updates/**'
+      - '!mataf/knowledge/sources/mataf-library-20261109/prepared-increments/**/topic-source-map.json'
   pull_request:
     branches: [main]
     paths:
@@ -39,12 +42,16 @@ permissions:
 
 concurrency:
   group: library-deploy-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
-  cancel-in-progress: false
+  # דחיפה חדשה מבטלת בנייה ישנה שעוד לא הסתיימה (רק הגרסה האחרונה נפרסת)
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
   build-test:
-    name: בנייה ובדיקות
+    name: בנייה, בדיקות ופריסה
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -73,36 +80,17 @@ jobs:
           sleep 2
           cp mataf/library-site/browser-test.mjs "$RUNNER_TEMP/pw/"
           node "$RUNNER_TEMP/pw/browser-test.mjs" http://localhost:4620
-      - uses: actions/upload-artifact@v4
-        with:
-          name: library-dist
-          path: dist
-          retention-days: 7
-
-  deploy:
-    name: פריסה
-    needs: build-test
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          sparse-checkout: .github/scripts
-      - uses: actions/download-artifact@v4
-        with:
-          name: library-dist
-          path: dist
+      # פריסה באותה משימה - בלי קובץ בנייה שמור (225MB לכל בנייה; מכסת האחסון במאגר פרטי 500MB)
       - name: בחירת יעד
         id: target
+        if: github.event_name != 'pull_request'
         run: |
           T="${{ github.event_name == 'push' && 'preview' || inputs.target }}"
           if [ "$T" = production ]; then echo "branch=main" >> "$GITHUB_OUTPUT"; else echo "branch=preview" >> "$GITHUB_OUTPUT"; fi
           echo "name=$T" >> "$GITHUB_OUTPUT"
       - name: העלאה ל-Cloudflare Pages
         id: deploy
+        if: github.event_name != 'pull_request'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -110,6 +98,7 @@ jobs:
           command: pages deploy dist --project-name=mataf-library --branch=${{ steps.target.outputs.branch }} --commit-dirty=true
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
       - name: בדיקת עשן - השער עונה ונועל
+        if: github.event_name != 'pull_request'
         env:
           URL: ${{ steps.deploy.outputs.deployment-url }}
         run: |

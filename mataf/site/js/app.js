@@ -2886,6 +2886,7 @@ function render() {
         ${!isPlain && !hasP ? acc('what', `${numWhat} מה רואים כאן`, '', renderIntroWhat(), true) : ''}
         <footer class="closing">אב-טיפוס · נתוני ייחוס ${REF_DATE} בלבד · כללים: ${RULES_SRC} · נתוני לקוח לא נשלחים, לא נשמרים ולא מוזנים לאף מערכת מהעמוד הזה; פרטי הסוכן לדוח בלבד נשמרים מקומית בדפדפן שלך.
         ${!isPlain ? renderSrcBox() : ''}
+        <div class="small muted" id="copyright">© 2026 פיקאס בע"מ. כל הזכויות שמורות. אין להעתיק, לשכפל או להפיץ את האתר, הקוד או החישובים ללא אישור בכתב.</div>
     </footer>
     </main>`;
     if (state.mekLast && state.mekLast.pension) updateNetResult();

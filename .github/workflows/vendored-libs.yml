@@ -8,7 +8,12 @@ on:
   push:
     branches: [main]
     paths:
-      - 'mataf/site/js/**'
+      # רק כשקובץ ספרייה או הרשימה משתנים (לא בכל שינוי קוד - חיסכון בדקות, 14.11.2026); בנוסף - שבועי
+      - 'mataf/site/js/VENDORED.json'
+      - 'mataf/site/js/pdf.min.js'
+      - 'mataf/site/js/pdf.worker.min.js'
+      - 'mataf/site/js/jspdf.umd.min.js'
+      - 'mataf/site/js/html2canvas.min.js'
       - '.github/scripts/check-vendored.mjs'
       - '.github/workflows/vendored-libs.yml'
   schedule:

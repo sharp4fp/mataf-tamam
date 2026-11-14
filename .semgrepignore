@@ -1,0 +1,18 @@
+# Semgrep - החרגות (ראו .github/workflows/semgrep.yml)
+# ספריות צד שלישי מוקטנות - נבדקות בנפרד מול OSV (vendored-libs.yml)
+mataf/site/js/pdf.min.js
+mataf/site/js/pdf.worker.min.js
+mataf/site/js/jspdf.umd.min.js
+mataf/site/js/html2canvas.min.js
+# קובצי נתונים שנוצרו אוטומטית (לא קוד שנכתב ידנית)
+mataf/site/js/official.js
+mataf/site/js/peers-snapshot.js
+mataf/site/js/mekadem/
+# קורפוס המקורות של הספרייה (PDF וטקסט) - לא קוד
+mataf/knowledge/sources/**/*.txt
+mataf/knowledge/sources/**/*.pdf
+mataf/knowledge/sources/**/*.json
+mataf/knowledge/updates/
+# תוצרי בנייה ותלויות
+node_modules/
+tamam/dist/

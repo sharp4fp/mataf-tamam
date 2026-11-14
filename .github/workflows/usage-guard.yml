@@ -1,0 +1,26 @@
+# שומר מכסת הדקות - פעם ביום (תכנית הייעול 14.11.2026). ראו .github/scripts/usage-guard.mjs.
+name: שומר מכסת הדקות
+
+on:
+  schedule:
+    - cron: '41 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  guard:
+    name: מונה דקות
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: .github/scripts
+      - name: סיכום אתמול ועדכון המונה
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/usage-guard.mjs

@@ -57,7 +57,7 @@
 - [ ] בקשות Dependabot פתוחות: `gh api repos/sharp4fp/mataf-tamam/pulls` - כל בקשת
       אבטחה מטופלת או מתועדת בבקלוג.
 - [ ] הספריות המועתקות (`mataf/site/js/VENDORED.json`): גרסה מעודכנת אם קובץ ספרייה שונה.
-- [ ] ממצאי CodeQL אחרונים (לשונית Security בגיטהאב, דרך הבעלים) ובדיקת OSV.
+- [ ] סריקת Semgrep ירוקה (`semgrep.yml`; הממצאים ביומן הריצה) ובדיקת OSV. (CodeQL הוחלף ב-14.11.2026 - חינמי רק במאגר ציבורי.)
 - [ ] כל כלי שנוסיף בעתיד (Trivy, Docker Scout וכו') - נכנס לשער הזה.
       כרגע אין קונטיינר Docker, ולכן Trivy/Scout לא פעילים.
 

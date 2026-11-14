@@ -1,6 +1,7 @@
-# ניטור האתרים החיים - כל 3 שעות.
+# ניטור האתרים החיים - כל 3 שעות, במשימה אחת (חיסכון בדקות, 14.11.2026: כל משימה מחויבת לפחות דקה שלמה).
 # בודק שכל אתר עונה ושהשערים נועלים. בכשל: פותח issue בגיטהאב (אחד לכל אתר, בלי כפילויות),
 # שנכנס לבקלוג בעבודה הבאה. כשהאתר חוזר לתקינות - ה-issue נסגר אוטומטית.
+# M-069: באותה משימה - קבועי המס באתר (constants-year.js): תזכורת מ-20 בדצמבר, התראה מ-1 בינואר אם לא עודכנו.
 # אין כאן נתוני לקוחות: נבדקים רק קודי תשובה ותוכן ציבורי.
 
 name: ניטור אתרים
@@ -16,91 +17,62 @@ permissions:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: מתה״פ (אתר חי)
-            url: https://pension-planner-2br.pages.dev
-            kind: gate
-          - name: מתה״פ (סביבת בדיקה)
-            url: https://pension-planner-preview.pages.dev
-            kind: gate
-          - name: מתה״פ (דמו)
-            url: https://pension-planner-demo.pages.dev
-            kind: gate
-          - name: ספריית המקורות
-            url: https://mataf-library.pages.dev
-            kind: libgate
-          - name: תמ״מ (שטר מטען)
-            url: https://tamam-waybill.pages.dev
-            kind: tamam
-    name: ${{ matrix.name }}
-    steps:
-      - name: בדיקה
-        id: probe
-        env:
-          URL: ${{ matrix.url }}
-          KIND: ${{ matrix.kind }}
-        run: |
-          ok=1; detail=""
-          for attempt in 1 2 3; do
-            root=$(curl -s -o /tmp/body -w '%{http_code}' --max-time 20 "$URL/")
-            case "$KIND" in
-              gate)
-                js=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL/js/app.js")
-                detail="דף הבית $root, קובץ קוד בלי כניסה $js"
-                if [[ "$root" =~ ^(200|302|303|401)$ ]] && [ "$js" != "200" ]; then ok=0; fi ;;
-              libgate)
-                data=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL/data/sources.json")
-                detail="דף הבית $root, נתונים בלי כניסה $data"
-                if [ "$root" = "401" ] && grep -q 'ספריית המקורות' /tmp/body && [ "$data" != "200" ]; then ok=0; fi ;;
-              tamam)
-                detail="דף הבית $root"
-                if [ "$root" = "200" ] && grep -q 'שטר מטען' /tmp/body; then ok=0; fi ;;
-            esac
-            [ $ok -eq 0 ] && break
-            sleep 20
-          done
-          echo "detail=$detail" >> "$GITHUB_OUTPUT"
-          echo "$URL: $detail"
-          exit $ok
-
-      - name: פתיחת issue בכשל
-        if: failure()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TITLE: "ניטור: ${{ matrix.name }} לא תקין"
-          URL: ${{ matrix.url }}
-          DETAIL: ${{ steps.probe.outputs.detail }}
-        run: |
-          existing=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --search "\"$TITLE\" in:title" --json number -q '.[0].number')
-          body="$URL - $DETAIL - $(date -u +%Y-%m-%dT%H:%MZ). ריצה: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          if [ -n "$existing" ]; then gh issue comment "$existing" -R "$GITHUB_REPOSITORY" --body "עדיין לא תקין: $body"
-          else gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body "$body" --label monitor || gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body "$body"; fi
-
-      - name: סגירת issue כשהאתר חזר
-        if: success()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TITLE: "ניטור: ${{ matrix.name }} לא תקין"
-        run: |
-          existing=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --search "\"$TITLE\" in:title" --json number -q '.[0].number')
-          if [ -n "$existing" ]; then gh issue close "$existing" -R "$GITHUB_REPOSITORY" --comment "האתר חזר לתקינות"; fi
-
-  # M-069: קבועי המס באתר (constants-year.js) - תזכורת מ-20 בדצמבר, התראה מ-1 בינואר אם לא עודכנו.
-  # issue נפתח פעם אחת (בלי כפילויות) ונסגר אוטומטית אחרי העדכון. אין כאן נתוני לקוחות.
-  constants:
-    name: קבועי מס - שנת תוקף
-    runs-on: ubuntu-latest
+    name: אתרים וקבועי מס
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             mataf/site/js
             .github/scripts
-      - name: בדיקת שנת התוקף
+      - name: בדיקת האתרים
+        id: sites
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          bad=0
+          probe() { # name url kind
+            local name="$1" URL="$2" KIND="$3" ok=1 detail=""
+            for attempt in 1 2 3; do
+              root=$(curl -s -o /tmp/body -w '%{http_code}' --max-time 20 "$URL/")
+              case "$KIND" in
+                gate)
+                  js=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL/js/app.js")
+                  detail="דף הבית $root, קובץ קוד בלי כניסה $js"
+                  if [[ "$root" =~ ^(200|302|303|401)$ ]] && [ "$js" != "200" ]; then ok=0; fi ;;
+                libgate)
+                  data=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL/data/sources.json")
+                  detail="דף הבית $root, נתונים בלי כניסה $data"
+                  if [ "$root" = "401" ] && grep -q 'ספריית המקורות' /tmp/body && [ "$data" != "200" ]; then ok=0; fi ;;
+                tamam)
+                  detail="דף הבית $root"
+                  if [ "$root" = "200" ] && grep -q 'שטר מטען' /tmp/body; then ok=0; fi ;;
+              esac
+              [ $ok -eq 0 ] && break
+              sleep 20
+            done
+            echo "$name | $URL: $detail | $([ $ok -eq 0 ] && echo תקין || echo לא תקין)"
+            local TITLE="ניטור: $name לא תקין"
+            local existing
+            existing=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --search "\"$TITLE\" in:title" --json number -q '.[0].number')
+            if [ $ok -ne 0 ]; then
+              bad=1
+              body="$URL - $detail - $(date -u +%Y-%m-%dT%H:%MZ). ריצה: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+              if [ -n "$existing" ]; then gh issue comment "$existing" -R "$GITHUB_REPOSITORY" --body "עדיין לא תקין: $body"
+              else gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body "$body" --label monitor || gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body "$body"; fi
+            elif [ -n "$existing" ]; then
+              gh issue close "$existing" -R "$GITHUB_REPOSITORY" --comment "האתר חזר לתקינות"
+            fi
+          }
+          probe 'מתה״פ (אתר חי)' https://pension-planner-2br.pages.dev gate
+          probe 'מתה״פ (סביבת בדיקה)' https://pension-planner-preview.pages.dev gate
+          probe 'מתה״פ (דמו)' https://pension-planner-demo.pages.dev gate
+          probe 'ספריית המקורות' https://mataf-library.pages.dev libgate
+          probe 'תמ״מ (שטר מטען)' https://tamam-waybill.pages.dev tamam
+          echo "bad=$bad" >> "$GITHUB_OUTPUT"
+
+      - name: בדיקת שנת התוקף של קבועי המס
         id: st
         run: node .github/scripts/check-constants-year.mjs mataf/site/js
       - name: תזכורת (20-31 בדצמבר)
@@ -112,10 +84,10 @@ jobs:
         run: |
           existing=$(gh issue list -R "$GITHUB_REPOSITORY" --state all --search "\"$TITLE\" in:title" --json number -q '.[0].number')
           if [ -z "$existing" ]; then
-            gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --label monitor --body "$(printf 'הקבועים הבאים בתוקף עד סוף השנה. לבדוק את לוח הניכויים ואת עדכוני ביטוח לאומי לשנה הבאה, ולהוסיף לתור ההורדה (mataf/knowledge/updates/DOWNLOAD-QUEUE-HE.md):\n\n%s' "$LIST")" \
-              || gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body "$LIST"
+            body=$(printf 'הקבועים הבאים בתוקף עד סוף השנה. לבדוק את לוח הניכויים ואת עדכוני ביטוח לאומי לשנה הבאה, ולהוסיף לתור ההורדה (mataf/knowledge/updates/DOWNLOAD-QUEUE-HE.md):\n\n%s' "$LIST")
+            gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --label monitor --body "$body" || gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body "$body"
           fi
-      - name: התראה - קבועים לא עודכנו
+      - name: התראה - קבועי מס לא עודכנו
         if: steps.st.outputs.state == 'stale'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -125,8 +97,7 @@ jobs:
           existing=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --search "\"$TITLE\" in:title" --json number -q '.[0].number')
           body=$(printf 'האתר מציג פס "לא עודכנו - לא אומת". לעדכן מול הפרסום הרשמי (תכנית לאישור הבעלים), ואז לעדכן את validThrough ב-mataf/site/js/constants-year.js:\n\n%s\n\nריצה: %s' "$LIST" "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID")
           if [ -z "$existing" ]; then gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --label monitor --body "$body" || gh issue create -R "$GITHUB_REPOSITORY" --title "$TITLE" --body "$body"; fi
-          exit 1
-      - name: סגירת issue אחרי העדכון
+      - name: סגירת issue קבועים אחרי העדכון
         if: steps.st.outputs.state != 'stale'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -134,3 +105,9 @@ jobs:
           for n in $(gh issue list -R "$GITHUB_REPOSITORY" --state open --search "\"ניטור: קבועי מס לא עודכנו\" in:title" --json number -q '.[].number'); do
             gh issue close "$n" -R "$GITHUB_REPOSITORY" --comment "הקבועים עודכנו - בתוקף לשנה הנוכחית"
           done
+      - name: תוצאה
+        if: always()
+        run: |
+          [ "${{ steps.sites.outputs.bad }}" = "0" ] || { echo "אתר לא תקין - ראו issue"; exit 1; }
+          [ "${{ steps.st.outputs.state }}" != "stale" ] || { echo "קבועי מס לא עודכנו"; exit 1; }
+          echo "הכול תקין"
