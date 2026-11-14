@@ -42,7 +42,7 @@ jobs:
         with:
           python-version: '3.12'   # Semgrep 1.100.0 לא תואם ל-Python 3.14 של השרת
       - name: התקנת Semgrep (גרסה קבועה)
-        run: python -m pip install --quiet semgrep==1.100.0
+        run: python -m pip install --quiet semgrep==1.100.0 "setuptools<70"   # pkg_resources נדרש לגרסה זו
       - name: סריקה
         run: |
           semgrep scan --metrics=off --error --quiet \
