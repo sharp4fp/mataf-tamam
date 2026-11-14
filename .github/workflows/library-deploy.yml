@@ -53,8 +53,8 @@ jobs:
       contents: read
       deployments: write
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: '22'
       - name: אינדקס החיפוש של הספרייה (נבנה כאן, לא נשמר במאגר) ואימות חתימות
@@ -84,14 +84,16 @@ jobs:
       - name: בחירת יעד
         id: target
         if: github.event_name != 'pull_request'
+        env:
+          TARGET_IN: ${{ github.event_name == 'push' && 'preview' || inputs.target }}
         run: |
-          T="${{ github.event_name == 'push' && 'preview' || inputs.target }}"
+          T="$TARGET_IN"
           if [ "$T" = production ]; then echo "branch=main" >> "$GITHUB_OUTPUT"; else echo "branch=preview" >> "$GITHUB_OUTPUT"; fi
           echo "name=$T" >> "$GITHUB_OUTPUT"
       - name: העלאה ל-Cloudflare Pages
         id: deploy
         if: github.event_name != 'pull_request'
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3.15.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

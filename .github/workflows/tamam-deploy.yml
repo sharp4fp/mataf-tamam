@@ -36,8 +36,8 @@ jobs:
       run:
         working-directory: tamam
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: '22'
       - name: התקנה
@@ -51,7 +51,7 @@ jobs:
           npx vite preview --port 4517 --strictPort >/dev/null 2>&1 &
           sleep 3
           npm test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: tamam-dist
           path: tamam/dist
@@ -66,12 +66,12 @@ jobs:
       contents: read
       deployments: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: tamam-dist
           path: dist
       - name: יצירת הפרויקט אם אינו קיים
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3.15.0
         continue-on-error: true
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -79,7 +79,7 @@ jobs:
           command: pages project create tamam-waybill --production-branch=main
       - name: העלאה ל-Cloudflare Pages
         id: deploy
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3.15.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -96,7 +96,7 @@ jobs:
             echo "ממתין לכתובת... ($i)"; sleep 10
           done
           echo "הדף לא עולה"; exit 1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         if: failure() && steps.deploy.outcome == 'success'
         with:
           sparse-checkout: .github/scripts
