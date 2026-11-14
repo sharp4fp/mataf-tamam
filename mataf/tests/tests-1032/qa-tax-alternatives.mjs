@@ -19,6 +19,10 @@ ok(await page.evaluate(() => !!document.querySelector('[data-acc="taxalts"]')), 
 // מולא אוטומטית מטופס 161 של ההדגמה: מענק 550,000, 27 שנות עבודה
 const ph = await page.evaluate(() => ({ g: document.querySelector('[data-reng="grant"]').placeholder, y: document.querySelector('[data-reng="workYears"]').placeholder }));
 ok(/550000/.test(ph.g) && /161/.test(ph.g) && /^27/.test(ph.y), 'auto-filled-from-form-161', JSON.stringify(ph));
+// M-071/M-070: בלי הצהרה על מענקים קודמים המנוע נעצר ומפרט; מועד הזכאות מחושב מתאריך הלידה בטופס 161 (1/1972 → 67 ב-2039)
+ok(/חסרים נתונים/.test(await page.evaluate(() => document.getElementById('reng-result').innerText)) && /מעסיקים קודמים/.test(await page.evaluate(() => document.getElementById('reng-result').innerText)), 'm071-stops-without-prior-grants');
+await setVal('priorExempt', '0'); await wait(300);
+ok(/1\/2039/.test(await page.evaluate(() => document.getElementById('reng-result').innerText)), 'm070-eligibility-from-birth-date-2039');
 let rows = await page.evaluate(() => [...document.querySelectorAll('[data-taxalts] tbody tr')].map(r => r.innerText));
 ok(rows.length >= 2, 'ranked-table-has-rows', String(rows.length));
 // מקדם המרה: חלופות שמשאירות כסף בקופה נכנסות לדירוג
