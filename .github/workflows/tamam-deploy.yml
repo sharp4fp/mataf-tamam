@@ -36,8 +36,8 @@ jobs:
       run:
         working-directory: tamam
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
       - name: התקנה
@@ -51,7 +51,7 @@ jobs:
           npx vite preview --port 4517 --strictPort >/dev/null 2>&1 &
           sleep 3
           npm test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: tamam-dist
           path: tamam/dist
@@ -65,12 +65,12 @@ jobs:
       contents: read
       deployments: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: tamam-dist
           path: dist
       - name: יצירת הפרויקט אם אינו קיים
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         continue-on-error: true
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -78,7 +78,7 @@ jobs:
           command: pages project create tamam-waybill --production-branch=main
       - name: העלאה ל-Cloudflare Pages
         id: deploy
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -95,7 +95,7 @@ jobs:
             echo "ממתין לכתובת... ($i)"; sleep 10
           done
           echo "הדף לא עולה"; exit 1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         if: failure() && steps.deploy.outcome == 'success'
         with:
           sparse-checkout: .github/scripts

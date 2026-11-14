@@ -46,8 +46,8 @@ jobs:
     name: בנייה ובדיקות
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
       - name: אינדקס החיפוש של הספרייה (נבנה כאן, לא נשמר במאגר) ואימות חתימות
@@ -73,7 +73,7 @@ jobs:
           sleep 2
           cp mataf/library-site/browser-test.mjs "$RUNNER_TEMP/pw/"
           node "$RUNNER_TEMP/pw/browser-test.mjs" http://localhost:4620
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: library-dist
           path: dist
@@ -88,10 +88,10 @@ jobs:
       contents: read
       deployments: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: .github/scripts
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: library-dist
           path: dist
@@ -103,7 +103,7 @@ jobs:
           echo "name=$T" >> "$GITHUB_OUTPUT"
       - name: העלאה ל-Cloudflare Pages
         id: deploy
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
