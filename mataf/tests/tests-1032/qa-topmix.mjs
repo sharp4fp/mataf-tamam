@@ -32,6 +32,8 @@ ok(c50.some(t => /לא נכלל בתמהיל/.test(t)), 'policy-not-selected-sta
 // יעד 30%: מגיע גם לחשיפה נמוכה (מסלולי 60 ומעלה / אג"ח)
 await setT(30);
 ok(/חשיפה מושגת (2[7-9]|3[0-3])/.test(await sum()), 'target-30-reachable', await sum());
+// מסלול גיל שאינו תואם את גיל הלקוח - מוצג הבסיס בספרייה (חוזר 2015-9-29 סעיף 4(ז))
+ok((await cards()).some(t => /2015-9-29/.test(t) && /4\(ז\)/.test(t)), 'age-track-mismatch-cites-circular');
 // יעד מחוץ לטווח - הודעה ברורה עם הטווח
 await setT(100);
 ok(/מחוץ לטווח האפשרי/.test(await sum()), 'out-of-range-message', await sum());

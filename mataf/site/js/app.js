@@ -2179,6 +2179,15 @@ function currentMix() {
     mixCache = { sig, res };
     return res;
 }
+// מסלול ברירת מחדל (תלוי גיל) שאינו תואם את גיל הלקוח: מותר לפי חוזר גופים מוסדיים 2015-9-29 סעיף 4(ז),
+// אלא אם הגוף המוסדי החליט שלא לאפשר (הספרייה: cma-20150916-regulation-1175-4)
+function mixAgeNote(c) {
+    if (!c || !/^age/.test(c.cat || '')) return '';
+    const age = clientAge();
+    const fits = age == null ? null : c.cat === 'age50' ? age <= 50 : c.cat === 'age5060' ? age >= 50 && age <= 60 : age >= 60;
+    if (fits) return '';
+    return `<div class="muted small">${age == null ? 'גיל הלקוח לא ידוע מקובץ המסלקה - ' : `המסלול מיועד לקבוצת גיל אחרת מגיל הלקוח (${age}) - `}הצטרפות למסלול ברירת מחדל שאינו מתאים לגיל מותרת אם העמית בחר בכך, אלא אם הגוף המוסדי החליט שלא לאפשר (חוזר גופים מוסדיים 2015-9-29, סעיף 4(ז)). לבדוק מול הגוף לפני ביצוע.</div>`;
+}
 function mixDirection(p) {
     const c = p.choice;
     if (!c) return '';
@@ -2231,6 +2240,7 @@ function renderMixCard(key) {
         <div class="track-line"><span>היום: ${esc(p.name)}</span><b>${p.eq != null ? pct(p.eq) + (p.estimated ? '*' : '') : 'לא ידוע'}</b></div>
         ${c ? `<div class="small"><b>${mixDirection(p)}</b></div><div class="track-line"><span>${stay ? 'נשאר במסלול הנוכחי - הוא בין המובילים' : 'להעביר ל'}: <b>${esc(c.name)}</b> <span class="muted small">(${esc(mixCatLabel(c.cat))} · מקום ${c.rank} מתוך ${c.cohortN} בקטגוריה)</span></span><b>← ${pct(c.eq)}</b></div>
         <div class="muted small">ציון ${c.score.toFixed(1)} · שארפ ${c.jSharpe ?? '-'} · תשואה 3 שנים ${c.jY3 ?? '-'}% · דמי ניהול ממוצעים מצבירה ${c.feeA ?? '-'}% (ממוצע רשמי, לא הצעה אישית)</div>
+        ${mixAgeNote(c)}
         ${!stay && !sameCo ? `<div class="muted small">ניוד בין חברות${p.kind === 'pensia' ? ': לפני ביצוע לבדוק רציפות כיסוי ביטוחי (נכות ושאירים), תקופת אכשרה והחרגות מצב רפואי קודם בקרן הקולטת' : ''}.${c.joinUnverified ? ' פתיחות המסלול להצטרפות לא אומתה פרטנית.' : ''}</div>` : ''}` : ''}
         ${emptyCats.length ? `<div class="muted small">אין מסלולים מדורגים מאומתים בקטגוריות: ${emptyCats.map(esc).join(', ')} (חסר נתון פתיחות להצטרפות או מדדי ציון).</div>` : ''}
         ${renderTransferRules(p.kind, esc)}
