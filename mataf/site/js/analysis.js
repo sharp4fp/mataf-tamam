@@ -752,7 +752,16 @@ export function equityGeoOf(name) {
         return { cls: 'local', basis: 'סיווג לפי מנדט בשם המסלול (מדד/חשיפת ישראל) - שם בלבד, לא נתון נצפה' };
     return { cls: 'unclassified', basis: null };
 }
-export const GEO_LABEL = { local: 'שוק מקומי', foreign: 'מניות חו"ל', unclassified: 'לא מסווג', any: 'ללא העדפה' };
+export const GEO_LABEL = { local: 'שוק מקומי', foreign: 'מניות חו"ל', unclassified: 'לא מסווג', any: 'ללא העדפה', split: 'חלוקה בין שוק מקומי לחו"ל' };
+export const GEO_PREFS = ['any', 'local', 'foreign', 'split'];
+// חלק המניות במסלולים עם מנדט חו"ל מתוך כל המניות ברכיבי הצעה: [{geo, w, eq}] - חשיפה מנייתית משוקללת; null כשאין מניות.
+// בפועל (בדיקת המאגר 14.11): בקרנות ובקופות הזכאות אין מסלולים עם מנדט "ישראל" בשם, ולכן החלוקה היא בין מנדט חו"ל לבין השאר
+// (מקומי או לא מסווג - מסלול מניות כללי מחזיק את שניהם).
+export function geoEquityShare(components) {
+    let f = 0, l = 0, u = 0;
+    for (const c of components) { const v = (c.w || 0) * (c.eq || 0); const k = (c.geo && c.geo.cls) || 'unclassified'; if (k === 'foreign') f += v; else if (k === 'local') l += v; else u += v; }
+    return { foreign: f, local: l, unclassified: u, foreignShare: f + l + u > 0 ? f / (f + l + u) * 100 : null };
+}
 
 // חלוקת משקלי הקצאה בשילוב לפי סיווג-מנדט (שם/קטגוריה בלבד). משקלי ההקצאה מדויקים; אין מכאן שום טענה מספרית
 // על חשיפה גיאוגרפית בפועל: שדות החשיפה הרשמיים הם חשיפה דלתא/look-through במיליונים (עשויה לעבור 100%, נגזרים/גידור),
@@ -829,7 +838,7 @@ export function fundMixContext(matched, clientAge = null, kind = 'pensia') {
 // הצעה ליעד חשיפה x בתוך הקרן: מסלול בודד או שילוב סינתטי של שני מסלולים עוטפים.
 // שיטת בחירת הרכיבים (מוצהרת): הזוג העוטף הסמוך ביותר ליעד (מזעור סטייה); מוצגים נתוני הרכיבים הרשמיים בלבד.
 // אין ולא יוצג ציון/שארפ משוקלל לשילוב - שילוב מסלולים אינו ממוצע של מדדי הביצוע שלהם.
-export function proposalForTarget(ctx, x, clientAge = null, geoPref = 'any', curEq = null) {
+export function proposalForTarget(ctx, x, clientAge = null, geoPref = 'any', curEq = null, geoSplit = 50) {
     if (!ctx.ok) return { type: 'unavailable', reason: ctx.reason === 'not_supported_product' ? 'שילוב בתוך מוצר זמין כרגע לקרנות פנסיה ולקופות גמל/השתלמות שאומתו מול תקנון בלבד.' : (ctx.reason === 'not_pension_fund' ? 'שילוב בתוך קרן זמין כרגע לקרנות פנסיה בלבד (אומת מול תקנון).' : 'חסר זיהוי רשמי של המסלול.') };
     // תקנון שלא נבדק להחזקה במקביל: לא חוסמים - מוצע מעבר מלא למסלול אחד (בחירת מסלול השקעה היא זכות בסיסית של העמית;
     // שילוב של שני מסלולים דורש אימות תקנון). ראו ההחלטה למטה אחרי סינון המסלולים.
@@ -875,11 +884,28 @@ export function proposalForTarget(ctx, x, clientAge = null, geoPref = 'any', cur
             geoNote: geoNoteFor([best]), ...singleGeo(best), ...capped };
     }
     const exact = sorted.find(r => Math.abs(r.eq - x) < 0.01);
-    if (exact) return singleRet(exact);
+    if (exact && geoPref !== 'split') return singleRet(exact);
     if (x <= lo.eq) return singleRet(lo, { cappedAt: 'min', rangeLo: lo.eq, rangeHi: hi.eq });
     if (x >= hi.eq) return singleRet(hi, { cappedAt: 'max', rangeLo: lo.eq, rangeHi: hi.eq });
     let low = sorted[0], high = sorted[sorted.length - 1];
-    if (prefActive) {
+    if (geoPref === 'split') {
+        // חלוקה בין שוק מקומי לחו"ל (14.11): מבין כל הזוגות העוטפים את היעד (ומסלול בודד מדויק) - הזוג שחלק חו"ל באפיק המניות
+        // שלו (לפי סיווג מנדט בשם בלבד) הקרוב ביותר לחלוקה המבוקשת; שוויון - הזוג הצר יותר. בלי רכיב מסווג - הזוג הסמוך כרגיל.
+        const f = Math.min(100, Math.max(0, Number(geoSplit)));
+        let best = null;
+        for (let i = 0; i < sorted.length; i++) for (let j = i + 1; j < sorted.length; j++) {
+            const a = sorted[i], b = sorted[j];
+            if (!(a.eq <= x && b.eq >= x) || b.eq - a.eq < 1e-9) continue;
+            const w = (x - a.eq) / (b.eq - a.eq);
+            const sh = geoEquityShare([{ geo: b.geo, w, eq: b.eq }, { geo: a.geo, w: 1 - w, eq: a.eq }]).foreignShare;
+            const score = (sh === null ? 1000 : Math.abs(sh - f)) + (b.eq - a.eq) / 1000;
+            if (!best || score < best.score) best = { score, a, b, sh };
+        }
+        if (best && sorted.some(r => r.geo.cls === 'foreign' || r.geo.cls === 'local')) { low = best.a; high = best.b; }
+        else {
+            for (let i = 0; i < sorted.length - 1; i++) if (sorted[i].eq <= x && sorted[i + 1].eq >= x) { low = sorted[i]; high = sorted[i + 1]; break; }
+        }
+    } else if (prefActive) {
         // ניווט גיאוגרפי: הרכיב התחתון/העליון נבחר קודם מבין המסלולים המסווגים בכיוון המועדף (הקרובים ביותר ליעד), ורק אם אין כאלה - מהלא-מסווגים.
         const below = sorted.filter(r => r.eq <= x), above = sorted.filter(r => r.eq >= x);
         low = [...below].reverse().find(r => r.geo.cls === geoPref && !r.isCurrent) || [...below].reverse().find(r => r.geo.cls === geoPref) || below[below.length - 1] || sorted[0];
@@ -891,13 +917,16 @@ export function proposalForTarget(ctx, x, clientAge = null, geoPref = 'any', cur
         }
     }
     const w = (x - low.eq) / (high.eq - low.eq);
+    if (geoPref === 'split' && (w < 1e-6 || w > 1 - 1e-6)) return singleRet(w < 1e-6 ? low : high);
     const achieved = w * high.eq + (1 - w) * low.eq;
     const AGE_BAND = /לבני\s*\d|מותאם גיל|תלוי גיל/;
     const ageClause = (AGE_BAND.test(low.name || '') || AGE_BAND.test(high.name || '')) && ctx.takanon && ctx.takanon.ageElection ? ctx.takanon.ageElection : null;
     const geoMix = geoMixOf([{ geo: high.geo, w }, { geo: low.geo, w: 1 - w }]);
     // מצב 'לא מקויים' (מבוסס מנדט בלבד, ללא חשבון חסם): העדפה פעילה ואין אף רכיב מסווג-מנדט בכיוון המועדף - לא להציג כהושגה.
     const geoUnmet = prefActive && ![low, high].some(r => r.geo.cls === geoPref);
-    return { type: 'mix', low, high, wHigh: w, wLow: 1 - w, achieved, takanon: ctx.takanon, ageClause, geoNote: geoNoteFor([low, high]), geoMix, geoUnmet };
+    const splitNote = geoPref === 'split' && !sorted.some(r => r.geo.cls === 'foreign' || r.geo.cls === 'local')
+        ? 'בקרן/קופה אין מסלול עם מנדט חו"ל או ישראל בשם - לא ניתן לכוון את החלוקה בהחזקה זו; ההצעה לפי היעד בלבד.' : null;
+    return { type: 'mix', low, high, wHigh: w, wLow: 1 - w, achieved, takanon: ctx.takanon, ageClause, geoNote: splitNote || geoNoteFor([low, high]), geoMix, geoUnmet };
 }
 
 // פתרון יעד כולל: החזקות קפואות (לא נבחרו) תורמת חשיפה קבועה; ההחזקות הנבחרות נדרשות לכסות את ההפרש.
@@ -910,12 +939,13 @@ export function proposalForTarget(ctx, x, clientAge = null, geoPref = 'any', cur
 export function plannerSnapshotOf(state) {
     return { v: 1,
         targetEq: (typeof state.targetEq === 'number' && isFinite(state.targetEq)) ? state.targetEq : null,
-        geoPref: ['any', 'local', 'foreign'].includes(state.geoPref) ? state.geoPref : 'any',
+        geoPref: GEO_PREFS.includes(state.geoPref) ? state.geoPref : 'any',
+        geoSplit: (typeof state.geoSplit === 'number' && state.geoSplit >= 0 && state.geoSplit <= 100) ? state.geoSplit : 50,
         unknownAssumption: (typeof state.unknownAssumption === 'number' && isFinite(state.unknownAssumption)) ? Math.min(100, Math.max(0, state.unknownAssumption)) : null,
         eligible: { ...state.eligible }, excluded: { ...state.excluded }, confirmed: { ...state.confirmed }, selections: { ...(state.selections || {}) }, marketPick: { ...(state.marketPick || {}) } };
 }
 export function plannerRestoreOf(pl, holdings) {
-    const out = { eligible: {}, excluded: {}, confirmed: {}, marketPick: {}, targetEq: null, geoPref: 'any', unknownAssumption: null, dropped: { keys: 0, confirms: 0, eligUnconfirmed: 0 } };
+    const out = { eligible: {}, excluded: {}, confirmed: {}, marketPick: {}, targetEq: null, geoPref: 'any', geoSplit: 50, unknownAssumption: null, dropped: { keys: 0, confirms: 0, eligUnconfirmed: 0 } };
     if (!pl || typeof pl !== 'object' || pl.v !== 1) return out;
     const byKey = new Map();
     for (const h of holdings || []) byKey.set(trackKeyOf(h.account.account, h.track), h);
@@ -945,7 +975,8 @@ export function plannerRestoreOf(pl, holdings) {
     }
     // בחירת רשומה מתנגשת משוחזרת כמות שהיא; תקפותה נבדקת מול קבוצת הקונפליקט בפועל בזמן הניתוח (אינדקס מחוץ לטווח מתעלם)
     if (typeof pl.targetEq === 'number' && isFinite(pl.targetEq) && pl.targetEq >= 0 && pl.targetEq <= 100) out.targetEq = pl.targetEq;
-    if (['any', 'local', 'foreign'].includes(pl.geoPref)) out.geoPref = pl.geoPref;
+    if (GEO_PREFS.includes(pl.geoPref)) out.geoPref = pl.geoPref;
+    if (typeof pl.geoSplit === 'number' && pl.geoSplit >= 0 && pl.geoSplit <= 100) out.geoSplit = pl.geoSplit;
     if (typeof pl.unknownAssumption === 'number' && isFinite(pl.unknownAssumption) && pl.unknownAssumption >= 0 && pl.unknownAssumption <= 100) out.unknownAssumption = pl.unknownAssumption;
     return out;
 }
@@ -1154,7 +1185,7 @@ export function solveTargetPlan(included, selectedKeys, T, clientAge = null, who
                         : top ? { type: 'market', track: top, auto: true, achieved: top.eq, sameCompany: sameCo(top) }
                         : { type: 'stay', cappedAt: p.targetEq > p.inHi ? 'max' : 'min', rangeLo: p.inLo, rangeHi: p.inHi };
                 } else {
-                    p.proposal = Math.abs(p.targetEq - p.curEq) < 0.005 ? { type: 'stay' } : proposalForTarget(p.ctx, p.targetEq, clientAge, geoPref, p.curEq);
+                    p.proposal = Math.abs(p.targetEq - p.curEq) < 0.005 ? { type: 'stay' } : proposalForTarget(p.ctx, p.targetEq, clientAge, geoPref, p.curEq, opts.geoSplit ?? 50);
                 }
                 p.achievedEq = p.proposal.type === 'stay' ? p.curEq : (p.proposal.achieved ?? p.curEq);
                 selAch += p.achievedEq * p.bal;

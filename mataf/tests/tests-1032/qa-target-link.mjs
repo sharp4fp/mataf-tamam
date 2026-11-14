@@ -47,6 +47,16 @@ const before = await page.evaluate(() => { window.__sl = document.querySelector(
 await wait(200);
 const live = await page.evaluate(() => ({ same: document.querySelector('[data-eq-slider]') === window.__sl, label: document.querySelector('.eq-target-out').textContent, card: [...document.querySelectorAll('[data-tblock] .target-card')].some(c => c.innerText.includes('ההמלצה ליעד 72')) }));
 ok(before && live.same && /72/.test(live.label) && live.card, 'live-update-while-dragging', JSON.stringify(live));
+// חלוקה בין שוק מקומי לחו"ל (14.11): אפשרות רביעית בחלון הגלילה, בחירת חלק חו"ל, וסיכום החלוקה בהצעה
+const geoOpts = await page.evaluate(() => [...document.querySelectorAll('select[data-geo-pref] option')].map(o => o.value).join(','));
+ok(geoOpts === 'any,local,foreign,split', 'geo-select-has-split-option', geoOpts);
+await page.evaluate(() => { const s = document.querySelector('select[data-geo-pref]'); s.value = 'split'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await wait(400);
+ok(await page.evaluate(() => !!document.querySelector('select[data-geo-split]')), 'split-share-select-appears');
+await page.evaluate(() => { const s = document.querySelector('select[data-geo-split]'); s.value = '70'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await wait(400);
+const splitTxt = await page.evaluate(() => document.querySelector('#acc-risk').textContent.replace(/\s+/g, ' '));
+console.log('  ', splitTxt.match(/חלוקת אפיק המניות בהצעה.{0,420}/)?.[0]);
+ok(/חלוקת אפיק המניות בהצעה/.test(splitTxt) && /מבוקש: 70% חו"ל · 30% מקומי/.test(splitTxt), 'split-summary-shown', splitTxt.match(/חלוקת אפיק המניות[^\n]*/)?.[0] || '');
+await page.evaluate(() => { const s = document.querySelector('select[data-geo-pref]'); s.value = 'any'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await wait(400);
 // הוצאת החזקה מהשינוי בחלק רמת הסיכון ← הכרטיס שלה בתיק אומר "ללא שינוי"
 await page.evaluate(() => { const c = document.querySelector('[data-eligible]'); c.click(); });
 await wait(400);

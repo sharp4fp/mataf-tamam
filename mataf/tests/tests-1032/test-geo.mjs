@@ -57,5 +57,34 @@ const plan = m.solveTargetPlan(included, new Set(['h1','h2']), 77, 43, whole, 'a
 chk('solveTargetPlan gemel+pension feasible/infeasible defined', ['feasible','infeasible','partial','underdetermined','conditional'].includes(plan.status), plan.status+' achieved='+(plan.achieved&&plan.achieved.toFixed(2)));
 const planLocal = m.solveTargetPlan(included, new Set(['h1']), 77, 43, whole, 'local');
 chk('solveTargetPlan local pref runs', !!planLocal.status, planLocal.status);
+// 5. חלוקה בין שוק מקומי לחו"ל (14.11): ההצעה מכוונת לחלק חו"ל המבוקש באפיק המניות, היעד הכולל נשמר
+chk('GEO_PREFS includes split', m.GEO_PREFS.includes('split') && m.GEO_LABEL.split === 'חלוקה בין שוק מקומי לחו"ל');
+const sh = m.geoEquityShare([{ geo: { cls: 'foreign' }, w: 0.5, eq: 100 }, { geo: { cls: 'local' }, w: 0.5, eq: 50 }]);
+chk('geoEquityShare equity-weighted', Math.abs(sh.foreignShare - 66.667) < 0.01, String(sh.foreignShare));
+chk('geoEquityShare unclassified-only = 0% foreign', m.geoEquityShare([{ geo: { cls: 'unclassified' }, w: 1, eq: 60 }]).foreignShare === 0);
+const pctxs = Object.entries(OFFICIAL_PENSION).filter(([k, r]) => r.parentCo != null && /מניות$/.test(r.name || '')).map(([k]) => m.fundMixContext({ officialId: Number(k) }, 43, 'pensia')).filter(c => c.ok && c.mixVerified);
+let tested = 0, steered = 0;
+for (const c of pctxs) {
+  const shares = {};
+  const classified = c.tracks.map(r => m.equityGeoOf(r.name).cls);
+  if (!classified.includes('foreign')) continue;
+  for (const f of [20, 80]) {
+    const x = (c.lo + c.hi) / 2;
+    const pr = m.proposalForTarget(c, x, 43, 'split', c.row.eq, f);
+    if (pr.type !== 'mix' && pr.type !== 'single' && pr.type !== 'stay') continue;
+    tested++;
+    chk('split keeps target ' + c.row.parentCoName + ' f=' + f, Math.abs((pr.achieved ?? x) - x) < 0.01 || pr.type === 'stay', String(pr.achieved));
+    if (pr.type === 'mix') { const s2 = m.geoEquityShare([{ geo: pr.high.geo, w: pr.wHigh, eq: pr.high.eq }, { geo: pr.low.geo, w: pr.wLow, eq: pr.low.eq }]).foreignShare; shares[f] = s2; }
+  }
+  if (shares[20] != null && shares[80] != null) { steered++; chk('split steers toward requested share ' + c.row.parentCoName, shares[80] >= shares[20], JSON.stringify(shares)); }
+  if (tested >= 6) break;
+}
+console.log('  split cases tested:', tested, 'steered:', steered);
+chk('split: proposals generated', tested > 0);
+chk('split: at least one fund steered', steered > 0);
+// שמירה ושחזור של החלוקה
+const snap = m.plannerSnapshotOf({ targetEq: 60, geoPref: 'split', geoSplit: 30, unknownAssumption: null, eligible: {}, excluded: {}, confirmed: {}, selections: {}, marketPick: {} });
+const back = m.plannerRestoreOf(snap, []);
+chk('split persists', back.geoPref === 'split' && back.geoSplit === 30, JSON.stringify([back.geoPref, back.geoSplit]));
 console.log(fails ? `\n${fails} FAILURES` : '\nALL PASS');
 process.exit(fails?1:0);

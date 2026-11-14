@@ -4,7 +4,7 @@ import { parseMaslakaXml, KIND_LABEL, normalizeIdNumber } from './maslaka.js';
 import { extract161, EMPTY_161, FIELD_LABELS, contradictions161 } from './pdf161.js';
 import { COMPANIES, SCENARIO_LABELS, GUAR_LABELS, loadCompany, scenariosOf, guaranteesOf, hasSpouse, inferCompany, mekademEstimate, SURV_RATES, SURV_RATE_LABELS, scenarioForRate } from './mekadem.js';
 import { extractDoc } from './pdfdocs.js';
-import { marketCandidates, parentIdOfMatch, pensionFundIdOfMatch, analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
+import { marketCandidates, parentIdOfMatch, pensionFundIdOfMatch, analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, geoEquityShare, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
 import { loadPeerData, periodLabel, findOwnRow, compareTrack, TRANSFER_GATES, EXISTING_VS_FUTURE_NOTE, BASELINE_NOTE, PEERS_SOURCE_NOTE } from './peers.js';
 import { renderReport, renderBeforeAfter, eligibleKeysOf } from './report.js';
 import { renderTransferRules } from './transfer-rules.js';
@@ -90,6 +90,7 @@ const state = {
     demo: false,
     targetEq: null,
     geoPref: 'any',
+    geoSplit: 50, // חלק חו"ל באפיק המניות כשנבחרה חלוקה (14.11)
     eligible: {},
     marketPick: {}, // M-037: בחירת מסלול מהשוק לכל החזקה (מפתח -> fundId)
     goals: { horizon: '', liquidity: 'בינוני', inheritance: false, consolidate: false, keepExemption: false, capitalFirst: false },
@@ -277,7 +278,7 @@ async function loadEncryptedPortfolio() {
         recompute(); // view טרי מהצינורות ששוחזרו - מפתחות/זהויות נמדדים מול הניתוח הנוכחי, לא מול מצב סטלה
         const restored = plannerRestoreOf(safeObj(manifest.planner), (view && view.holdings) || []);
         state.eligible = restored.eligible; state.excluded = restored.excluded; state.confirmed = restored.confirmed; state.marketPick = restored.marketPick || {};
-        state.targetEq = restored.targetEq; state.geoPref = restored.geoPref; state.unknownAssumption = restored.unknownAssumption;
+        state.targetEq = restored.targetEq; state.geoPref = restored.geoPref; state.geoSplit = restored.geoSplit ?? 50; state.unknownAssumption = restored.unknownAssumption;
         planCache = { sig: null, plan: null };
         // שער קשירת לקוח גם על נתונים משוחזרים: קובץ שמירה (מדור קודם או ששונה חיצונית) עלול לשאת
         // טופס 161 של לקוח אחר. זהות שונה -> הפרדה; חסרה -> לא פתור. הכל נשמר במצב ממתין, לא נמחק.
@@ -1867,9 +1868,9 @@ function currentTargetPlan() {
     const selKeys = eligibleKeysOf(inc, state.eligible);
     if (!selKeys.length) return null;
     const whole = wholePlanContext();
-    const sig = JSON.stringify(state.marketPick || {}) + '|' + state.targetEq + '|' + selKeys.slice().sort().join(',') + '|' + inc.map(x => x.key + ':' + x.bal + ':' + x.eq).join(',') + '|' + whole.estFrozen.map(e => e.bal + ':' + e.eq).join(',') + '|' + whole.noBasisVal + '|' + (whole.frozenKnown || []).map(e => e.bal + ':' + e.eq).join(',') + '|' + (whole.unknownAssumption ?? '') + '|' + (state.geoPref || 'any');
+    const sig = JSON.stringify(state.marketPick || {}) + '|' + state.targetEq + '|' + selKeys.slice().sort().join(',') + '|' + inc.map(x => x.key + ':' + x.bal + ':' + x.eq).join(',') + '|' + whole.estFrozen.map(e => e.bal + ':' + e.eq).join(',') + '|' + whole.noBasisVal + '|' + (whole.frozenKnown || []).map(e => e.bal + ':' + e.eq).join(',') + '|' + (whole.unknownAssumption ?? '') + '|' + (state.geoPref || 'any') + ':' + (state.geoSplit ?? 50);
     if (planCache.sig === sig) return planCache.plan;
-    const plan = solveTargetPlan(inc, new Set(selKeys), state.targetEq, clientAge(), whole, state.geoPref || 'any', { market: true, picks: state.marketPick || {} });
+    const plan = solveTargetPlan(inc, new Set(selKeys), state.targetEq, clientAge(), whole, state.geoPref || 'any', { market: true, picks: state.marketPick || {}, geoSplit: state.geoSplit ?? 50 });
     planCache = { sig, plan };
     return plan;
 }
@@ -2176,6 +2177,25 @@ function geoMixHtml(gm) {
     if (!parts.length) return '';
     return `<div class="muted small">חלוקת משקלי ההצעה לפי סיווג-מנדט (שם/קטגוריה בלבד - לא נתון נצפה): ${parts.join(' · ')}. אין שדה רשמי לחלוקת מניות ארץ/חו"ל, ולחלק הלא-מסווג אין בסיס לייחס כיוון גיאוגרפי.</div>`;
 }
+// סיכום חלוקת אפיק המניות בכל ההצעה מול החלוקה המבוקשת (לפי סיווג מנדט בשם המסלול בלבד - לא נתון נצפה)
+function geoSplitSummaryHtml(plan) {
+    const comps = [];
+    for (const p of plan.per) {
+        const pr = p.proposal, bal = p.bal || 0;
+        const curName = (p.h && p.h.track && p.h.track.name) || '';
+        if (!pr || pr.type === 'stay' || pr.type === 'unavailable' || pr.type === 'unverified_fund') comps.push({ geo: equityGeoOf(curName), w: bal, eq: p.curEq ?? 0, fo: p.h && p.h.match && p.h.match.row ? p.h.match.row.fo : null });
+        else if (pr.type === 'mix') { comps.push({ geo: pr.high.geo || equityGeoOf(pr.high.name), w: bal * pr.wHigh, eq: pr.high.eq, fo: pr.high.fo }); comps.push({ geo: pr.low.geo || equityGeoOf(pr.low.name), w: bal * pr.wLow, eq: pr.low.eq, fo: pr.low.fo }); }
+        else if (pr.track) comps.push({ geo: pr.track.geo || equityGeoOf(pr.track.name), w: bal, eq: pr.track.eq, fo: pr.track.fo });
+    }
+    const g = geoEquityShare(comps), tot = g.foreign + g.local + g.unclassified;
+    const f = state.geoSplit ?? 50;
+    // נתון רשמי נצפה לצד הסיווג: נכסי חו"ל (כל הנכסים, לא רק מניות) משוקלל לפי יתרה, כשקיים לרכיב
+    let foW = 0, foV = 0;
+    for (const c of comps) if (c.fo != null) { foW += c.w; foV += c.w * c.fo; }
+    const res = g.foreignShare === null ? 'אין בהצעה חשיפה למניות.'
+        : `מתוך המניות בהצעה: <b>${pct(g.foreignShare)}</b> במסלולים עם מנדט חו"ל בשם${g.local > 0 ? `, ${pct(g.local / tot * 100)} במסלולים עם מנדט ישראל` : ''}, ו-<b>${pct(g.unclassified / tot * 100)}</b> במסלולי מניות כלליים (מחזיקים גם ישראל וגם חו"ל).`;
+    return `<div class="callout note-c"><b>חלוקת אפיק המניות בהצעה</b> (מבוקש: ${f}% חו"ל · ${100 - f}% מקומי). ${res}${foW > 0 ? `<div><b>נכסי חו"ל בפועל לפי נתון רשמי: ${pct(foV / foW)}</b> (כל הנכסים, לא רק מניות; משוקלל לפי יתרה).</div>` : ''}<div class="muted small">ההצעה מעדיפה בכל קרן את שילוב המסלולים שחלק מנדט החו"ל בו הקרוב ביותר לחלוקה המבוקשת, בלי לשנות את יעד החשיפה למניות. אין שדה רשמי לחלוקת מניות ארץ/חו"ל, ובקרנות ובקופות הזמינות אין כיום מסלולים עם מנדט "ישראל" בשם - לכן הנתון הרשמי של נכסי חו"ל הוא הבדיקה המהימנה יותר.</div></div>`;
+}
 function geoUnmetHtml(pr) {
     return pr && pr.geoUnmet ? ` <span class="tag-miss">הכיוון "${GEO_LABEL[state.geoPref] || ''}" אינו מקויים בבסיס נתון: אין בהצעה רכיב מסווג-מנדט בכיוון המועדף, ולכן היא אינה מבטיחה שינוי מדיד בחלוקה הגיאוגרפית</span>` : '';
 }
@@ -2263,6 +2283,7 @@ function renderTargetController() {
             ${anyChange ? `<div class="muted small">${SEVERANCE_CAVEAT}</div>` : ''}
         </div>`;
     }
+    if (plan && plan.per && state.geoPref === 'split' && planHtml) planHtml += geoSplitSummaryHtml(plan);
     return `
         <div class="sliderwrap">
             <div class="small"><b>דרך אילו מוצרים ליישם את היעד?</b> כל ההחזקות המזוהות משתתפות. הסירו סימון כדי להשאיר החזקה ללא שינוי; היעד מתחלק בין המסומנות בלבד. ההמלצה לכל החזקה מוצגת גם בחלק "תיק הנכסים".</div>
@@ -2270,7 +2291,8 @@ function renderTargetController() {
                 <option value="any" ${(state.geoPref || 'any') === 'any' ? 'selected' : ''}>ללא העדפה</option>
                 <option value="local" ${state.geoPref === 'local' ? 'selected' : ''}>שוק מקומי (ישראל)</option>
                 <option value="foreign" ${state.geoPref === 'foreign' ? 'selected' : ''}>מניות חו"ל</option>
-            </select></div>
+                <option value="split" ${state.geoPref === 'split' ? 'selected' : ''}>חלוקה בין שוק מקומי לחו"ל</option>
+            </select>${state.geoPref === 'split' ? ` <label>חו"ל מתוך אפיק המניות: <select data-geo-split>${[10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90].map(v => `<option value="${v}"${(state.geoSplit ?? 50) === v ? ' selected' : ''}>${v}% חו"ל · ${100 - v}% מקומי</option>`).join('')}</select></label>` : ''}</div>
             <div class="muted small">הסיווג נשען על המנדט בשם המסלול בלבד - אין שדה רשמי לחלוקת מניות ארץ/חו"ל. ברוב המסלולים אין בסיס כזה בשם ('לא מסווג'), ואז ההצעה נשענת על מסלולים לא-מסווגים ומציינת זאת במפורש - היא אינה מבטיחה את הכיוון. מסלולים המסווגים בכיוון ההפוך מודרים מההצעה.</div>
             ${cbList}
             ${unidentNote}
@@ -2812,7 +2834,7 @@ async function onMaslaka(files) {
     state.portfolio = p; state.reports = rep; state.demo = false; state.busy = false;
     // איפוס מלא של מצב תלוי-תיק בעת החלפת קובץ (09/11/2026): אישורי זהות, בחירות ידניות, החרגות מהממוצע,
     // זכאויות שילוב, יעד/העדפת גיאוגרפיה ובחירת תחילת קצבה - כולם קשורים לחשבונות ולמסלולים של הקובץ הקודם.
-    state.confirmed = {}; state.selections = {}; state.excluded = {}; state.targetEq = null; state.geoPref = 'any'; state.eligible = {}; state.unknownAssumption = null; state.marketPick = {};
+    state.confirmed = {}; state.selections = {}; state.excluded = {}; state.targetEq = null; state.geoPref = 'any'; state.geoSplit = 50; state.eligible = {}; state.unknownAssumption = null; state.marketPick = {};
     state.pensionStartSel = null; state.manualDropNote = ''; state.uploadError = '';
     // כרטיס המקדם (תכנון פרישה) קשור ללקוח/לקובץ: גוף מנהל (מזוהה או שנבחר ידנית), תרחיש, הבטחה, יתרה,
     // אומדן אחרון וחלופות מתאפסים בהחלפת קובץ - כדי שלקוח/קובץ חדש לא יירש מנהל או תוצאה של הקודם.
@@ -2987,6 +3009,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (t.dataset.unknownAssump !== undefined) { const v = t.value.trim(); state.unknownAssumption = v === '' ? null : Math.min(100, Math.max(0, Number(v) || 0)); render(); return; }
         if (t.dataset.geoPref !== undefined) { state.geoPref = t.value; render(); return; }
+        if (t.dataset.geoSplit !== undefined) { state.geoSplit = parseInt(t.value); render(); return; }
         if (t.dataset.selectId !== undefined) {
             const k = t.dataset.selectId;
             const hh = view ? view.holdings.find(x => trackKeyOf(x.account.account, x.track) === k) : null;
