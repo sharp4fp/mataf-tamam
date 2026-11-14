@@ -1,5 +1,5 @@
 // qa-target-link.mjs - יעד החשיפה (חלק רמת הסיכון) מניע את ההמלצות בתיק הנכסים (בקשת הבעלים 11.11.2026)
-// ברירת מחדל: כל ההחזקות המזוהות משתתפות; בקר נוסף בראש תיק הנכסים; עדכון חי בזמן גרירה.
+// ברירת מחדל: כל ההחזקות המזוהות משתתפות; בקר אחד בחלק רמת סיכון וחשיפה, ההמלצות בחלק השוואה לשוק וחלופות (14.11); עדכון חי בזמן גרירה.
 import puppeteer from 'puppeteer-core';
 const browser = await puppeteer.launch({ executablePath: '/usr/bin/google-chrome', headless: 'new', args: ['--no-sandbox', '--disable-dev-shm-usage'] });
 const page = await browser.newPage();
@@ -24,7 +24,7 @@ ok(await page.evaluate(() => !!document.querySelector('[data-eq-slider]')), 'top
 ok(await page.evaluate(() => [...document.querySelectorAll('[data-eligible]')].every(c => c.checked)), 'all-identified-eligible-by-default');
 
 const setTop = async (v) => { await page.evaluate((v) => { const s = document.querySelector('[data-eq-slider]'); s.value = v; s.dispatchEvent(new Event('change', { bubbles: true })); }, v); await wait(400); };
-const cards = () => page.evaluate(() => [...document.querySelectorAll('#acc-portfolio [data-tblock] .target-card')].map(c => c.innerText.replace(/\s+/g, ' ').trim()));
+const cards = () => page.evaluate(() => [...document.querySelectorAll('#acc-alts [data-tblock] .target-card')].map(c => c.innerText.replace(/\s+/g, ' ').trim()));
 await setTop(85);
 const c85 = await cards();
 ok(c85.length >= 3, 'every-holding-has-target-card', String(c85.length));

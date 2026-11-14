@@ -712,3 +712,11 @@ details.alts.market .altstbl td:nth-child(2) { min-width: 180px; }
     .acc-has-aside > .acc-aside { position: static; order: 2; padding: 8px 16px; }
     .acc-has-aside > .acc-body { order: 3; }
 }
+
+/* ניתוח תיק פנסיוני - שורת הסבר מתחת לכותרת החלק ולשוניות הדוחות (14.11) */
+.acc-title { flex-wrap: wrap; row-gap: 2px; }
+.acc-lead { flex-basis: 100%; font-size: 0.8rem; font-weight: 400; color: #5b6b7c; line-height: 1.35; }
+.rep-tabs { border-top: 0; margin: 0 0 12px; padding-top: 0; }
+.rep-tabs .subtab { color: #1f4d3f; border-color: #b9cfc6; }
+.rep-tabs .subtab:hover { background: #eef5f1; }
+.rep-tabs .subtab.on { background: #2e7d4f; color: #fff; border-color: #2e7d4f; }

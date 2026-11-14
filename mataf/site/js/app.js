@@ -121,6 +121,13 @@ function numSel(attr, from, to, step, cur, ph, fmtv = (v) => String(v)) {
     if (c && !opts.includes(c)) opts.push(c);
     return `<select ${attr}><option value="">${esc(ph)}</option>${opts.map(v => `<option value="${esc(v)}"${v === c ? ' selected' : ''}>${esc(fmtv(v))}</option>`).join('')}</select>`;
 }
+// גרסאות תצוגה של ניתוח תיק פנסיוני: גרסה קודמת נשארת נגישה ולא נמחקת (הנחיית הבעלים 14.11 10:53)
+const PORT_LAYOUTS = [['v8', '8 חלקים (חדשה)'], ['v11', '11 חלקים (קודמת, עד 14.11)']];
+const isV11 = () => state.portLayout === 'v11';
+function renderLayoutSwitch() {
+    const cur = isV11() ? 'v11' : 'v8';
+    return `<div class="subtabs" role="group" aria-label="גרסת תצוגה"><span class="small" style="color:#fff;opacity:.85;align-self:center">גרסת תצוגה:</span>${PORT_LAYOUTS.map(([k, l]) => `<button type="button" class="subtab${k === cur ? ' on' : ''}" data-action="layout|${k}" aria-pressed="${k === cur}">${l}</button>`).join('')}</div>`;
+}
 function acc(id, titleHtml, badge, body, forceOpen = false, aside = '') {
     const isOpen = forceOpen || state.open[id] === undefined ? (forceOpen || false) : state.open[id];
     return `<section class="card acc${aside ? ' acc-has-aside' : ''}" id="acc-${id}">${aside ? `<div class="acc-aside">${aside}</div>` : ''}
@@ -572,6 +579,7 @@ function renderStep3() {
             ${chk('capitalFirst', 'שמירה על ההון עבור הלקוח והיורשים ככל הניתן, גם על חשבון קצבה גבוהה יותר (ללא ערובה לשימור מלא של ההון)')}
             ${chk('consolidate', 'ריכוז הנכסים למסלול פנסיוני אחד')}
         </div>
+        ${isV11() ? '' : `<div class="subhead">יעדי כסף (סכום ותאריך)</div>${rgGoalBlocks()}`}
         <div class="muted small">המטרות נרשמות כאן כדי שהבדיקות הפתוחות למטה ישקפו אותן. בשלב זה אין במערכת מסקנות מוכנות לגבי ניוד או העברה בין-דורית.</div>
     `;
 }
@@ -1456,9 +1464,9 @@ function rgListSel(key, val, list) {
     const opts = [['', 'בחרו...'], ...list.map(x => [x, x]), ...(val && !list.includes(val) ? [[val, val]] : [])];
     return '<select data-rg="' + key + '">' + opts.map(([v, l]) => '<option value="' + esc(v) + '"' + (val === v ? ' selected' : '') + '>' + esc(l) + '</option>').join('') + '</select>';
 }
-function renderRiskGoals() {
+// יעדי כסף (סכום ותאריך) - נרשמים בחלק "מטרות הלקוח" ומשמשים את דף ההתאמה (איחוד 14.11)
+function rgGoalBlocks() {
     const r = state.riskgoals;
-    const auto = rgAuto();
     const shownGoal = (i) => i === 0 || !!(r.goals[i - 1].desc || r.goals[i - 1].amount);
     const goalBlock = (i) => {
         if (!shownGoal(i)) return '';
@@ -1473,12 +1481,17 @@ function renderRiskGoals() {
             + '<label>כמה מהתיק מיועד למטרה הזו (₪, לא חובה)<input type="number" min="0" step="10000" data-rg="g' + i + 'alloc" value="' + esc(g.alloc) + '"></label>'
             + '</div></div>';
     };
+    return goalBlock(0) + goalBlock(1) + goalBlock(2);
+}
+function renderRiskGoals() {
+    const r = state.riskgoals;
+    const auto = rgAuto();
+    const goals = r.goals.filter(g => g.desc || g.amount).map(g => esc(g.desc || 'מטרה') + (g.amount ? ' - ₪' + Number(g.amount).toLocaleString('he-IL') : '')).join(' · ');
     return '<div class="card intake">'
         + '<div class="track-line"><span><b>האם רמת הסיכון מתאימה למטרות הלקוח?</b></span><span class="small muted">דף עבודה פנימי לסוכן - לא נכנס לדוח</span></div>'
         + '<div class="muted small">ממלאים את המטרות של הלקוח ואת היחס שלו לסיכון, והדף מציף <b>שאלות לבדיקה</b> (למשל: "הלקוח אמר שהוא שמרן, אבל 70% מהתיק במניות"). אין כאן ציון ואין המלצה אוטומטית; שדה ריק מסומן "חסר". הבסיס: הפרדה בין <b>מה הלקוח רוצה</b> (נכונות), <b>מה הוא יכול</b> (יכולת) ו<b>האם המטרות ממומנות</b> (<a href="https://www.kitces.com/blog/separating-risk-tolerance-from-risk-capacity-just-because-you-can-afford-to-take-risk-doesnt-mean-you-should/" target="_blank" rel="noopener">Kitces</a>, <a href="https://www.morningstar.com/financial-advisors/risk-capacity-is-more-than-just-time-frame" target="_blank" rel="noopener">Morningstar</a>).</div>'
-        + '<div class="subhead">1. המטרות של הלקוח</div>'
-        + goalBlock(0) + goalBlock(1) + goalBlock(2)
-        + '<div class="subhead">2. התיק והכסף שנדרש בקרוב</div>'
+        + (isV11() ? '<div class="subhead">1. המטרות של הלקוח</div>' + rgGoalBlocks() + '<div class="subhead">2. התיק והכסף שנדרש בקרוב</div>'
+            : '<div class="note small">המטרות נלקחות מחלק "מטרות הלקוח": ' + (goals || '<b>טרם הוזנו</b>') + '</div><div class="subhead">1. התיק והכסף שנדרש בקרוב</div>')
         + (auto ? '<div class="note small">מקובץ המסלקה: יתרה <b>₪' + auto.balance.toLocaleString('he-IL') + '</b>, חשיפה משוקללת למניות <b>' + (auto.equity === null ? 'לא ידועה' : auto.equity + '%') + '</b>' + (auto.estimated ? ' (חלקה הערכה לפי שם המסלול)' : '') + (auto.equity !== null && auto.coverage < 100 ? ' (על ' + auto.coverage + '% מהיתרה שהמסלול שלה מזוהה)' : '') + '. אפשר לתקן בשדות למטה.</div>' : '<div class="muted small">אין קובץ מסלקה - הזינו את היתרה והחשיפה ידנית.</div>')
         + '<div class="netgrid">'
         + '<label>יתרת התיק (₪)<input type="number" min="0" step="10000" data-rg="balance" value="' + esc(r.balance) + '" placeholder="' + (auto ? auto.balance + ' (מסלקה)' : '') + '"></label>'
@@ -1488,7 +1501,7 @@ function renderRiskGoals() {
         + '<label>כסף שיימשך מהתיק בקרוב (₪)<input type="number" min="0" step="10000" data-rg="liq" value="' + esc(r.liq) + '"></label>'
         + '<label>מתי' + rgYearsSel('liqDate', r.liqDate) + '</label>'
         + '</div>'
-        + '<div class="subhead">3. היחס של הלקוח לסיכון</div>'
+        + '<div class="subhead">' + (isV11() ? 3 : 2) + '. היחס של הלקוח לסיכון</div>'
         + '<div class="netgrid">'
         + '<label>כמה סיכון הלקוח אומר שהוא מוכן לקחת' + rgSel('willing', r.willing, [['', 'בחרו...'], ['low', 'מעט - שמרן'], ['mid', 'בינוני'], ['high', 'הרבה']]) + '</label>'
         + '<label>מה עשה בירידה הקודמת בשווקים' + rgSel('behavior', r.behavior, [['', 'בחרו...'], ['sold', 'מכר'], ['held', 'לא שינה כלום'], ['bought', 'קנה עוד'], ['unknown', 'לא ידוע']]) + '</label>'
@@ -1961,6 +1974,7 @@ function targetSummaryCore(plan) {
     }
     return `חשיפה מושגת ${pct(plan.achievedWholeEst)}* · ${changes ? `${changes} ${changes === 1 ? 'שינוי מוצע' : 'שינויים מוצעים'} · כ-${fmt(Math.round(moved / 1000) * 1000)} ₪ משנים מסלול` : 'אין צורך בשינוי'}`;
 }
+// גרסת 11 החלקים (נשמרת לגישה, 14.11): בקר היעד בראש תיק הנכסים
 function renderTargetBar() {
     if (!view) return '';
     const cr = confirmedRisk();
@@ -2061,10 +2075,10 @@ function renderManualSelector(a, t, key) {
 
 function renderPortfolio() {
     if (!view) return '';
+    const legacy = isV11();
     const p = state.portfolio;
     return `
-        <div class="group-label">תיק הנכסים</div>
-        ${renderTargetBar()}
+        ${legacy ? `<div class="group-label">תיק הנכסים</div>${renderTargetBar()}` : (() => { const cr = confirmedRisk(); return `<div class="note small">${cr ? `חשיפה למניות בחלק המזוהה: <b>${pct(cr.equity)}</b> · ` : ''}יעד החשיפה נקבע בחלק "רמת סיכון וחשיפה", והחלופות לכל מסלול מופיעות בחלק "השוואה לשוק וחלופות".</div>`; })()}
         <h2>${esc(p.clientName || 'הלקוח')} - ${fmt(view.totalValue)} ₪${view.rejectedImports && view.rejectedImports.length ? ` <span class="tag-miss">⚠ יבוא חלקי - יש חשבונות שנדחו; הסכום המוצג אינו מלוא התיק</span>` : ''}</h2>
         ${visibleAccounts(p).map((a, i) => `<div class="card acct">
             <div class="card-head">
@@ -2095,7 +2109,7 @@ function renderPortfolio() {
                     : h && h.estimate
                         ? `<div class="muted small">${matchLabel(h.match)} חשיפה מנייתית <b>${pct(h.estimate.eq)}</b>* <span class="tag-miss">אומדן מבוסס נתוני מחלקה רשמיים - לא נתון שנצפה בהחזקה זו</span> · ${esc(h.estimate.basis)} · טווח המחלקה ${pct(h.estimate.lo)}-${pct(h.estimate.hi)} (טווח בפועל, אינו גבול מובטח למסלול זה) · נכסי חו"ל (כל הנכסים, לא רק מניות) ${h.estimate.fo !== null ? pct(h.estimate.fo) + '*' : '—'} · ${(() => { const g = equityGeoOf((h.match && h.match.row && h.match.row.name) || t.name); return g.cls === 'unclassified' ? 'אפיק המניות: לא מסווג גיאוגרפית (אין שדה רשמי)' : `אפיק המניות לפי מנדט בשם בלבד: ${GEO_LABEL[g.cls]}* (${g.basis})`; })()} · <span class="tag-miss">לא נכלל בממוצע המדויק</span></div>${renderManualSelector(a, t, key)}`
                         : `<div class="muted small">${h ? matchLabel(h.match) : ''} <span class="tag-miss">לא נכלל בממוצע הסיכון - אין נתון חשיפה ולא בסיס להערכה, והחשיפה אינה ידועה</span></div>${renderManualSelector(a, t, key)}`}
-                    ${renderAlternatives(a, h)}
+                    ${legacy ? renderAlternatives(a, h) : ''}
                 </div>`;
             }).join('')}
             ${a.tracks.length === 0 ? `<div class="muted small">בדיווח האחרון אין בחשבון יתרה פעילה במסלולים (0 ₪), ולכן החשבון אינו משוקלל בממוצע החשיפה.${a.prevYearEnd ? ` יתרת סוף השנה הקודמת בחשבון זה (ערך היסטורי בלבד, ייתכן שהכסף הועבר למוצר אחר): ${fmt(a.prevYearEnd)} ₪.` : ''} נתוני החשיפה של המסלולים עצמם קיימים במאגרים הרשמיים, אך אין משקל נוכחי לייחס להם.</div>` : ''}
@@ -2124,6 +2138,31 @@ function renderPortfolio() {
             return `<div class="callout note-c"><b>כיסוי החשיפה.</b> ${pct(view.coverage * 100)} משווי התיק עם נתון חשיפה מתועד${view.rejectedImports && view.rejectedImports.length ? ` · ${view.rejectedImports.length} ${view.rejectedImports.length === 1 ? 'חשבון נדחה' : 'חשבונות נדחו'} מהייבוא עקב רשומות מתנגשות - אינם בצבירה ובכיסוי (פירוט הגרסאות בחלק 1); אין להתייחס לסכום המוצג כמלוא התיק` : ''} (רשמי / מקור לא-רשמי מסומן)${estVal ? `; ${pct(estVal / view.totalValue * 100)} הערכת מחלקה עם בסיס מצוין (מסומנת * במסלול) - אומדן, לא נתון שנצפה בהחזקה` : ''}${noneT.length ? `. ללא נתון וללא בסיס להערכה: ${noneT.map(h => `${esc(h.track.name)} (${esc(h.account.plan)}, ${fmt(h.track.balance)} ₪)`).join('; ')} - חשיפתם אינה ידועה ואינה נספרת כאפס בממוצע` : ''}.</div>`;
         })() : ''}
     `;
+}
+
+// חלק "השוואה לשוק וחלופות" (איחוד 14.11): ההמלצה ליעד וטבלת החלופות לכל מסלול, השוואת עמיתים ורשימת ההתייעלות
+function renderAltsSection() {
+    if (!view) return '';
+    const T = state.targetEq;
+    const head = `<div class="callout note-c">${T === null || T === undefined ? 'טרם נקבע יעד חשיפה למניות - מוצגות החלופות מול המסלול הנוכחי.' : `ההמלצות מכוונות ליעד <b>${pct(T)}</b> מניות לכל התיק.`} <button type="button" class="linkbtn small" data-goto-acc="risk">קביעת היעד בחלק "רמת סיכון וחשיפה" ◂</button></div>`;
+    const items = visibleAccounts(state.portfolio).map(a => a.tracks.filter(t => (t.balance || 0) >= 1).map(t => {
+        const h = view.holdings.find(x => x.track === t);
+        return `<div class="card acct"><div class="track-line"><span><b>${esc(t.name)}</b> <span class="muted small">(${esc(a.plan || '')} · ${esc(a.yatzran)})</span></span><b>${fmt(t.balance)} ₪</b></div>${renderAlternatives(a, h)}</div>`;
+    }).join('')).join('');
+    return `${head}<div class="subhead">חלופות והמלצה לכל מסלול</div>${items}
+        ${fold('peers', 'השוואת עמיתים רשמית (גמל-נט / פנסיה-נט)', renderPeers(), state.peers ? `תקופת דיווח ${periodLabel(state.peers.period)}` : 'טרם הופעלה')}
+        ${fold('efficiency', 'רשימת עיון לפי שארפ (התייעלות מול נתוני ייחוס)', renderEfficiency())}`;
+}
+
+// חלק "דוחות ללקוח" (איחוד 14.11): שלוש לשוניות בתוך חלק אחד
+function renderReportsSection() {
+    const tab = state.repTab || 'short';
+    const tabs = [['short', 'דוח מקוצר (A4)'], ['ba', 'דוח לפני/אחרי (הדמיה)'], ['diff', 'השוואת מסלקה חדשה מול קודמת']];
+    const bar = `<div class="subtabs rep-tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" class="subtab${k === tab ? ' on' : ''}" data-reptab="${k}" aria-pressed="${k === tab}">${l}</button>`).join('')}</div>`;
+    const body = tab === 'ba' ? renderBeforeAfterSection()
+        : tab === 'diff' ? (state.diff.open ? renderDiffBody(state) : `<div class="muted small">משווים את קובץ המסלקה הנוכחי לקובץ קודם של אותו לקוח: מה השתנה ביתרות, במסלולים ובדמי הניהול.</div><button type="button" class="ghostbtn" data-diff-open>פתיחת ההשוואה</button>`)
+        : renderReportSection();
+    return bar + body;
 }
 
 // תיוג כיוון גיאוגרפי של מסלול מוצע (רק כשיש בסיס-מנדט בשם; 'לא מסווג' אינו מתויג).
@@ -2265,7 +2304,6 @@ function renderRisk() {
     else shiftText = `להקטנת החשיפה בכל התיק ל-${pct(effTarget)}: סכום להמחשה - העברת כ-${fmt(-shift)} ₪, ממסלולים מנייתיים אל מסלולים עם חשיפה נמוכה יותר. ההמחשה מניחה מעבר ממסלול של 100% מניות למסלול של 0% מניות. כלי זה אינו מציע מסלולי הגנה; הוא רק מכמת את הפער.`;
     const shiftSuffix = wholeCur === null ? '' : ` הכימות חל על כל התיק (מצב נוכחי ${pct(wholeCur)}*, כולל אומדנים מסומנים); המימוש בפועל מוגבל לכלים המאומתים ומוצג בבקר שלהלן. ההעברה בפועל תלויה בפער החשיפות בין מסלול המקור ליעד, ועשויה להיות גדולה או קטנה מהסכום המודגם (מסלול ממונף יכול לחרוג מ-100% מניות). זו כימות פער לבחינה, לא הוראת פעולה ולא גבול.`;
     return `
-        <div class="group-label">רמת סיכון</div>
         <h2>חשיפה מנייתית משוקללת</h2>
         <div class="muted small">המדד: חשיפה מנייתית משוקללת-יתרות של המסלולים הזוהים בלבד. זה אינו מדד סיכון כולל של התיק (אינו כולל אג"ח, מט"ח, מניות חוץ ומינוף).</div>
         ${curEq !== null && cr ? `
@@ -2276,13 +2314,14 @@ function renderRisk() {
                 ${view.totalValue > cr.value ? ` ${(() => { const unident = view.holdings.filter(h => h.equityPct === null); const estH2 = unident.filter(h => h.estimate); const estVal2 = estH2.reduce((sum, h) => sum + h.track.balance, 0); const noBasis2 = unident.filter(h => !h.estimate).reduce((sum, h) => sum + h.track.balance, 0); const loAll2 = (curEq * cr.value + estH2.reduce((sum, h) => sum + h.track.balance * h.estimate.lo, 0)) / view.totalValue; const hiAll2 = (curEq * cr.value + estH2.reduce((sum, h) => sum + h.track.balance * h.estimate.hi, 0) + 100 * noBasis2) / view.totalValue; return `מיתר התיק: ${estVal2 > 0 ? `${pct(estVal2 / view.totalValue * 100)} (${fmt(estVal2)} ₪) מגובה באומדן מחלקה מסומן בכוכבית (משולב בבקר היעד שלהלן)` : ''}${estVal2 > 0 && noBasis2 > 0 ? ' ו-' : ''}${noBasis2 > 0 ? `${pct(noBasis2 / view.totalValue * 100)} (${fmt(noBasis2)} ₪) ללא כל בסיס לחשיפה` : ''}${estVal2 === 0 && noBasis2 === 0 ? 'אין חלק בלתי מזוהה' : ''}. בתרחיש שבו האומדנים בקצוות טווח המחלקה שלהם${noBasis2 > 0 ? ' והללא-ידוע 0%-100% מניות' : ''} (תרחיש היפותטי חסום להמחשה בלבד - אינו גבול מתמטי; חשיפה ממונפת עלולה לחרוג מ-100%), החשיפה בכל התיק נעה בין ${pct(loAll2)} ל-${pct(hiAll2)}.`; })()}` : ''} החשיפה לפי תמונת ${REF_DATE}.
                 <br>מקורות החלק הנכלל: ${[cr.byClass.official ? `${pct(cr.byClass.official / cr.value * 100)} נתון רשמי לזהות מאומתת-קוד (מאגר האוצר ${REF_DATE} או מסמך רשמי של הגוף)` : '', cr.byClass.confirmed ? `${pct(cr.byClass.confirmed / cr.value * 100)} שורה רשמית לזהות שהמשתמש אישר ידנית (התאמה לפי שם בלבד)` : '', cr.byClass.web ? `${pct(cr.byClass.web / cr.value * 100)} נמצא במקור שאינו רשמי, מסומן ככזה במסלול` : '', cr.byClass.estimate ? `${pct(cr.byClass.estimate / cr.value * 100)} הערכת המערכת, לא נתון רשמי - הבסיס מצוין במסלול` : ''].filter(Boolean).join(' · ')}. נתוני החשיפה הם תמונת מצב למועד הפרסום הרשמי (${REF_DATE}) והיתרות נכונות ליום הדיווח במסלקה; אינם ערובה לחשיפה הנוכחית או העתידית בפועל, וההרכב במועד היתרה עשוי להיות שונה.
             </div>
-            <div class="sliderwrap">
-                <label>יעד חשיפה מנייתית: <b id="eq-target-label">${pct(effTarget)}</b></label>
-                <input type="range" min="0" max="100" value="${effTarget}" id="eq-slider">
+            <div class="sliderwrap target-bar">
+                <label>יעד חשיפה מנייתית לכל התיק: <b id="eq-target-label" class="eq-target-out">${pct(effTarget)}</b></label>
+                <input type="range" min="0" max="100" value="${effTarget}" id="eq-slider" data-eq-slider aria-label="יעד חשיפה מנייתית">
+                <div class="small" data-target-summary>${state.targetEq === null || state.targetEq === undefined ? 'הזיזו את הבקר - ההמלצה לכל מסלול תופיע בחלק "השוואה לשוק וחלופות".' : targetSummaryText()}</div>
                 <div class="small" id="shift-text">${shiftText}${Math.abs(shift) >= 1000 ? shiftSuffix : ''}</div>
             </div>
             ${renderTargetController()}`
-        : `<div class="callout note-c"><b>אין מספיק נתונים.</b> אין עדיין מסלולים הנכללים בממוצע. מסלול שזוהה לפי קוד מסלול רשמי נכלל אוטומטית מגמל-נט, פנסיה-נט או ביטוח-נט (מאגרי הרשות, ${REF_DATE}); התאמה לפי דמיון שם בלבד נכללת רק אחרי אישור ידני; מסלול ללא נתון וללא בסיס להערכה מסומן "לא ידוע" ואינו נספר כאפס.</div>`}
+        : `<div class="callout note-c target-bar"><b>אין מספיק נתונים.</b> אין עדיין מסלולים הנכללים בממוצע. מסלול שזוהה לפי קוד מסלול רשמי נכלל אוטומטית מגמל-נט, פנסיה-נט או ביטוח-נט (מאגרי הרשות, ${REF_DATE}); התאמה לפי דמיון שם בלבד נכללת רק אחרי אישור ידני; מסלול ללא נתון וללא בסיס להערכה מסומן "לא ידוע" ואינו נספר כאפס.</div>`}
     `;
 }
 
@@ -2396,7 +2435,7 @@ function renderReportSection() {
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button type="button" class="ghostbtn" data-report-preview>תצוגה מקדימה של הדוח</button>
-            <button type="button" class="ghostbtn" data-diff-open>השוואת מסלקה חדשה מול קודמת</button>
+            ${isV11() ? '<button type="button" class="ghostbtn" data-diff-open>השוואת מסלקה חדשה מול קודמת</button>' : ''}
             <button type="button" class="ghostbtn" data-report-print>הפקת הדוח להדפסה / PDF</button>
         </div>
         <div class="muted small">בתצוגת ההדפסה ניתן לבחור "שמירה כ-PDF". מומלץ נייר A4, שוליים רגילים.</div>`;
@@ -2415,9 +2454,8 @@ function renderBeforeAfterSection() {
 function renderOpenQuestions() {
     if (!view) return '';
     return `
-        <div class="group-label">שאלות פתוחות</div>
         <h2>מסגרת החלטה - בדיקות שלא בוצעו עדיין</h2>
-        <div class="muted small">לפי המטרות שנרשמו בשלב 3. לכל נכס - הבדיקות הנדרשות לפני ריכוז או ניוד. אין להניח שניתן לנייד או להפוך לקצבה כל נכס.</div>
+        <div class="muted small">לפי המטרות שנרשמו בחלק "מטרות הלקוח". לכל נכס - הבדיקות הנדרשות לפני ריכוז או ניוד. אין להניח שניתן לנייד או להפוך לקצבה כל נכס.</div>
         ${visibleAccounts(state.portfolio).filter(a => a.kind !== 'risk').map(a => `<div class="card">
             <div class="card-head"><b>${esc(a.plan)}</b> <span class="muted">(${KIND_LABEL[a.kind]}, ${fmt(a.totalBalance)} ₪)</span></div>
             <ul class="checks-open">
@@ -2570,18 +2608,29 @@ function render() {
     const numAlloc = isRet ? nextStepNum() : '';
     const numSummary = isRet ? nextStepNum() : '';
     const numNif = isNif ? nextStepNum() : '';
+    const v11 = isV11();
+    // ניתוח תיק פנסיוני: 8 חלקים לפי סדר העבודה מול הלקוח (אושר 14.11 10:49)
+    const numPortfolio = (isPort && !v11) && hasP ? nextStepNum() : '';
+    const numRisk = (isPort && !v11) && hasP ? nextStepNum() : '';
+    const numAlts = (isPort && !v11) && hasP ? nextStepNum() : '';
+    const numStep3 = (isPort && !v11) ? nextStepNum() : '';
+    const numRiskGoals = (isPort && !v11) ? nextStepNum() : '';
+    const numChecks = (isPort && !v11) ? nextStepNum() : '';
+    const numReports = (isPort && !v11) && hasP ? nextStepNum() : '';
+    const pt = (num, name, lead) => `<span class="acc-name">${num} ${name}</span><span class="acc-lead">${lead}</span>`;
+    // גרסת 11 החלקים - נשמרת לגישה
     // תיק פנסיוני: חלקי בדיקת התיק
-    const numPortfolio = isPort && hasP ? nextStepNum() : '';
-    const numReport = isPort && hasP ? nextStepNum() : '';
-    const numMasdiff = isPort && hasP && state.diff.open ? nextStepNum() : '';
-    const numBeforeAfter = isPort && hasP ? nextStepNum() : '';
-    const numPeers = isPort && hasP ? nextStepNum() : '';
-    const numRisk = isPort && hasP ? nextStepNum() : '';
-    const numEfficiency = isPort && hasP ? nextStepNum() : '';
-    const numStep3 = isPort ? nextStepNum() : '';
-    const numRiskGoals = isPort ? nextStepNum() : '';
-    const numOpenq = isPort && hasP ? nextStepNum() : '';
-    const numReview = isPort ? nextStepNum() : '';
+    const oPortfolio = (isPort && v11) && hasP ? nextStepNum() : '';
+    const oReport = (isPort && v11) && hasP ? nextStepNum() : '';
+    const oMasdiff = (isPort && v11) && hasP && state.diff.open ? nextStepNum() : '';
+    const oBeforeAfter = (isPort && v11) && hasP ? nextStepNum() : '';
+    const oPeers = (isPort && v11) && hasP ? nextStepNum() : '';
+    const oRisk = (isPort && v11) && hasP ? nextStepNum() : '';
+    const oEfficiency = (isPort && v11) && hasP ? nextStepNum() : '';
+    const oStep3 = (isPort && v11) ? nextStepNum() : '';
+    const oRiskGoals = (isPort && v11) ? nextStepNum() : '';
+    const oOpenq = (isPort && v11) && hasP ? nextStepNum() : '';
+    const oReview = (isPort && v11) ? nextStepNum() : '';
     const numWhat = !isPlain && !hasP ? nextStepNum() : '';
     document.getElementById('root').innerHTML = `
     <header class="hero">
@@ -2611,11 +2660,12 @@ function render() {
                 <a class="ghostbtn liblink" href="https://mataf-library.pages.dev/" target="_blank" rel="noopener">ספריית המקורות</a>
             </div>
             ${state.mode === 'calc' ? renderCalcSubtabs(state) : ''}
+            ${state.mode === 'portfolio' ? renderLayoutSwitch() : ''}
         </div>
     </header>
     <main class="wrap">
         ${!isPlain ? renderCallouts() : ''}
-        ${!isPlain ? acc('step1', `${numStep1} קובץ המסלקה (ZIP או XML)`, badgeStep1(), renderStep1() + (isRet ? fold('secure', 'שמירה או טעינה של תיק מוצפן (אופציונלי)', renderEncPanel()) : ''), !hasP,
+        ${!isPlain ? acc('step1', isPort && !v11 ? pt(numStep1, 'טעינת קובץ המסלקה', 'מעלים את קובץ המסלקה של הלקוח. מכאן נבנה כל הניתוח.') : `${numStep1} קובץ המסלקה (ZIP או XML)`, badgeStep1(), renderStep1() + (isRet ? fold('secure', 'שמירה או טעינה של תיק מוצפן (אופציונלי)', renderEncPanel()) : ''), !hasP,
             isPort ? `<button type="button" class="encbtn${state.encOpen ? ' on' : ''}" data-action="enctoggle" aria-expanded="${!!state.encOpen}">🔒 שמירה / טעינה בקובץ מוצפן</button>` : '') : ''}
         ${isPort && state.encOpen ? `<section class="card" id="enc-panel"><div class="group-label">שמירת העבודה לקובץ מוצפן (אופציונלי)</div>${renderEncPanel()}</section>` : ''}
         ${isNif ? acc('nifraim', `${numNif} נפרעים צפויים לפי חברת ביטוח`, state.nif.parsed ? 'קובץ נטען' : '', renderNifraimBody({ nif: state.nif, portfolio: null }), true) : ''}
@@ -2628,17 +2678,24 @@ function render() {
         ${isRet ? acc('pension', `${numPension} הקצבה הצפויה`, badgePensionStep(), renderPensionStep()) : ''}
         ${isRet ? acc('alloc', `${numAlloc} ההמלצה: אופן המשיכה ותכנון המס`, badgeAlloc(), renderRecommendationStep()) : ''}
         ${isRet ? acc('summary', `${numSummary} סיכום ופעולות`, missBadge(RS_IDS.summary), renderSummaryStep()) : ''}
-        ${isPort && hasP ? acc('portfolio', `${numPortfolio} תיק הנכסים`, `${fmt(view.totalValue)} ₪ · ${visibleAccounts(state.portfolio).length} חשבונות${view.rejectedImports && view.rejectedImports.length ? ' · ⚠ יבוא חלקי' : ''}`, renderPortfolio(), true) : ''}
-        ${isPort && hasP ? acc('report', `${numReport} דוח מקוצר ללקוח (A4)`, 'מבוסס על קובץ המסלקה שהועלה', renderReportSection()) : ''}
-        ${isPort && hasP && state.diff.open ? acc('masdiff', `${numMasdiff} השוואת מסלקה חדשה מול קודמת`, state.diff.result ? 'הושוואה' : '', renderDiffBody(state), true) : ''}
-        ${isPort && hasP ? acc('beforeafter', `${numBeforeAfter} דוח לפני/אחרי מסכם (הדמיה)`, 'מול החלופות הזכאיות המדורגות', renderBeforeAfterSection()) : ''}
-        ${isPort && hasP ? acc('peers', `${numPeers} השוואת עמיתים רשמית (גמל-נט / פנסיה-נט)`, state.peers ? `תקופת דיווח ${periodLabel(state.peers.period)}` : 'טרם הופעלה', renderPeers()) : ''}
-        ${isPort && hasP ? acc('risk', `${numRisk} רמת סיכון`, '', renderRisk()) : ''}
-        ${isPort && hasP ? acc('efficiency', `${numEfficiency} התייעלות מול נתוני ייחוס`, '', renderEfficiency()) : ''}
-        ${isPort ? acc('step3', `${numStep3} מטרות הלקוח`, '', renderStep3()) : ''}
-        ${isPort ? acc('riskgoals', `${numRiskGoals} התאמת סיכון למטרות - דף עבודה פנימי`, badgeRg(), renderRiskGoals()) : ''}
-        ${isPort && hasP ? acc('openq', `${numOpenq} שאלות פתוחות`, '', renderOpenQuestions()) : ''}
-        ${isPort ? acc('review', `${numReview} סיכום לבחינה מקצועית ומשוב`, '', renderReview()) : ''}
+        ${(isPort && !v11) && hasP ? acc('portfolio', pt(numPortfolio, 'תמונת מצב התיק', 'מה יש ללקוח היום: כל המוצרים, הצבירות, המסלולים ודמי הניהול.'), `${fmt(view.totalValue)} ₪ · ${visibleAccounts(state.portfolio).length} חשבונות${view.rejectedImports && view.rejectedImports.length ? ' · ⚠ יבוא חלקי' : ''}`, renderPortfolio(), true) : ''}
+        ${(isPort && !v11) && hasP ? acc('risk', pt(numRisk, 'רמת סיכון וחשיפה', 'כמה מהכסף חשוף למניות ולחו"ל, ומה היעד הרצוי.'), confirmedRisk() ? `${pct(confirmedRisk().equity)} מניות` : '', renderRisk()) : ''}
+        ${(isPort && !v11) && hasP ? acc('alts', pt(numAlts, 'השוואה לשוק וחלופות', 'האם הלקוח משלם יותר מדי, ואיך המסלולים שלו עומדים מול מסלולים דומים.'), state.targetEq === null || state.targetEq === undefined ? '' : `יעד ${pct(state.targetEq)}`, renderAltsSection()) : ''}
+        ${(isPort && !v11) ? acc('step3', pt(numStep3, 'מטרות הלקוח', 'מה הלקוח רוצה להשיג ומתי.'), '', renderStep3()) : ''}
+        ${(isPort && !v11) ? acc('riskgoals', pt(numRiskGoals, 'התאמת הסיכון למטרות (פנימי)', 'בדיקה לסוכן בלבד: האם רמת הסיכון מתאימה למה שהלקוח אמר. לא נכנס לדוח.'), badgeRg(), renderRiskGoals()) : ''}
+        ${(isPort && !v11) ? acc('checks', pt(numChecks, 'בדיקות לפני החלטה', 'מה צריך לבדוק לפני כל ניוד או שינוי, ומה כבר נבדק.'), '', (hasP ? renderOpenQuestions() : '') + '<div class="subhead">מה נבדק ומה פתוח - סיכום ומשוב</div>' + renderReview()) : ''}
+        ${(isPort && !v11) && hasP ? acc('reports', pt(numReports, 'דוחות ללקוח', 'מפיקים את מה שהלקוח מקבל ביד.'), '', renderReportsSection()) : ''}
+        ${(isPort && v11) && hasP ? acc('portfolio', `${oPortfolio} תיק הנכסים`, `${fmt(view.totalValue)} ₪ · ${visibleAccounts(state.portfolio).length} חשבונות${view.rejectedImports && view.rejectedImports.length ? ' · ⚠ יבוא חלקי' : ''}`, renderPortfolio(), true) : ''}
+        ${(isPort && v11) && hasP ? acc('report', `${oReport} דוח מקוצר ללקוח (A4)`, 'מבוסס על קובץ המסלקה שהועלה', renderReportSection()) : ''}
+        ${(isPort && v11) && hasP && state.diff.open ? acc('masdiff', `${oMasdiff} השוואת מסלקה חדשה מול קודמת`, state.diff.result ? 'הושוואה' : '', renderDiffBody(state), true) : ''}
+        ${(isPort && v11) && hasP ? acc('beforeafter', `${oBeforeAfter} דוח לפני/אחרי מסכם (הדמיה)`, 'מול החלופות הזכאיות המדורגות', renderBeforeAfterSection()) : ''}
+        ${(isPort && v11) && hasP ? acc('peers', `${oPeers} השוואת עמיתים רשמית (גמל-נט / פנסיה-נט)`, state.peers ? `תקופת דיווח ${periodLabel(state.peers.period)}` : 'טרם הופעלה', renderPeers()) : ''}
+        ${(isPort && v11) && hasP ? acc('risk', `${oRisk} רמת סיכון`, '', renderRisk()) : ''}
+        ${(isPort && v11) && hasP ? acc('efficiency', `${oEfficiency} התייעלות מול נתוני ייחוס`, '', renderEfficiency()) : ''}
+        ${(isPort && v11) ? acc('step3', `${oStep3} מטרות הלקוח`, '', renderStep3()) : ''}
+        ${(isPort && v11) ? acc('riskgoals', `${oRiskGoals} התאמת סיכון למטרות - דף עבודה פנימי`, badgeRg(), renderRiskGoals()) : ''}
+        ${(isPort && v11) && hasP ? acc('openq', `${oOpenq} שאלות פתוחות`, '', renderOpenQuestions()) : ''}
+        ${(isPort && v11) ? acc('review', `${oReview} סיכום לבחינה מקצועית ומשוב`, '', renderReview()) : ''}
         ${!isPlain && !hasP ? acc('what', `${numWhat} מה רואים כאן`, '', renderIntroWhat(), true) : ''}
         <footer class="closing">אב-טיפוס · נתוני ייחוס ${REF_DATE} בלבד · כללים: ${RULES_SRC} · נתוני לקוח לא נשלחים, לא נשמרים ולא מוזנים לאף מערכת מהעמוד הזה; פרטי הסוכן לדוח בלבד נשמרים מקומית בדפדפן שלך.
         ${!isPlain ? renderSrcBox() : ''}
@@ -2655,7 +2712,7 @@ async function onDiffFiles(files) {
     // דוח קודם אחד בלבד להשוואה (כמו המסלקה הנוכחית) - כמה דוחות קודמים אינם מוזגים
     if (files.length > 1) {
         state.diff.reports = [{ fileName: '', ok: false, detail: `נבחרו ${files.length} קבצים - מעלים דוח מסלקה קודם אחד בלבד (ZIP או XML); כמה דוחות קודמים אינם מוזגים להשוואה אחת.` }];
-        state.diff.open = true; state.open['masdiff'] = true; render(); return;
+        state.diff.open = true; state.repTab = 'diff'; state.open[isV11() ? 'masdiff' : 'reports'] = true; render(); return;
     }
     const snap = [];
     for (const f of Array.from(files)) {
@@ -2843,6 +2900,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (['portfolio', 'life', 'health', 'retirement', 'calc', 'nifraim'].includes(urlTab)) state.mode = urlTab;
     const urlCalc = new URLSearchParams(location.search).get('calc'); // קישור ישיר ללשונית משנה במחשבונים
     if (urlCalc && /^[a-z]+$/.test(urlCalc)) state.calcSub = urlCalc;
+    if (new URLSearchParams(location.search).get('layout') === '11') state.portLayout = 'v11'; // קישור ישיר לגרסת 11 החלקים
     render();
     const root = document.getElementById('root');
     // שכבת התצוגה המקדימה של הדוח (report-root) היא אחות של root ולכן מטופלת במאזין נפרד
@@ -3039,7 +3097,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         if (t.dataset.pendingDiscard !== undefined) { state.pendingClient = null; render(); return; }
-        if (t.dataset.diffOpen !== undefined) { state.diff.open = true; state.open['masdiff'] = true; render(); setTimeout(() => { const el = document.getElementById('acc-masdiff'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); return; }
+        if (t.dataset.reptab) { state.repTab = t.dataset.reptab; render(); return; }
+        if (t.dataset.diffOpen !== undefined) { const tgt = isV11() ? 'masdiff' : 'reports'; state.diff.open = true; state.repTab = 'diff'; state.open[tgt] = true; render(); setTimeout(() => { const el = document.getElementById('acc-' + tgt); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); return; }
         if (t.dataset.peersRun !== undefined) { void runPeers(); return; }
         if (t.dataset.reportPreview !== undefined) {
             if (!view) return;
@@ -3261,6 +3320,7 @@ document.addEventListener('DOMContentLoaded', () => {
             render(); return;
         }
         if (t.dataset.action === 'enctoggle') { state.encOpen = !state.encOpen; render(); if (state.encOpen) { const el = document.getElementById('enc-panel'); if (el) el.scrollIntoView({ block: 'nearest' }); } return; }
+        if (t.dataset.action && t.dataset.action.startsWith('layout|')) { state.portLayout = t.dataset.action.split('|')[1]; render(); return; }
         if (t.dataset.action && t.dataset.action.startsWith('calcsub|')) { state.calcSub = t.dataset.action.split('|')[1]; render(); return; }
         if (t.dataset.action === 'asmanual') { state.assets.banks.push({ file: 'הזנה ידנית', bank: 'הזנה ידנית', date: '', manual: true, rows: [
             { key: 'cashIls', label: 'עו"ש ופיקדונות', source: 'הזנה ידנית', cat: 'cash', amount: 0, eq: 0, page: '-', include: true },

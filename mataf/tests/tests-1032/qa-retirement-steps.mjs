@@ -46,7 +46,27 @@ console.log('portfolio:', port.join(','));
 ok(await page.evaluate(() => !!document.querySelector('#acc-step1 .acc-aside [data-action="enctoggle"]')), 'portfolio-encrypted-save-is-green-button-beside-step1');
 await page.evaluate(() => document.querySelector('[data-action="enctoggle"]').click()); await new Promise(r => setTimeout(r, 300));
 ok(await page.evaluate(() => !!document.querySelector('#enc-panel')), 'enc-button-opens-panel');
-for (const id of ['step1', 'portfolio', 'report', 'beforeafter', 'peers', 'risk', 'efficiency', 'step3', 'riskgoals', 'openq', 'review']) ok(port.includes(id), 'portfolio-has-' + id);
+// ניתוח תיק פנסיוני: 8 חלקים בסדר קבוע (14.11), והחלקים שאוחדו נמצאים בתוכם
+ok(port.join(',') === 'step1,portfolio,risk,alts,step3,riskgoals,checks,reports', 'portfolio-eight-parts-in-order', port.join(','));
+const psubs = await subIds();
+for (const id of ['peers', 'efficiency']) ok(psubs.includes(id), 'portfolio-merged-fold-' + id);
+ok(await page.evaluate(() => document.querySelectorAll('main > section.acc:not(.sub) .acc-lead').length === 8), 'every-part-has-explanation-line');
+ok(await page.evaluate(() => { const b = document.querySelector('#acc-body-checks').innerText; return /מסגרת החלטה/.test(b) && /בוצע ואומת/.test(b); }), 'checks-has-open-questions-and-review');
+ok(await page.evaluate(() => !!document.querySelector('#acc-step3 select[data-rg="g0desc"]') && !document.querySelector('#acc-riskgoals select[data-rg="g0desc"]')), 'money-goals-entered-once-in-goals-part');
+ok(await page.evaluate(() => document.querySelectorAll('#acc-reports [data-reptab]').length === 3 && !!document.querySelector('#acc-reports [data-report-preview]')), 'reports-three-tabs');
+await page.evaluate(() => document.querySelector('[data-reptab="ba"]').click()); await new Promise(r => setTimeout(r, 300));
+ok(await page.evaluate(() => !!document.querySelector('#acc-reports [data-ba-preview]')), 'reports-tab-before-after');
+await page.evaluate(() => document.querySelector('[data-reptab="diff"]').click()); await new Promise(r => setTimeout(r, 300));
+await page.evaluate(() => document.querySelector('#acc-reports [data-diff-open]').click()); await new Promise(r => setTimeout(r, 300));
+ok(await page.evaluate(() => !document.querySelector('#acc-masdiff') && document.querySelector('#acc-reports [data-reptab="diff"]').classList.contains('on')), 'reports-tab-diff-inside-reports');
+await page.evaluate(() => document.querySelector('[data-reptab="short"]').click()); await new Promise(r => setTimeout(r, 300));
+// הגרסה הקודמת (11 חלקים) נשארת נגישה מכפתור גרסה (הנחיית הבעלים 14.11 10:53)
+await page.evaluate(() => document.querySelector('[data-action="layout|v11"]').click()); await new Promise(r => setTimeout(r, 400));
+const port11 = await topIds();
+ok(port11.join(',') === 'step1,portfolio,report,masdiff,beforeafter,peers,risk,efficiency,step3,riskgoals,openq,review', 'legacy-11-parts-still-available', port11.join(','));
+ok(await page.evaluate(() => !!document.querySelector('#acc-riskgoals select[data-rg="g0desc"]') && !!document.querySelector('#acc-portfolio .target-bar')), 'legacy-goals-in-sheet-and-bar-in-portfolio');
+await page.evaluate(() => document.querySelector('[data-action="layout|v8"]').click()); await new Promise(r => setTimeout(r, 400));
+ok((await topIds()).length === 8, 'switch-back-to-8-parts');
 for (const id of ['step2', 'kibua', 'alloc', 'questions', 'pension', 'summary']) ok(!port.includes(id), 'portfolio-no-retirement-step-' + id);
 ok(errs.length === 0, 'no-page-errors' + (errs.length ? ': ' + errs[0] : ''));
 console.log(`retirement-steps: PASS=${pass} FAIL=${fail}`);
