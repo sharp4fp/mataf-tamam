@@ -1787,10 +1787,10 @@ function renderAssetsCard(on = true) {
         </tbody></table></div>
         <div class="muted small">סך נכסים: ${money(r.totals.assetsLo)}${r.totals.assetsHi !== r.totals.assetsLo ? ' - ' + money(r.totals.assetsHi) : ''} · התחייבויות: ${money(r.totals.debtsLo)}${r.totals.debtsHi !== r.totals.debtsLo ? ' - ' + money(r.totals.debtsHi) : ''} · נזיל (אמצע הטווחים): ${money(r.liquid)}${r.need ? ` מול צורך של ${money(r.need.lo)}-${money(r.need.hi)} ב-3 שנים${r.liquid < r.need.lo ? ' - <b>הנזילות לא מכסה את הצורך</b>' : ''}` : ''} · חשיפה למט"ח: ${r.fxPct === null ? '—' : r.fxPct + '%'}${r.concentration.length ? ` · <b>ריכוזיות:</b> ${esc(r.concentration.join(', '))} מעל 25% מהנכסים` : ''}${r.feeCost ? ` · דמי ניהול בתיקים: ${money(r.feeCost.lo)}-${money(r.feeCost.hi)} בשנה` : ''}${r.rentYear ? ` · שכירות נטו: ${money(r.rentYear.lo)}-${money(r.rentYear.hi)} בשנה` : ''}${r.leveragePct !== null ? ` · מינוף: ${r.leveragePct}% מהנכסים הפיננסיים` : ''}</div>
         ${r.notes.length ? `<ul class="small">${r.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
-        <div class="muted small">החשיפה למניות מחושבת על ערכי האמצע של טווחי הסכום, ולכן היא טווח. הפנסיה מגיעה מהמסלקה (כרטסת תיק פנסיוני), עם החשיפה של כל מסלול; מסלול שלא זוהה נספר כ-0-100%. דירת המגורים במאזן בלבד (החלטת הבעלים 12.11).</div>`;
+        <div class="muted small">החשיפה למניות מחושבת על ערכי האמצע של טווחי הסכום, ולכן היא טווח. הפנסיה מגיעה מהמסלקה (כרטסת ניתוח תיק פנסיוני), עם החשיפה של כל מסלול; מסלול שלא זוהה נספר כ-0-100%. דירת המגורים במאזן בלבד (החלטת הבעלים 12.11).</div>`;
     return `<div class="card" id="assets-card" data-calcsub-card="assets"${on ? '' : ' hidden'}>
         <div class="group-label">תמונת נכסים וסיכון כולל</div>
-        <div class="muted small">אחוז הסיכון האמיתי של הלקוח הוא החשיפה למניות על פני <b>כל</b> הנכסים - פנסיה, בנקים, תיקים מנוהלים, חו"ל - ולא בכל מוצר בנפרד. ${pen ? `הפנסיה נלקחה מקובץ המסלקה (${money(pen.value)}).` : 'כדי לכלול את הפנסיה, העלו קובץ מסלקה בכרטסת תיק פנסיוני.'}</div>
+        <div class="muted small">אחוז הסיכון האמיתי של הלקוח הוא החשיפה למניות על פני <b>כל</b> הנכסים - פנסיה, בנקים, תיקים מנוהלים, חו"ל - ולא בכל מוצר בנפרד. ${pen ? `הפנסיה נלקחה מקובץ המסלקה (${money(pen.value)}).` : 'כדי לכלול את הפנסיה, העלו קובץ מסלקה בכרטסת ניתוח תיק פנסיוני.'}</div>
         <div class="drop"><input type="file" id="assets-input" accept=".pdf" multiple><div class="drop-hint"><b>אישורי יתרות מהבנקים (PDF).</b> אפשר כמה קבצים, מכמה בנקים. מזוהים "ריכוז יתרות" של הפועלים, לאומי, דיסקונט, מזרחי טפחות, מרכנתיל ואוצר החייל / הבינלאומי (PDF מאתר הבנק; סריקה עדיין לא נקראת). גמל והשתלמות שמופיעים באישור לא נספרים, כי הם כבר במסלקה.</div></div>
         ${a.status ? `<div class="status-line">${esc(a.status)}</div>` : ''}
         ${banks}
@@ -2601,7 +2601,7 @@ function render() {
                 : 'תכנון פרישה: טופס 161, תרחישי פרישה ומסמכים רשמיים משלימים. הנתונים שהוזנו בבדיקת התיק נשמרים גם כאן. כל העיבוד מתבצע בדפדפן שלך בלבד: קבצי הלקוח לא נשמרים, לא נשלחים ולא מוזנים לאף מערכת, ורענון העמוד מנקה את נתוני הלקוח. יוצא דופן יחיד: פרטי הסוכן לדוח (שם/טלפון/מותג) נשמרים מקומית בדפדפן שלך בלבד ואינם נשלחים.'}</p>
             <div class="herobtns">
                 <div class="modeswitch" role="group" aria-label="בחירת כרטסת">
-                    <button type="button" class="modebtn${state.mode === 'portfolio' ? ' active' : ''}" data-mode-set="portfolio" aria-pressed="${state.mode === 'portfolio'}">תיק פנסיוני</button>
+                    <button type="button" class="modebtn${state.mode === 'portfolio' ? ' active' : ''}" data-mode-set="portfolio" aria-pressed="${state.mode === 'portfolio'}">ניתוח תיק פנסיוני</button>
                     <button type="button" class="modebtn${state.mode === 'life' ? ' active' : ''}" data-mode-set="life" aria-pressed="${state.mode === 'life'}">ביטוח חיים</button>
                     <button type="button" class="modebtn${state.mode === 'health' ? ' active' : ''}" data-mode-set="health" aria-pressed="${state.mode === 'health'}">ביטוח בריאות</button>
                     <button type="button" class="modebtn${state.mode === 'retirement' ? ' active' : ''}" data-mode-set="retirement" aria-pressed="${state.mode === 'retirement'}">תכנון פרישה</button>
