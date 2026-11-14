@@ -1,4 +1,4 @@
-// qa-topmix.mjs - חלק 2 "תמונת מצב התיק והמלצות": תמהיל מובילי השוק לפי בקר אחוז המניות (M-060, אושר 14.11.2026 12:08)
+// qa-topmix.mjs - חלק 2 (המערכת בוחרת לבד, בלי בחירה ידנית) "תמונת מצב התיק והמלצות": תמהיל מובילי השוק לפי בקר אחוז המניות (M-060, אושר 14.11.2026 12:08)
 import puppeteer from 'puppeteer-core';
 const browser = await puppeteer.launch({ executablePath: '/usr/bin/google-chrome', headless: 'new', args: ['--no-sandbox', '--disable-dev-shm-usage'] });
 const page = await browser.newPage();
@@ -35,15 +35,13 @@ ok(/חשיפה מושגת (2[7-9]|3[0-3])/.test(await sum()), 'target-30-reachab
 // יעד מחוץ לטווח - הודעה ברורה עם הטווח
 await setT(100);
 ok(/מחוץ לטווח האפשרי/.test(await sum()), 'out-of-range-message', await sum());
-// החלפה ידנית: השאר מתאזנים
+// המערכת מחליטה לבד: אין חלון בחירה ידני; טבלת המלצה לכל התיק עם כיוון לכל מוצר (בקשת הבעלים 14.11 12:41)
 await setT(50);
-const picked = await page.evaluate(() => { const s = document.querySelector('select[data-mixpick]'); const o = [...s.querySelectorAll('optgroup')].find(g => /מניות/.test(g.label)).querySelector('option'); s.value = o.value; s.dispatchEvent(new Event('change', { bubbles: true })); return o.textContent.split(' · ')[0]; });
-await wait(500);
-const cp = await cards();
-ok(cp.some(t => t.includes('נבחר ידנית') && t.includes(picked)), 'manual-pick-applied', picked);
-ok(/חשיפה מושגת/.test(await sum()), 'others-rebalance-after-pick', await sum());
-await page.evaluate(() => { const s = document.querySelector('select[data-mixpick]'); s.value = ''; s.dispatchEvent(new Event('change', { bubbles: true })); }); await wait(400);
-ok(!(await cards()).some(t => t.includes('נבחר ידנית')), 'clear-pick');
+ok(await page.evaluate(() => !document.querySelector('select[data-mixpick]')), 'no-manual-dropdown');
+const tbl = await page.evaluate(() => [...document.querySelectorAll('#acc-portfolio [data-mixtable] tbody tr')].map(r => r.innerText.replace(/\s+/g, ' ')));
+ok(tbl.length >= 4 && /כל התיק/.test(tbl[tbl.length - 1]), 'recommendation-table-under-slider', tbl.join(' || ').slice(0, 300));
+ok(tbl.some(r => /[↓↑●→]/.test(r)), 'direction-per-product');
+ok((await cards()).some(t => /הורדת סיכון|העלאת סיכון|נשאר - המסלול הנוכחי מוביל|ברמת סיכון דומה/.test(t) && /להעביר ל|נשאר במסלול/.test(t)), 'card-says-where-to-move');
 // ביטול סימון של מוצר - נשאר במקום
 await page.evaluate(() => { const c = [...document.querySelectorAll('[data-mixsel]')].find(x => x.checked); c.click(); }); await wait(400);
 ok((await cards()).filter(t => /לא נכלל בתמהיל/.test(t)).length >= 2, 'unticked-holding-stays');

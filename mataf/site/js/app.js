@@ -90,9 +90,8 @@ const state = {
     demo: false,
     targetEq: null,
     geoPref: 'any',
-    geoSplit: 50,
-    mixSel: {}, // תמהיל מובילי השוק (M-060): סימון 'מתחשבים במוצר' לכל מסלול; ברירת מחדל - הכול חוץ מפוליסות
-    mixPick: {}, // החלפה ידנית של מסלול בתמהיל: key -> fundId // חלק חו"ל באפיק המניות כשנבחרה חלוקה (14.11)
+    geoSplit: 50, // חלק חו"ל באפיק המניות כשנבחרה חלוקה (14.11)
+    mixSel: {}, // תמהיל מובילי השוק (M-060): סימון 'מתחשבים במוצר' לכל מסלול; ברירת מחדל - הכול חוץ מפוליסות. המערכת בוחרת לבד, בלי החלפה ידנית
     eligible: {},
     marketPick: {}, // M-037: בחירת מסלול מהשוק לכל החזקה (מפתח -> fundId)
     goals: { horizon: '', liquidity: 'בינוני', inheritance: false, consolidate: false, keepExemption: false, capitalFirst: false },
@@ -280,7 +279,7 @@ async function loadEncryptedPortfolio() {
         recompute(); // view טרי מהצינורות ששוחזרו - מפתחות/זהויות נמדדים מול הניתוח הנוכחי, לא מול מצב סטלה
         const restored = plannerRestoreOf(safeObj(manifest.planner), (view && view.holdings) || []);
         state.eligible = restored.eligible; state.excluded = restored.excluded; state.confirmed = restored.confirmed; state.marketPick = restored.marketPick || {};
-        state.targetEq = restored.targetEq; state.geoPref = restored.geoPref; state.geoSplit = restored.geoSplit ?? 50; state.mixSel = restored.mixSel || {}; state.mixPick = restored.mixPick || {}; state.unknownAssumption = restored.unknownAssumption;
+        state.targetEq = restored.targetEq; state.geoPref = restored.geoPref; state.geoSplit = restored.geoSplit ?? 50; state.mixSel = restored.mixSel || {}; state.unknownAssumption = restored.unknownAssumption;
         planCache = { sig: null, plan: null };
         // שער קשירת לקוח גם על נתונים משוחזרים: קובץ שמירה (מדור קודם או ששונה חיצונית) עלול לשאת
         // טופס 161 של לקוח אחר. זהות שונה -> הפרדה; חסרה -> לא פתור. הכל נשמר במצב ממתין, לא נמחק.
@@ -1990,6 +1989,7 @@ function refreshTargetLive() {
     document.querySelectorAll('.eq-target-out, #eq-target-label').forEach(el => { el.textContent = pct(state.targetEq); });
     document.querySelectorAll('[data-eq-slider], #eq-slider').forEach(el => { if (document.activeElement !== el) el.value = state.targetEq; });
     document.querySelectorAll('[data-target-summary]').forEach(el => { el.textContent = isV11() ? targetSummaryText() : mixSummaryText(); });
+    document.querySelectorAll('[data-mixtable]').forEach(el => { el.innerHTML = renderMixTable(); });
     if (!view) return;
     const byKey = new Map(view.holdings.map(h => [trackKeyOf(h.account.account, h.track), h]));
     document.querySelectorAll('[data-tblock]').forEach(el => {
@@ -2163,11 +2163,32 @@ function currentMix() {
     if (state.targetEq === null || state.targetEq === undefined || !view) return null;
     const H = mixHoldings();
     const geo = state.geoPref === 'local' || state.geoPref === 'foreign' ? state.geoPref : 'any';
-    const sig = JSON.stringify([state.targetEq, geo, state.mixPick, H.map(h => [h.key, h.bal, h.eq, h.selected])]);
+    const sig = JSON.stringify([state.targetEq, geo, H.map(h => [h.key, h.bal, h.eq, h.selected])]);
     if (mixCache.sig === sig) return mixCache.res;
-    const res = solveTopMix(H, state.targetEq, { clientAge: clientAge(), geoPref: geo, picks: state.mixPick });
+    const res = solveTopMix(H, state.targetEq, { clientAge: clientAge(), geoPref: geo }); // המערכת מחליטה לבד (בקשת הבעלים 14.11 12:41); אין בחירה ידנית
     mixCache = { sig, res };
     return res;
+}
+function mixDirection(p) {
+    const c = p.choice;
+    if (!c) return '';
+    if (c.fundId === p.curFundId) return '● נשאר - המסלול הנוכחי מוביל';
+    if (p.eq == null) return '→ מעבר למסלול מוביל (החשיפה הנוכחית לא ידועה)';
+    const d = c.eq - p.eq;
+    return Math.abs(d) < 3 ? '→ מעבר למסלול מוביל ברמת סיכון דומה' : d < 0 ? `↓ הורדת סיכון: ${pct(p.eq)} ← ${pct(c.eq)} מניות` : `↑ העלאת סיכון: ${pct(p.eq)} ← ${pct(c.eq)} מניות`;
+}
+// טבלת ההמלצה לכל התיק - מוצגת מתחת לבקר: לאן להעביר כל מוצר
+function renderMixTable() {
+    const m = currentMix();
+    if (!m) return '';
+    const rows = m.per.map(p => {
+        const c = p.choice;
+        const to = !p.selected ? '<span class="muted">לא מסומן - נשאר</span>' : !c ? '<span class="muted">אין מסלולים מדורגים - נשאר</span>' : c.fundId === p.curFundId ? 'נשאר (מוביל)' : `<b>${esc(c.name)}</b>`;
+        const dir = !c ? '' : c.fundId === p.curFundId ? '●' : p.eq == null ? '→' : Math.abs(c.eq - p.eq) < 3 ? '→' : c.eq < p.eq ? '↓' : '↑';
+        return `<tr><td>${esc(p.name)}<div class="muted small">${esc(KIND_LABEL[p.kind] || p.kind)} · ${fmt(p.bal)} ₪</div></td><td>${p.eq != null ? pct(p.eq) : '-'}</td><td>${to}</td><td>${c ? pct(c.eq) : (p.eq != null ? pct(p.eq) : '-')}</td><td>${dir}</td><td>${c ? c.score.toFixed(0) : '-'}</td></tr>`;
+    }).join('');
+    return `<div class="alts-scroll"><table class="altstbl mixtbl"><thead><tr><th>מוצר</th><th>מניות היום</th><th>המלצה</th><th>מניות אחרי</th><th>כיוון</th><th>ציון</th></tr></thead><tbody>${rows}
+        <tr class="top"><td><b>כל התיק</b></td><td><b>${m.eqBefore != null ? pct(m.eqBefore) : '-'}</b></td><td>${m.moves} מעברים</td><td><b>${m.eqAfter != null ? pct(m.eqAfter) : '-'}</b></td><td></td><td><b>${m.scoreAfter != null ? m.scoreAfter.toFixed(0) : '-'}</b></td></tr></tbody></table></div>`;
 }
 const mixCatLabel = (c) => (MIX_CATS.find(x => x[0] === c) || [null, c])[1];
 function mixSummaryText() {
@@ -2188,18 +2209,12 @@ function renderMixCard(key) {
     const c = p.choice;
     const stay = c && c.fundId === p.curFundId;
     const sameCo = c && p.curParentId != null && c.parentId === p.curParentId;
-    const opts = MIX_CATS.map(([cat, label]) => {
-        const list = (p.top && p.top.cats[cat]) || [];
-        if (!list.length) return '';
-        return `<optgroup label="${esc(label)}">${list.map(o => `<option value="${o.fundId}"${p.picked && c && o.fundId === c.fundId ? ' selected' : ''}>${esc(o.name)} · ${pct(o.eq)} מניות · ציון ${o.score.toFixed(0)}</option>`).join('')}</optgroup>`;
-    }).join('');
     const emptyCats = MIX_CATS.filter(([cat]) => !((p.top && p.top.cats[cat]) || []).length).map(([, l]) => l);
     return `<div class="card target-card">${head}
         <div class="track-line"><span>היום: ${esc(p.name)}</span><b>${p.eq != null ? pct(p.eq) + (p.estimated ? '*' : '') : 'לא ידוע'}</b></div>
-        ${c ? `<div class="track-line"><span>${stay ? 'נשאר במסלול הנוכחי - הוא בין המובילים' : 'מוצע'}: <b>${esc(c.name)}</b> <span class="muted small">(${esc(mixCatLabel(c.cat))} · מקום ${c.rank} מתוך ${c.cohortN} בקטגוריה)</span></span><b>← ${pct(c.eq)}</b></div>
-        <div class="muted small">ציון ${c.score.toFixed(1)} · שארפ ${c.jSharpe ?? '-'} · תשואה 3 שנים ${c.jY3 ?? '-'}% · דמי ניהול ממוצעים מצבירה ${c.feeA ?? '-'}% (ממוצע רשמי, לא הצעה אישית)${p.picked ? ' · <b>נבחר ידנית</b>' : ''}</div>
+        ${c ? `<div class="small"><b>${mixDirection(p)}</b></div><div class="track-line"><span>${stay ? 'נשאר במסלול הנוכחי - הוא בין המובילים' : 'להעביר ל'}: <b>${esc(c.name)}</b> <span class="muted small">(${esc(mixCatLabel(c.cat))} · מקום ${c.rank} מתוך ${c.cohortN} בקטגוריה)</span></span><b>← ${pct(c.eq)}</b></div>
+        <div class="muted small">ציון ${c.score.toFixed(1)} · שארפ ${c.jSharpe ?? '-'} · תשואה 3 שנים ${c.jY3 ?? '-'}% · דמי ניהול ממוצעים מצבירה ${c.feeA ?? '-'}% (ממוצע רשמי, לא הצעה אישית)</div>
         ${!stay && !sameCo ? `<div class="muted small">ניוד בין חברות${p.kind === 'pensia' ? ': לפני ביצוע לבדוק רציפות כיסוי ביטוחי (נכות ושאירים), תקופת אכשרה והחרגות מצב רפואי קודם בקרן הקולטת' : ''}.${c.joinUnverified ? ' פתיחות המסלול להצטרפות לא אומתה פרטנית.' : ''}</div>` : ''}` : ''}
-        <label class="small">החלפת מסלול (השאר מתאזנים): <select data-mixpick="${esc(key)}"><option value="">המלצת המערכת</option>${opts}</select></label>
         ${emptyCats.length ? `<div class="muted small">אין מסלולים מדורגים מאומתים בקטגוריות: ${emptyCats.map(esc).join(', ')} (חסר נתון פתיחות להצטרפות או מדדי ציון).</div>` : ''}
         ${renderTransferRules(p.kind, esc)}
     </div>`;
@@ -2247,6 +2262,7 @@ function renderTargetPanel() {
         <div class="track-line"><span><b>יעד חשיפה מנייתית לכל התיק</b> <span class="muted small">(מצב נוכחי בחלק המזוהה: ${pct(cr.equity)})</span></span><b class="eq-target-out">${pct(T)}</b></div>
         <input type="range" min="0" max="100" value="${T}" data-eq-slider aria-label="יעד חשיפה מנייתית">
         <div class="small" data-target-summary>${mixSummaryText()}</div>
+        <div data-mixtable>${renderMixTable()}</div>
         ${fold('targetctl', 'מוצרים בתמהיל, כיוון גיאוגרפי וסיכום', renderMixSelectors() + renderMixGeo() + renderMixSummaryCard())}
     </div>`;
 }
@@ -2951,7 +2967,7 @@ async function onMaslaka(files) {
     state.portfolio = p; state.reports = rep; state.demo = false; state.busy = false;
     // איפוס מלא של מצב תלוי-תיק בעת החלפת קובץ (09/11/2026): אישורי זהות, בחירות ידניות, החרגות מהממוצע,
     // זכאויות שילוב, יעד/העדפת גיאוגרפיה ובחירת תחילת קצבה - כולם קשורים לחשבונות ולמסלולים של הקובץ הקודם.
-    state.confirmed = {}; state.selections = {}; state.excluded = {}; state.targetEq = null; state.geoPref = 'any'; state.geoSplit = 50; state.mixSel = {}; state.mixPick = {}; state.eligible = {}; state.unknownAssumption = null; state.marketPick = {};
+    state.confirmed = {}; state.selections = {}; state.excluded = {}; state.targetEq = null; state.geoPref = 'any'; state.geoSplit = 50; state.mixSel = {}; state.eligible = {}; state.unknownAssumption = null; state.marketPick = {};
     state.pensionStartSel = null; state.manualDropNote = ''; state.uploadError = '';
     // כרטיס המקדם (תכנון פרישה) קשור ללקוח/לקובץ: גוף מנהל (מזוהה או שנבחר ידנית), תרחיש, הבטחה, יתרה,
     // אומדן אחרון וחלופות מתאפסים בהחלפת קובץ - כדי שלקוח/קובץ חדש לא יירש מנהל או תוצאה של הקודם.
@@ -3127,7 +3143,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (t.dataset.unknownAssump !== undefined) { const v = t.value.trim(); state.unknownAssumption = v === '' ? null : Math.min(100, Math.max(0, Number(v) || 0)); render(); return; }
         if (t.dataset.geoPref !== undefined) { state.geoPref = t.value; render(); return; }
         if (t.dataset.mixsel !== undefined) { state.mixSel = { ...state.mixSel, [t.dataset.mixsel]: t.checked }; render(); return; }
-        if (t.dataset.mixpick !== undefined) { const v = parseInt(t.value); const np = { ...state.mixPick }; if (Number.isFinite(v)) np[t.dataset.mixpick] = v; else delete np[t.dataset.mixpick]; state.mixPick = np; render(); return; }
         if (t.dataset.geoSplit !== undefined) { state.geoSplit = parseInt(t.value); render(); return; }
         if (t.dataset.selectId !== undefined) {
             const k = t.dataset.selectId;

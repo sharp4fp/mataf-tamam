@@ -942,7 +942,7 @@ export function plannerSnapshotOf(state) {
         geoPref: GEO_PREFS.includes(state.geoPref) ? state.geoPref : 'any',
         geoSplit: (typeof state.geoSplit === 'number' && state.geoSplit >= 0 && state.geoSplit <= 100) ? state.geoSplit : 50,
         unknownAssumption: (typeof state.unknownAssumption === 'number' && isFinite(state.unknownAssumption)) ? Math.min(100, Math.max(0, state.unknownAssumption)) : null,
-        mixSel: { ...(state.mixSel || {}) }, mixPick: { ...(state.mixPick || {}) },
+        mixSel: { ...(state.mixSel || {}) },
         eligible: { ...state.eligible }, excluded: { ...state.excluded }, confirmed: { ...state.confirmed }, selections: { ...(state.selections || {}) }, marketPick: { ...(state.marketPick || {}) } };
 }
 export function plannerRestoreOf(pl, holdings) {
@@ -978,9 +978,8 @@ export function plannerRestoreOf(pl, holdings) {
     if (typeof pl.targetEq === 'number' && isFinite(pl.targetEq) && pl.targetEq >= 0 && pl.targetEq <= 100) out.targetEq = pl.targetEq;
     if (GEO_PREFS.includes(pl.geoPref)) out.geoPref = pl.geoPref;
     // תמהיל מובילי השוק (M-060): רק למפתחות קיימים
-    out.mixSel = {}; out.mixPick = {};
+    out.mixSel = {};
     if (pl.mixSel && typeof pl.mixSel === 'object' && !Array.isArray(pl.mixSel)) for (const [k, v] of Object.entries(pl.mixSel)) if (byKey.has(k) && typeof v === 'boolean') out.mixSel[k] = v;
-    if (pl.mixPick && typeof pl.mixPick === 'object' && !Array.isArray(pl.mixPick)) for (const [k, v] of Object.entries(pl.mixPick)) if (byKey.has(k) && Number.isInteger(v)) out.mixPick[k] = v;
     if (typeof pl.geoSplit === 'number' && pl.geoSplit >= 0 && pl.geoSplit <= 100) out.geoSplit = pl.geoSplit;
     if (typeof pl.unknownAssumption === 'number' && isFinite(pl.unknownAssumption) && pl.unknownAssumption >= 0 && pl.unknownAssumption <= 100) out.unknownAssumption = pl.unknownAssumption;
     return out;
