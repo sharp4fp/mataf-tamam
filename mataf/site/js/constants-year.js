@@ -43,6 +43,6 @@ export function staleBannerHtml(now = new Date()) {
     if (!st.stale.length) return '';
     const years = [...new Set(st.stale.map(c => c.validThrough))].sort();
     return `<div class="note small" id="constants-stale" role="status"><b>קבועי המס בחישוב הם של ${years.join(', ')} ולא עודכנו ל-${st.year} - לא אומת.</b> `
-        + `החישובים ממשיכים לעבוד בקבועים הישנים (${st.stale.length} קבועים: ${[...new Set(st.stale.map(c => c.label))].join(', ')}). `
-        + `יש לבדוק מול לוח הניכויים הרשמי של ${st.year} לפני הסתמכות.</div>`;
+        + `החישובים ממשיכים לעבוד בקבועים הישנים. יש לבדוק מול לוח הניכויים הרשמי של ${st.year} לפני הסתמכות. `
+        + `<details><summary>${st.stale.length} קבועים</summary>${[...new Set(st.stale.map(c => c.label.replace(/ \(.*\)$/, '')))].join(' · ')}</details></div>`;
 }
