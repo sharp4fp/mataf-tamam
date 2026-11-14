@@ -1,4 +1,4 @@
-// qa-market.mjs - מסלולים מכל השוק לפי יעד החשיפה (M-037, אושר 11.11.2026 14:09)
+// qa-market.mjs - מסלולים מכל השוק לפי יעד החשיפה (M-037, אושר 11.11.2026 14:09) - גרסת 11 החלקים (?layout=11)
 import puppeteer from 'puppeteer-core';
 const browser = await puppeteer.launch({ executablePath: '/usr/bin/google-chrome', headless: 'new', args: ['--no-sandbox', '--disable-dev-shm-usage'] });
 const page = await browser.newPage();
@@ -8,7 +8,7 @@ page.on('pageerror', e => errs.push(String(e)));
 let pass = 0, fail = 0;
 const ok = (c, n, d = '') => { if (c) { pass++; console.log('PASS ' + n); } else { fail++; console.log('FAIL ' + n + (d ? ' :: ' + d : '')); } };
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
-await page.goto('http://127.0.0.1:8099/', { waitUntil: 'networkidle2', timeout: 30000 });
+await page.goto('http://127.0.0.1:8099/?layout=11', { waitUntil: 'networkidle2', timeout: 30000 });
 await page.click('[data-action="demo"]');
 await wait(800);
 for (let i = 0; i < 8; i++) {

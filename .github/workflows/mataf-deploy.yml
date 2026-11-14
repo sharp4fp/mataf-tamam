@@ -88,6 +88,7 @@ jobs:
           node tests-1032/qa-assets.mjs
           node tests-1032/qa-insurance-selects.mjs
           node tests-1032/qa-riskgoals.mjs
+          node tests-1032/qa-topmix.mjs
 
   deploy:
     name: פריסה

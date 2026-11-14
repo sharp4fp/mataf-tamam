@@ -4,7 +4,7 @@ import { parseMaslakaXml, KIND_LABEL, normalizeIdNumber } from './maslaka.js';
 import { extract161, EMPTY_161, FIELD_LABELS, contradictions161 } from './pdf161.js';
 import { COMPANIES, SCENARIO_LABELS, GUAR_LABELS, loadCompany, scenariosOf, guaranteesOf, hasSpouse, inferCompany, mekademEstimate, SURV_RATES, SURV_RATE_LABELS, scenarioForRate } from './mekadem.js';
 import { extractDoc } from './pdfdocs.js';
-import { marketCandidates, parentIdOfMatch, pensionFundIdOfMatch, analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, geoEquityShare, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
+import { marketCandidates, parentIdOfMatch, pensionFundIdOfMatch, analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, geoEquityShare, solveTopMix, MIX_CATS, MIX_TOLERANCE, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
 import { loadPeerData, periodLabel, findOwnRow, compareTrack, TRANSFER_GATES, EXISTING_VS_FUTURE_NOTE, BASELINE_NOTE, PEERS_SOURCE_NOTE } from './peers.js';
 import { renderReport, renderBeforeAfter, eligibleKeysOf } from './report.js';
 import { renderTransferRules } from './transfer-rules.js';
@@ -90,7 +90,9 @@ const state = {
     demo: false,
     targetEq: null,
     geoPref: 'any',
-    geoSplit: 50, // חלק חו"ל באפיק המניות כשנבחרה חלוקה (14.11)
+    geoSplit: 50,
+    mixSel: {}, // תמהיל מובילי השוק (M-060): סימון 'מתחשבים במוצר' לכל מסלול; ברירת מחדל - הכול חוץ מפוליסות
+    mixPick: {}, // החלפה ידנית של מסלול בתמהיל: key -> fundId // חלק חו"ל באפיק המניות כשנבחרה חלוקה (14.11)
     eligible: {},
     marketPick: {}, // M-037: בחירת מסלול מהשוק לכל החזקה (מפתח -> fundId)
     goals: { horizon: '', liquidity: 'בינוני', inheritance: false, consolidate: false, keepExemption: false, capitalFirst: false },
@@ -278,7 +280,7 @@ async function loadEncryptedPortfolio() {
         recompute(); // view טרי מהצינורות ששוחזרו - מפתחות/זהויות נמדדים מול הניתוח הנוכחי, לא מול מצב סטלה
         const restored = plannerRestoreOf(safeObj(manifest.planner), (view && view.holdings) || []);
         state.eligible = restored.eligible; state.excluded = restored.excluded; state.confirmed = restored.confirmed; state.marketPick = restored.marketPick || {};
-        state.targetEq = restored.targetEq; state.geoPref = restored.geoPref; state.geoSplit = restored.geoSplit ?? 50; state.unknownAssumption = restored.unknownAssumption;
+        state.targetEq = restored.targetEq; state.geoPref = restored.geoPref; state.geoSplit = restored.geoSplit ?? 50; state.mixSel = restored.mixSel || {}; state.mixPick = restored.mixPick || {}; state.unknownAssumption = restored.unknownAssumption;
         planCache = { sig: null, plan: null };
         // שער קשירת לקוח גם על נתונים משוחזרים: קובץ שמירה (מדור קודם או ששונה חיצונית) עלול לשאת
         // טופס 161 של לקוח אחר. זהות שונה -> הפרדה; חסרה -> לא פתור. הכל נשמר במצב ממתין, לא נמחק.
@@ -1987,12 +1989,13 @@ function renderTargetBar() {
 function refreshTargetLive() {
     document.querySelectorAll('.eq-target-out, #eq-target-label').forEach(el => { el.textContent = pct(state.targetEq); });
     document.querySelectorAll('[data-eq-slider], #eq-slider').forEach(el => { if (document.activeElement !== el) el.value = state.targetEq; });
-    document.querySelectorAll('[data-target-summary]').forEach(el => { el.textContent = targetSummaryText(); });
+    document.querySelectorAll('[data-target-summary]').forEach(el => { el.textContent = isV11() ? targetSummaryText() : mixSummaryText(); });
     if (!view) return;
     const byKey = new Map(view.holdings.map(h => [trackKeyOf(h.account.account, h.track), h]));
     document.querySelectorAll('[data-tblock]').forEach(el => {
         const h = byKey.get(el.dataset.tblock);
-        if (h) el.innerHTML = renderHoldingTarget(h.account, h);
+        if (el.dataset.mix) el.innerHTML = renderMixCard(el.dataset.tblock);
+        else if (h) el.innerHTML = renderHoldingTarget(h.account, h);
     });
 }
 
@@ -2105,7 +2108,7 @@ function renderPortfolio() {
                     : h && h.estimate
                         ? `<div class="muted small">${matchLabel(h.match)} חשיפה מנייתית <b>${pct(h.estimate.eq)}</b>* <span class="tag-miss">אומדן מבוסס נתוני מחלקה רשמיים - לא נתון שנצפה בהחזקה זו</span> · ${esc(h.estimate.basis)} · טווח המחלקה ${pct(h.estimate.lo)}-${pct(h.estimate.hi)} (טווח בפועל, אינו גבול מובטח למסלול זה) · נכסי חו"ל (כל הנכסים, לא רק מניות) ${h.estimate.fo !== null ? pct(h.estimate.fo) + '*' : '—'} · ${(() => { const g = equityGeoOf((h.match && h.match.row && h.match.row.name) || t.name); return g.cls === 'unclassified' ? 'אפיק המניות: לא מסווג גיאוגרפית (אין שדה רשמי)' : `אפיק המניות לפי מנדט בשם בלבד: ${GEO_LABEL[g.cls]}* (${g.basis})`; })()} · <span class="tag-miss">לא נכלל בממוצע המדויק</span></div>${renderManualSelector(a, t, key)}`
                         : `<div class="muted small">${h ? matchLabel(h.match) : ''} <span class="tag-miss">לא נכלל בממוצע הסיכון - אין נתון חשיפה ולא בסיס להערכה, והחשיפה אינה ידועה</span></div>${renderManualSelector(a, t, key)}`}
-                    ${legacy ? renderAlternatives(a, h) : h ? `<div data-tblock="${esc(trackKeyOf(a.account, t))}">${renderHoldingTarget(a, h)}</div>` : ''}
+                    ${legacy ? renderAlternatives(a, h) : h ? `<div data-tblock="${esc(trackKeyOf(a.account, t))}" data-mix="1">${renderMixCard(trackKeyOf(a.account, t))}</div>` : ''}
                 </div>`;
             }).join('')}
             ${a.tracks.length === 0 ? `<div class="muted small">בדיווח האחרון אין בחשבון יתרה פעילה במסלולים (0 ₪), ולכן החשבון אינו משוקלל בממוצע החשיפה.${a.prevYearEnd ? ` יתרת סוף השנה הקודמת בחשבון זה (ערך היסטורי בלבד, ייתכן שהכסף הועבר למוצר אחר): ${fmt(a.prevYearEnd)} ₪.` : ''} נתוני החשיפה של המסלולים עצמם קיימים במאגרים הרשמיים, אך אין משקל נוכחי לייחס להם.</div>` : ''}
@@ -2136,6 +2139,104 @@ function renderPortfolio() {
     `;
 }
 
+// ---------- תמהיל מובילי השוק (M-060, אושר 14.11 12:08) ----------
+const POLICY_KINDS = new Set(['menahalim']);
+const mixDefaultSel = (kind) => !POLICY_KINDS.has(kind) && kind !== 'risk' && kind !== 'other';
+const mixSelected = (key, kind) => state.mixSel[key] !== undefined ? !!state.mixSel[key] : mixDefaultSel(kind);
+function mixHoldings() {
+    if (!view) return [];
+    const out = [];
+    for (const a of visibleAccounts(state.portfolio)) for (const t of a.tracks.filter(t => (t.balance || 0) >= 1)) {
+        const h = view.holdings.find(x => x.track === t);
+        if (!h) continue;
+        const key = trackKeyOf(a.account, t);
+        const eq = h.equityPct !== null ? h.equityPct : (h.estimate ? h.estimate.eq : null);
+        const isFundKind = a.kind === 'pensia' || a.kind === 'hishtalmut' || a.kind === 'tagmulim' || a.kind === 'hashkaa';
+        const curFundId = isFundKind ? pensionFundIdOfMatch(h.match, a.kind) : null;
+        out.push({ key, bal: t.balance, eq, estimated: h.equityPct === null && !!h.estimate, kind: a.kind, group: h.match && h.match.group, curFundId,
+            curParentId: curFundId != null ? parentIdOfMatch(h.match, a.kind) : null, selected: mixSelected(key, a.kind), name: t.name, plan: a.plan, yatzran: a.yatzran });
+    }
+    return out;
+}
+let mixCache = { sig: null, res: null };
+function currentMix() {
+    if (state.targetEq === null || state.targetEq === undefined || !view) return null;
+    const H = mixHoldings();
+    const geo = state.geoPref === 'local' || state.geoPref === 'foreign' ? state.geoPref : 'any';
+    const sig = JSON.stringify([state.targetEq, geo, state.mixPick, H.map(h => [h.key, h.bal, h.eq, h.selected])]);
+    if (mixCache.sig === sig) return mixCache.res;
+    const res = solveTopMix(H, state.targetEq, { clientAge: clientAge(), geoPref: geo, picks: state.mixPick });
+    mixCache = { sig, res };
+    return res;
+}
+const mixCatLabel = (c) => (MIX_CATS.find(x => x[0] === c) || [null, c])[1];
+function mixSummaryText() {
+    const m = currentMix();
+    if (!m) return 'הזיזו את הבקר - התמהיל המומלץ לכל קופה יופיע מתחת לכל מסלול.';
+    if (!m.movableCount && !m.per.some(p => p.picked)) return 'אין קופות מסומנות שאפשר להעביר - סמנו לפחות מוצר אחד ב"מתחשבים במוצר".';
+    const base = `חשיפה מושגת ${pct(m.eqAfter)} · ${m.moves} שינויים · ציון ממוצע ${m.scoreAfter != null ? m.scoreAfter.toFixed(0) : '-'}`;
+    return m.inTol ? `${base} (בטווח ±${m.tol}% מהיעד ${pct(m.T)})` : `היעד ${pct(m.T)} מחוץ לטווח האפשרי עם המוצרים המסומנים (${pct(m.rangeLo)} - ${pct(m.rangeHi)}). מוצג הצירוף הקרוב ביותר: ${base}.`;
+}
+function renderMixCard(key) {
+    const m = currentMix();
+    if (!m) return '';
+    const p = m.per.find(x => x.key === key);
+    if (!p) return '';
+    const head = `<div class="group-label">ההמלצה ליעד ${pct(state.targetEq)} - תמהיל מובילי השוק</div>`;
+    if (p.note === 'not_selected') return `<div class="card target-card muted-card">${head}<div class="muted small">לא נכלל בתמהיל (לא סומן "מתחשבים במוצר") - נשאר ללא שינוי${p.eq != null ? `, וחשיפתו (${pct(p.eq)}) נספרת בחשיפת כל התיק` : ''}.</div></div>`;
+    if (p.note) return `<div class="card target-card muted-card">${head}<div class="muted small">${p.note === 'no_market_policy' ? 'לפוליסות אין כיום מאגר השוואה מאומת עם ציון מלא - הפוליסה נשארת במקומה.' : 'לסוג המוצר הזה אין מסלולים מדורגים מאומתים בשוק - נשאר במקומו.'}${p.eq != null ? ` חשיפתו (${pct(p.eq)}) נספרת בחשיפת כל התיק.` : ''}</div></div>`;
+    const c = p.choice;
+    const stay = c && c.fundId === p.curFundId;
+    const sameCo = c && p.curParentId != null && c.parentId === p.curParentId;
+    const opts = MIX_CATS.map(([cat, label]) => {
+        const list = (p.top && p.top.cats[cat]) || [];
+        if (!list.length) return '';
+        return `<optgroup label="${esc(label)}">${list.map(o => `<option value="${o.fundId}"${p.picked && c && o.fundId === c.fundId ? ' selected' : ''}>${esc(o.name)} · ${pct(o.eq)} מניות · ציון ${o.score.toFixed(0)}</option>`).join('')}</optgroup>`;
+    }).join('');
+    const emptyCats = MIX_CATS.filter(([cat]) => !((p.top && p.top.cats[cat]) || []).length).map(([, l]) => l);
+    return `<div class="card target-card">${head}
+        <div class="track-line"><span>היום: ${esc(p.name)}</span><b>${p.eq != null ? pct(p.eq) + (p.estimated ? '*' : '') : 'לא ידוע'}</b></div>
+        ${c ? `<div class="track-line"><span>${stay ? 'נשאר במסלול הנוכחי - הוא בין המובילים' : 'מוצע'}: <b>${esc(c.name)}</b> <span class="muted small">(${esc(mixCatLabel(c.cat))} · מקום ${c.rank} מתוך ${c.cohortN} בקטגוריה)</span></span><b>← ${pct(c.eq)}</b></div>
+        <div class="muted small">ציון ${c.score.toFixed(1)} · שארפ ${c.jSharpe ?? '-'} · תשואה 3 שנים ${c.jY3 ?? '-'}% · דמי ניהול ממוצעים מצבירה ${c.feeA ?? '-'}% (ממוצע רשמי, לא הצעה אישית)${p.picked ? ' · <b>נבחר ידנית</b>' : ''}</div>
+        ${!stay && !sameCo ? `<div class="muted small">ניוד בין חברות${p.kind === 'pensia' ? ': לפני ביצוע לבדוק רציפות כיסוי ביטוחי (נכות ושאירים), תקופת אכשרה והחרגות מצב רפואי קודם בקרן הקולטת' : ''}.${c.joinUnverified ? ' פתיחות המסלול להצטרפות לא אומתה פרטנית.' : ''}</div>` : ''}` : ''}
+        <label class="small">החלפת מסלול (השאר מתאזנים): <select data-mixpick="${esc(key)}"><option value="">המלצת המערכת</option>${opts}</select></label>
+        ${emptyCats.length ? `<div class="muted small">אין מסלולים מדורגים מאומתים בקטגוריות: ${emptyCats.map(esc).join(', ')} (חסר נתון פתיחות להצטרפות או מדדי ציון).</div>` : ''}
+        ${renderTransferRules(p.kind, esc)}
+    </div>`;
+}
+function renderMixSelectors() {
+    const H = mixHoldings();
+    if (!H.length) return '';
+    return `<div class="small" style="margin-top:8px"><b>מתחשבים במוצר?</b> מוצר מסומן יכול לעבור למסלול מוביל; מוצר לא מסומן נשאר במקומו (למשל פוליסה עם רווח צבור שהלקוח לא רוצה למכור), והחשיפה שלו נספרת בתיק.</div>
+        ${H.map(h => `<label class="confirmlab"><input type="checkbox" data-mixsel="${esc(h.key)}" ${h.selected ? 'checked' : ''}> ${esc(h.name)} <span class="muted small">(${esc(KIND_LABEL[h.kind] || h.kind)}, ${esc(h.yatzran || '')})</span> - ${h.eq != null ? pct(h.eq) + (h.estimated ? '*' : '') : 'חשיפה לא ידועה'} · ${fmt(h.bal)} ₪</label>`).join('')}`;
+}
+function renderMixGeo() {
+    return `<div class="small" style="margin-top:6px"><b>כיוון גיאוגרפי מועדף לאפיק המניות:</b> <select data-geo-pref>
+        <option value="any" ${(state.geoPref || 'any') === 'any' ? 'selected' : ''}>ללא העדפה</option>
+        <option value="local" ${state.geoPref === 'local' ? 'selected' : ''}>שוק מקומי (ישראל)</option>
+        <option value="foreign" ${state.geoPref === 'foreign' ? 'selected' : ''}>מניות חו"ל</option>
+        <option value="split" ${state.geoPref === 'split' ? 'selected' : ''}>חלוקה בין שוק מקומי לחו"ל</option>
+    </select>${state.geoPref === 'split' ? ` <label>חו"ל מתוך אפיק המניות: <select data-geo-split>${[10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90].map(v => `<option value="${v}"${(state.geoSplit ?? 50) === v ? ' selected' : ''}>${v}% חו"ל · ${100 - v}% מקומי</option>`).join('')}</select></label>` : ''}</div>
+    <div class="muted small">"שוק מקומי" או "חו"ל" מחריגים מהתמהיל מסלולים שהמנדט בשמם הפוך. "חלוקה" מוצגת כבדיקה בסיכום התמהיל (לפי מנדט בשם ונכסי חו"ל רשמיים).</div>`;
+}
+function mixGeoHtml() {
+    if (state.geoPref !== 'split') return '';
+    const m = currentMix();
+    if (!m) return '';
+    const comps = m.per.map(p => p.choice ? { geo: equityGeoOf(p.choice.name), w: p.bal, eq: p.choice.eq, fo: p.choice.fo } : { geo: equityGeoOf(p.name || ''), w: p.bal, eq: p.eq ?? 0, fo: null });
+    const g = geoEquityShare(comps), tot = g.foreign + g.local + g.unclassified, f = state.geoSplit ?? 50;
+    let foW = 0, foV = 0; for (const c of comps) if (c.fo != null) { foW += c.w; foV += c.w * c.fo; }
+    return `<div class="callout note-c"><b>חלוקת אפיק המניות בהצעה</b> (מבוקש: ${f}% חו"ל · ${100 - f}% מקומי). ${tot > 0 ? `מתוך המניות: <b>${pct(g.foreign / tot * 100)}</b> במסלולים עם מנדט חו"ל בשם, <b>${pct(g.unclassified / tot * 100)}</b> במסלולי מניות כלליים.` : ''}${foW > 0 ? ` <b>נכסי חו"ל בפועל לפי נתון רשמי: ${pct(foV / foW)}</b> (כל הנכסים, משוקלל לפי יתרה).` : ''}</div>`;
+}
+function renderMixSummaryCard() {
+    const m = currentMix();
+    if (!m) return '';
+    return `<div class="card"><div class="track-line"><span>תמהיל מובילי השוק - כל התיק</span><b>${m.eqBefore != null ? pct(m.eqBefore) : '-'} ← ${m.eqAfter != null ? pct(m.eqAfter) : '-'}</b></div>
+        <div class="small">${esc(mixSummaryText())}</div>
+        <div class="muted small">שיטה: כל קופה מסומנת עוברת כולה למסלול אחד, באותו סוג מוצר ומכל חברה, מתוך 3 המובילים בכל קטגוריה (${MIX_CATS.map(x => x[1]).join(', ')}) לפי הציון המאושר (40% שארפ, 30% תשואה 3 שנים, 20% שירות, 10% איזון אקטוארי; בגמל והשתלמות בלי הרכיב האקטוארי) - אחוזון בתוך הקטגוריה. נבחר הצירוף עם הציון הממוצע הגבוה ביותר (משוקלל לפי יתרות) שחשיפת כל התיק בו בטווח ±${MIX_TOLERANCE}% מהיעד. נתוני ${REF_DATE}; אינו ייעוץ ואינו הוראת פעולה.</div>
+        ${mixGeoHtml()}</div>`;
+}
+
 // בקר יעד החשיפה בחלק "תמונת מצב התיק והמלצות" (בקשת הבעלים 14.11 11:45): כאן קובעים את היעד, את המוצרים ואת הכיוון הגיאוגרפי;
 // בחלק "רמת סיכון וחשיפה" הבקר מוצג לתצוגה בלבד
 function renderTargetPanel() {
@@ -2145,8 +2246,8 @@ function renderTargetPanel() {
     return `<div class="card target-bar">
         <div class="track-line"><span><b>יעד חשיפה מנייתית לכל התיק</b> <span class="muted small">(מצב נוכחי בחלק המזוהה: ${pct(cr.equity)})</span></span><b class="eq-target-out">${pct(T)}</b></div>
         <input type="range" min="0" max="100" value="${T}" data-eq-slider aria-label="יעד חשיפה מנייתית">
-        <div class="small" data-target-summary>${state.targetEq === null || state.targetEq === undefined ? 'הזיזו את הבקר - ההמלצה לכל מסלול תופיע מתחתיו.' : targetSummaryText()}</div>
-        ${fold('targetctl', 'מוצרים ליישום היעד, כיוון גיאוגרפי ופירוט התכנית', renderTargetController())}
+        <div class="small" data-target-summary>${mixSummaryText()}</div>
+        ${fold('targetctl', 'מוצרים בתמהיל, כיוון גיאוגרפי וסיכום', renderMixSelectors() + renderMixGeo() + renderMixSummaryCard())}
     </div>`;
 }
 
@@ -2850,7 +2951,7 @@ async function onMaslaka(files) {
     state.portfolio = p; state.reports = rep; state.demo = false; state.busy = false;
     // איפוס מלא של מצב תלוי-תיק בעת החלפת קובץ (09/11/2026): אישורי זהות, בחירות ידניות, החרגות מהממוצע,
     // זכאויות שילוב, יעד/העדפת גיאוגרפיה ובחירת תחילת קצבה - כולם קשורים לחשבונות ולמסלולים של הקובץ הקודם.
-    state.confirmed = {}; state.selections = {}; state.excluded = {}; state.targetEq = null; state.geoPref = 'any'; state.geoSplit = 50; state.eligible = {}; state.unknownAssumption = null; state.marketPick = {};
+    state.confirmed = {}; state.selections = {}; state.excluded = {}; state.targetEq = null; state.geoPref = 'any'; state.geoSplit = 50; state.mixSel = {}; state.mixPick = {}; state.eligible = {}; state.unknownAssumption = null; state.marketPick = {};
     state.pensionStartSel = null; state.manualDropNote = ''; state.uploadError = '';
     // כרטיס המקדם (תכנון פרישה) קשור ללקוח/לקובץ: גוף מנהל (מזוהה או שנבחר ידנית), תרחיש, הבטחה, יתרה,
     // אומדן אחרון וחלופות מתאפסים בהחלפת קובץ - כדי שלקוח/קובץ חדש לא יירש מנהל או תוצאה של הקודם.
@@ -3025,6 +3126,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (t.dataset.unknownAssump !== undefined) { const v = t.value.trim(); state.unknownAssumption = v === '' ? null : Math.min(100, Math.max(0, Number(v) || 0)); render(); return; }
         if (t.dataset.geoPref !== undefined) { state.geoPref = t.value; render(); return; }
+        if (t.dataset.mixsel !== undefined) { state.mixSel = { ...state.mixSel, [t.dataset.mixsel]: t.checked }; render(); return; }
+        if (t.dataset.mixpick !== undefined) { const v = parseInt(t.value); const np = { ...state.mixPick }; if (Number.isFinite(v)) np[t.dataset.mixpick] = v; else delete np[t.dataset.mixpick]; state.mixPick = np; render(); return; }
         if (t.dataset.geoSplit !== undefined) { state.geoSplit = parseInt(t.value); render(); return; }
         if (t.dataset.selectId !== undefined) {
             const k = t.dataset.selectId;

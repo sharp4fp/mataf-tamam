@@ -942,6 +942,7 @@ export function plannerSnapshotOf(state) {
         geoPref: GEO_PREFS.includes(state.geoPref) ? state.geoPref : 'any',
         geoSplit: (typeof state.geoSplit === 'number' && state.geoSplit >= 0 && state.geoSplit <= 100) ? state.geoSplit : 50,
         unknownAssumption: (typeof state.unknownAssumption === 'number' && isFinite(state.unknownAssumption)) ? Math.min(100, Math.max(0, state.unknownAssumption)) : null,
+        mixSel: { ...(state.mixSel || {}) }, mixPick: { ...(state.mixPick || {}) },
         eligible: { ...state.eligible }, excluded: { ...state.excluded }, confirmed: { ...state.confirmed }, selections: { ...(state.selections || {}) }, marketPick: { ...(state.marketPick || {}) } };
 }
 export function plannerRestoreOf(pl, holdings) {
@@ -976,6 +977,10 @@ export function plannerRestoreOf(pl, holdings) {
     // בחירת רשומה מתנגשת משוחזרת כמות שהיא; תקפותה נבדקת מול קבוצת הקונפליקט בפועל בזמן הניתוח (אינדקס מחוץ לטווח מתעלם)
     if (typeof pl.targetEq === 'number' && isFinite(pl.targetEq) && pl.targetEq >= 0 && pl.targetEq <= 100) out.targetEq = pl.targetEq;
     if (GEO_PREFS.includes(pl.geoPref)) out.geoPref = pl.geoPref;
+    // תמהיל מובילי השוק (M-060): רק למפתחות קיימים
+    out.mixSel = {}; out.mixPick = {};
+    if (pl.mixSel && typeof pl.mixSel === 'object' && !Array.isArray(pl.mixSel)) for (const [k, v] of Object.entries(pl.mixSel)) if (byKey.has(k) && typeof v === 'boolean') out.mixSel[k] = v;
+    if (pl.mixPick && typeof pl.mixPick === 'object' && !Array.isArray(pl.mixPick)) for (const [k, v] of Object.entries(pl.mixPick)) if (byKey.has(k) && Number.isInteger(v)) out.mixPick[k] = v;
     if (typeof pl.geoSplit === 'number' && pl.geoSplit >= 0 && pl.geoSplit <= 100) out.geoSplit = pl.geoSplit;
     if (typeof pl.unknownAssumption === 'number' && isFinite(pl.unknownAssumption) && pl.unknownAssumption >= 0 && pl.unknownAssumption <= 100) out.unknownAssumption = pl.unknownAssumption;
     return out;
@@ -1232,4 +1237,151 @@ export function classEstimate(account, track) {
     const foMed = fos.length ? (fos.length % 2 ? fos[(fos.length - 1) / 2] : (fos[fos.length / 2 - 1] + fos[fos.length / 2]) / 2) : null;
     const basis = `חציון מחלקה: ${clsDesc} עם סימוכין "${ev.join(' ')}" בשם (${base.length} מסלולים, ${REF_DATE}) - אומדן מבוסס נתוני מחלקה רשמיים, לא נתון שנצפה בהחזקה זו`;
     return { eq: Math.round(med * 100) / 100, lo: eqs[0], hi: eqs[eqs.length - 1], n: base.length, fo: foMed, basis, narrow: true, evidence: ev };
+}
+
+// ---------- תמהיל סינתטי מהמסלולים המובילים בשוק (M-060, תכנית שאושרה 14.11.2026 12:08) ----------
+// כל קופה מסומנת עוברת כולה למסלול אחד (בלי פיצול), באותו סוג מוצר, מכל חברה. לכל סוג מוצר נלקחים 3 המסלולים
+// המדורגים ראשונים בכל אחת מארבע קטגוריות: מניות/עוקבי מדד, כללי, אג"ח/סולידי/שקלי, מותאם גיל.
+// הציון: אותו ציון מאושר (40% שארפ, 30% תשואה 3 שנים, 10% אקטוארי, 20% שירות; בגמל/השתלמות 4:3:2 בלי אקטוארי),
+// אחוזון בתוך הקטגוריה. בחירת התמהיל: הציון הממוצע (משוקלל יתרות) הגבוה ביותר שחשיפת התיק כולו בו בטווח ±3% מהיעד;
+// אם אין כזה - הצירוף הקרוב ביותר ליעד, עם פער מוצהר.
+// מותאם גיל מפוצל לשלוש רצועות גיל, כי החשיפה בהן שונה מאוד (כ-58% / כ-50% / כ-30%) - כך ה"טופ 3" אינו מאבד את המסלולים הסולידיים
+export const MIX_CATS = [['equity', 'מניות / עוקבי מדד'], ['general', 'כללי'], ['bond', 'אג"ח / סולידי / שקלי'], ['age50', 'מותאם גיל - לבני 50 ומטה'], ['age5060', 'מותאם גיל - לבני 50 עד 60'], ['age60', 'מותאם גיל - לבני 60 ומעלה']];
+export const MIX_TOLERANCE = 3;
+export function mixCategoryOf(name, eq) {
+    const n = String(name || '');
+    if (/60\s*ומעלה|מעל\s*(גיל\s*)?60/.test(n)) return 'age60';
+    if (/50\s*(עד|-|–)\s*60/.test(n)) return 'age5060';
+    if (/50\s*ומטה|עד\s*(גיל\s*)?50\b/.test(n)) return 'age50';
+    if (/לבני\s*\d|מותאם גיל|תלוי גיל|גיל\s*\d/.test(n)) return 'age5060';
+    if (/אג"ח|אגח|אג״ח|שקלי|כספי|סולידי|ממשלתי|פיקדון|פקדון|צמוד מדד|שקל/.test(n)) return 'bond';
+    if (/מניות|S&P|s&p|נאסד|עוקב מדד/i.test(n)) return 'equity';
+    if (/כללי/.test(n)) return 'general';
+    return eq >= 75 ? 'equity' : eq >= 25 ? 'general' : 'bond';
+}
+function mixPctl(vals) {
+    const n = vals.length; if (n <= 1) return new Array(n).fill(50);
+    const out = new Array(n).fill(null), order = vals.map((v, i) => [v, i]).sort((x, y) => x[0] - y[0]);
+    for (let i = 0; i < n;) { let j = i; while (j + 1 < n && order[j + 1][0] === order[i][0]) j++; const mid = (i + j) / 2 + 1; for (let k = i; k <= j; k++) out[order[k][1]] = 100 * (mid - 1) / (n - 1); i = j + 1; }
+    return out;
+}
+// ניקוד קבוצת מסלולים לפי הנוסחה המאושרת (זהה ל-marketCandidates); מסלול בלי כל המדדים - מוחרג ונספר
+function mixScoreRows(rows, gemel) {
+    const coh = [], missing = [];
+    if (gemel) {
+        const SRVG = window.SERVICE25_GEMEL || {};
+        for (const r of rows) { const sv = SRVG[r.parentId]; if (r.sharpe == null || r.y3 == null || sv == null) { missing.push(r); continue; } coh.push({ ...r, jSharpe: r.sharpe, jY3: r.y3, srv: sv }); }
+        if (coh.length) {
+            const sP = mixPctl(coh.map(x => x.jSharpe)), yP = mixPctl(coh.map(x => x.jY3));
+            const orgs = [...new Set(coh.map(x => x.parentId))], oP = mixPctl(orgs.map(o => coh.find(z => z.parentId === o).srv));
+            coh.forEach((x, i) => { x.score = (4 * sP[i] + 3 * yP[i] + 2 * oP[orgs.indexOf(x.parentId)]) / 9; });
+        }
+    } else {
+        const JUNE = window.JUNE26 || {}, ACT = window.ACT36M || {}, SRV = window.SERVICE25 || {};
+        for (const r of rows) {
+            const jd = JUNE[r.fundId];
+            const act = jd && ACT[jd.p] ? ACT[jd.p].v : null, srv = jd && SRV[jd.p] ? SRV[jd.p].v : null;
+            if (!jd || jd.s == null || jd.y == null || act == null || srv == null) { missing.push(r); continue; }
+            coh.push({ ...r, jSharpe: jd.s, jY3: jd.y, act, actFund: ACT[jd.p].name, srv, srvFund: SRV[jd.p].name });
+        }
+        if (coh.length) {
+            const sP = mixPctl(coh.map(x => x.jSharpe)), yP = mixPctl(coh.map(x => x.jY3));
+            const funds = [...new Set(coh.map(x => x.actFund))], fP = mixPctl(funds.map(f => coh.find(z => z.actFund === f).act));
+            const orgs = [...new Set(coh.map(x => x.srvFund))], oP = mixPctl(orgs.map(o => coh.find(z => z.srvFund === o).srv));
+            coh.forEach((x, i) => { x.score = 0.4 * sP[i] + 0.3 * yP[i] + 0.1 * fP[funds.indexOf(x.actFund)] + 0.2 * oP[orgs.indexOf(x.srvFund)]; });
+        }
+    }
+    coh.sort((x, y) => y.score - x.score || x.fundId - y.fundId);
+    return { scored: coh, missing };
+}
+const mixTopCache = new Map();
+// 3 המובילים בכל קטגוריה לסוג מוצר; geoPref local/foreign מחריג מסלולים המסווגים בכיוון ההפוך (לפי מנדט בשם)
+export function mixTopByCategory(kind, group, clientAge = null, geoPref = 'any', n = 3) {
+    const ck = [kind, group, clientAge, geoPref, n].join('|');
+    if (mixTopCache.has(ck)) return mixTopCache.get(ck);
+    const pool = marketPoolOf(kind, group, clientAge);
+    let res;
+    if (pool.disabled) res = { disabled: pool.disabled, cats: {}, list: [] };
+    else {
+        let rows = pool.rows.filter(r => !/מקבלי קצבה|קצבה לזכאים|הלכה|שריעה|בניהול אישי/.test(r.name || ''));
+        if (geoPref === 'local' || geoPref === 'foreign') rows = rows.filter(r => { const g = equityGeoOf(r.name).cls; return g === geoPref || g === 'unclassified'; });
+        const cats = {}, list = [];
+        let missing = 0;
+        for (const [c] of MIX_CATS) {
+            const sc = mixScoreRows(rows.filter(r => mixCategoryOf(r.name, r.eq) === c), !!pool.gemel);
+            missing += sc.missing.length;
+            cats[c] = sc.scored.slice(0, n).map((r, i) => ({ ...r, cat: c, rank: i + 1, cohortN: sc.scored.length }));
+            list.push(...cats[c]);
+        }
+        res = { disabled: null, cats, list, missing, gemel: !!pool.gemel };
+    }
+    mixTopCache.set(ck, res);
+    return res;
+}
+// holdings: [{key, bal, eq (נוכחי, יכול להיות null), kind, group, curFundId, curParentId, selected}]
+// frozen: {eqSum, val} - חלקי התיק שאינם בחישוב (לא מסומנים / לא נתמכים) עם חשיפה ידועה; unknownVal - ללא בסיס
+// picks: {key: fundId} - החלפה ידנית; השאר מתאזנים
+export function solveTopMix(holdings, T, opts = {}) {
+    const tol = opts.tolerance ?? MIX_TOLERANCE, age = opts.clientAge ?? null, geo = opts.geoPref || 'any', picks = opts.picks || {};
+    const frozenSum = (opts.frozen && opts.frozen.eqSum) || 0;
+    const per = [];
+    let fixedSum = frozenSum, fixedVal = (opts.frozen && opts.frozen.val) || 0;
+    const movable = [];
+    for (const h of holdings) {
+        const p = { ...h, top: null, options: [], choice: null, note: null };
+        if (!h.selected) { p.note = 'not_selected'; per.push(p); if (h.eq != null) { fixedSum += h.bal * h.eq; fixedVal += h.bal; } continue; }
+        const top = mixTopByCategory(h.kind, h.group, age, geo);
+        p.top = top;
+        if (top.disabled || !top.list.length) { p.note = top.disabled === 'menahalim' ? 'no_market_policy' : 'no_market'; per.push(p); if (h.eq != null) { fixedSum += h.bal * h.eq; fixedVal += h.bal; } continue; }
+        p.options = top.list;
+        const pickId = picks[h.key];
+        if (pickId != null) {
+            const opt = top.list.find(o => o.fundId === pickId);
+            if (opt) { p.choice = opt; p.picked = true; fixedSum += h.bal * opt.eq; fixedVal += h.bal; per.push(p); continue; }
+        }
+        per.push(p); movable.push(p);
+    }
+    const knownV = fixedVal + movable.reduce((s, p) => s + p.bal, 0);
+    // DP על חשיפה מצטברת (דליים של 0.1% מהשווי הידוע): לכל דלי - הציון המצטבר הגבוה ביותר (ובשוויון - פחות מעברים)
+    const B = 1000, unit = knownV > 0 ? knownV / B : 1;
+    let states = new Map([[Math.round(fixedSum / 100 / unit), { score: 0, moves: 0, path: [] }]]);
+    for (const p of movable) {
+        const next = new Map();
+        for (const [b, st] of states) for (const o of p.options) {
+            const nb = b + Math.round(p.bal * o.eq / 100 / unit);
+            const sc = st.score + p.bal * o.score, mv = st.moves + (o.fundId === p.curFundId ? 0 : 1);
+            const cur = next.get(nb);
+            if (!cur || sc > cur.score + 1e-9 || (Math.abs(sc - cur.score) <= 1e-9 && mv < cur.moves)) next.set(nb, { score: sc, moves: mv, path: st.path.concat(o) });
+        }
+        states = next;
+    }
+    const scoredVal = movable.reduce((s, p) => s + p.bal, 0);
+    let best = null, rangeLo = Infinity, rangeHi = -Infinity;
+    for (const [b, st] of states) {
+        const eqWhole = knownV > 0 ? b * unit * 100 / knownV : 0;
+        rangeLo = Math.min(rangeLo, eqWhole); rangeHi = Math.max(rangeHi, eqWhole);
+        const dev = Math.abs(eqWhole - T), inTol = dev <= tol + 1e-9;
+        const cand = { st, eqWhole, dev, inTol };
+        if (!best) { best = cand; continue; }
+        if (inTol && !best.inTol) best = cand;
+        else if (inTol === best.inTol) {
+            if (inTol ? (st.score > best.st.score + 1e-9 || (Math.abs(st.score - best.st.score) <= 1e-9 && (st.moves < best.st.moves || (st.moves === best.st.moves && dev < best.dev)))) : (dev < best.dev - 1e-9 || (Math.abs(dev - best.dev) <= 1e-9 && st.score > best.st.score))) best = cand;
+        }
+    }
+    if (best) movable.forEach((p, i) => { p.choice = best.st.path[i]; });
+    // חשיפה מדויקת אחרי הבחירה (ללא עיגול דליים)
+    let sumAfter = frozenSum, sumBefore = 0, valBefore = 0, scoreAfter = 0, scoreValAfter = 0, moves = 0;
+    for (const p of per) {
+        if (p.choice) { sumAfter += p.bal * p.choice.eq; scoreAfter += p.bal * p.choice.score; scoreValAfter += p.bal; if (p.choice.fundId !== p.curFundId) moves++; }
+        else if (p.eq != null) sumAfter += p.bal * p.eq;
+        if (p.eq != null) { sumBefore += p.bal * p.eq; valBefore += p.bal; }
+    }
+    const eqAfter = knownV > 0 ? sumAfter / knownV : null;
+    const unknownCur = per.filter(p => p.eq == null && !p.choice).reduce((s, p) => s + p.bal, 0);
+    return {
+        per, T, tol, eqAfter, inTol: eqAfter != null && Math.abs(eqAfter - T) <= tol + 1e-9, gap: eqAfter != null ? eqAfter - T : null,
+        eqBefore: valBefore > 0 ? (sumBefore + frozenSum) / (valBefore + ((opts.frozen && opts.frozen.val) || 0)) : null,
+        rangeLo: isFinite(rangeLo) ? rangeLo : null, rangeHi: isFinite(rangeHi) ? rangeHi : null,
+        scoreAfter: scoreValAfter > 0 ? scoreAfter / scoreValAfter : null, moves, movableCount: movable.length, unknownCurVal: unknownCur, scoredVal,
+    };
 }

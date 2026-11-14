@@ -1,4 +1,4 @@
-// qa-target-link.mjs - יעד החשיפה (בקר בחלק 2 "תמונת מצב התיק והמלצות") מניע את ההמלצות לכל מסלול (בקשת הבעלים 11.11.2026)
+// qa-target-link.mjs - גרסת 11 החלקים (?layout=11): יעד החשיפה מניע את ההמלצות בתיק הנכסים. גרסת 8 החלקים נבדקת ב-qa-topmix (בקשת הבעלים 11.11.2026)
 // ברירת מחדל: כל ההחזקות המזוהות משתתפות; בקר אחד בחלק רמת סיכון וחשיפה, ההמלצות בחלק השוואה לשוק וחלופות (14.11); עדכון חי בזמן גרירה.
 import puppeteer from 'puppeteer-core';
 const browser = await puppeteer.launch({ executablePath: '/usr/bin/google-chrome', headless: 'new', args: ['--no-sandbox', '--disable-dev-shm-usage'] });
@@ -10,7 +10,7 @@ let pass = 0, fail = 0;
 const ok = (c, n, d = '') => { if (c) { pass++; console.log('PASS ' + n); } else { fail++; console.log('FAIL ' + n + (d ? ' :: ' + d : '')); } };
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
 
-await page.goto('http://127.0.0.1:8099/', { waitUntil: 'networkidle2', timeout: 30000 });
+await page.goto('http://127.0.0.1:8099/?layout=11', { waitUntil: 'networkidle2', timeout: 30000 });
 await page.click('[data-action="demo"]');
 await wait(800);
 ok(await page.evaluate(() => !!document.querySelector('.target-bar') && !document.querySelector('[data-eq-slider]')), 'bar-asks-to-identify-before-any-identified');
@@ -53,7 +53,7 @@ ok(geoOpts === 'any,local,foreign,split', 'geo-select-has-split-option', geoOpts
 await page.evaluate(() => { const s = document.querySelector('select[data-geo-pref]'); s.value = 'split'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await wait(400);
 ok(await page.evaluate(() => !!document.querySelector('select[data-geo-split]')), 'split-share-select-appears');
 await page.evaluate(() => { const s = document.querySelector('select[data-geo-split]'); s.value = '70'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await wait(400);
-const splitTxt = await page.evaluate(() => document.querySelector('#acc-portfolio').textContent.replace(/\s+/g, ' '));
+const splitTxt = await page.evaluate(() => document.querySelector('main').textContent.replace(/\s+/g, ' '));
 console.log('  ', splitTxt.match(/חלוקת אפיק המניות בהצעה.{0,420}/)?.[0]);
 ok(/חלוקת אפיק המניות בהצעה/.test(splitTxt) && /מבוקש: 70% חו"ל · 30% מקומי/.test(splitTxt), 'split-summary-shown', splitTxt.match(/חלוקת אפיק המניות[^\n]*/)?.[0] || '');
 await page.evaluate(() => { const s = document.querySelector('select[data-geo-pref]'); s.value = 'any'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await wait(400);
@@ -62,13 +62,9 @@ await page.evaluate(() => { const c = document.querySelector('[data-eligible]');
 await wait(400);
 ok(await page.evaluate(() => [...document.querySelectorAll('[data-tblock] .target-card')].some(c => c.innerText.includes('ללא שינוי'))), 'unticked-holding-says-no-change');
 // מעבר לחלק רמת הסיכון מהקישור
-// בחלק רמת סיכון וחשיפה הבקר לתצוגה בלבד, עם קישור לבקר בחלק 2 (בקשת הבעלים 14.11 11:45)
-ok(await page.evaluate(() => { const r = document.querySelector('#acc-risk #eq-slider'); return !!r && r.disabled && !r.hasAttribute('data-eq-slider') && !!document.querySelector('#acc-portfolio [data-eq-slider]'); }), 'risk-slider-read-only-controller-in-part-2');
-await page.evaluate(() => { const h = document.querySelector('[data-acc="portfolio"]'); if (h.getAttribute('aria-expanded') === 'true') h.click(); });
-await wait(300);
-await page.evaluate(() => document.querySelector('#acc-risk [data-goto-acc="portfolio"]').click());
+await page.evaluate(() => document.querySelector('[data-goto-acc="risk"]').click());
 await wait(400);
-ok(await page.evaluate(() => document.querySelector('[data-acc="portfolio"]').getAttribute('aria-expanded') === 'true'), 'link-opens-portfolio-part');
+ok(await page.evaluate(() => document.querySelector('[data-acc="risk"]').getAttribute('aria-expanded') === 'true'), 'link-opens-risk-section');
 ok(errs.length === 0, 'no-page-errors', errs[0] || '');
 console.log(`target-link: PASS=${pass} FAIL=${fail}`);
 await browser.close();

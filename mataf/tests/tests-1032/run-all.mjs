@@ -14,6 +14,7 @@ const suites = [
     ['test-diff-prev', here + '/test-diff-prev.mjs'],
     ['test-manual-select', here + '/test-manual-select.mjs'],
     ['test-geo', here + '/test-geo.mjs'],
+    ['test-topmix', here + '/test-topmix.mjs'],
     ['test-analysis', here + '/test-analysis.mjs'],
     ['uitest2', here + '/uitest2.mjs'],
     ['test-movement', here + '/test-movement.mjs'],
