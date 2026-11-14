@@ -12,6 +12,7 @@ import { renderDiffBody, diffPortfolios, renderNifraimBody, parseNifraimText, ma
 import { renderLifeTab, renderHealthTab, insInit, insApply, emptyInsState } from './insurance.js';
 import { renderCalcTab, renderCalcSubtabs, calcApply } from './calc.js';
 import { evaluateRetirement } from './retire-engine.js';
+import { staleBannerHtml } from './constants-year.js';
 import { AMOUNT_RANGES, EQUITY_RANGES, FEE_RANGES, RENT_RANGES, SECTIONS, parseBalanceItems, computeTotal } from './assets.js';
 
 const fmt = (n) => Math.round(n).toLocaleString('he-IL');
@@ -2849,6 +2850,7 @@ function render() {
         </div>
     </header>
     <main class="wrap">
+        ${staleBannerHtml()}
         ${!isPlain ? renderCallouts() : ''}
         ${!isPlain ? acc('step1', isPort && !v11 ? pt(numStep1, 'טעינת קובץ המסלקה', 'מעלים את קובץ המסלקה של הלקוח. מכאן נבנה כל הניתוח.') : `${numStep1} קובץ המסלקה (ZIP או XML)`, badgeStep1(), renderStep1() + (isRet ? fold('secure', 'שמירה או טעינה של תיק מוצפן (אופציונלי)', renderEncPanel()) : ''), !hasP,
             isPort ? `<button type="button" class="encbtn${state.encOpen ? ' on' : ''}" data-action="enctoggle" aria-expanded="${!!state.encOpen}">🔒 שמירה / טעינה בקובץ מוצפן</button>` : '') : ''}

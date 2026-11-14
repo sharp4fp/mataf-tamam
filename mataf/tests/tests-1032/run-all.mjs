@@ -27,6 +27,7 @@ const suites = [
     ['test-critical-fixes', here + '/test-critical-fixes.mjs'],
     ['test-retire-engine', here + '/test-retire-engine.mjs'],
     ['test-assets', here + '/test-assets.mjs'],
+    ['test-constants-year', here + '/test-constants-year.mjs'],
 ];
 let bad = 0;
 for (const [name, file] of suites) {
