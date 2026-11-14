@@ -2072,6 +2072,14 @@ function renderManualSelector(a, t, key) {
         <select data-select-id="${esc(key)}" size="${Math.min(sel.options.length + 1, 7)}"><option value="">— לא נבחר; ההחזקה אינה מזוהה ואינה בממוצע —</option>${sel.options.map(o => `<option value="${o.id}" ${cur && cur.officialId === o.id ? 'selected' : ''}>${esc(o.name)}${o.eq !== null ? ` · חשיפה ${o.eq}%` : ''}${o.nameMatch ? ' · התאמת שם מדויקה (לא נבחר אוטומטית)' : ''}</option>`).join('')}</select></label></div>`;
 }
 
+// שורת "נכלל בממוצע הסיכון" כתיבת סימון בראש המוצר (בקשת הבעלים 14.11 13:27); ברירת מחדל - מסומן
+function riskIncHtml(h, key) {
+    if (h.match.officialId || h.override) {
+        return `<label class="confirmlab small riskinc"><input type="checkbox" data-riskinc="${esc(key)}" ${state.excluded[key] ? '' : 'checked'}> נכלל בממוצע הסיכון <span class="muted small">(${h.override ? overrideSourceTag(h.override) : 'זוהה לפי קוד רשמי'})</span></label>`;
+    }
+    if (h.match.userSelected) return `<div class="small riskinc"><label class="confirmlab"><input type="checkbox" checked disabled> נכלל בממוצע הסיכון <span class="muted small">(זהות נבחרה ידנית)</span></label> <button type="button" class="mini" data-select-clear="${esc(key)}">ביטול הבחירה הידנית</button></div>`;
+    return '';
+}
 function renderPortfolio() {
     if (!view) return '';
     const legacy = isV11();
@@ -2089,6 +2097,7 @@ function renderPortfolio() {
                 const key = trackKeyOf(a.account, t);
                 return `<div class="track">
                     <div class="track-line"><span>${esc(t.name)}${t.code ? `<span class="muted small"> (קוד מסלול רשמי: ${esc(t.code)})</span>` : ''}</span><b>${fmt(t.balance)} ₪</b></div>
+                    ${!legacy && h && h.equityPct !== null ? riskIncHtml(h, key) : ''}
                     ${h && h.equityPct !== null ? `
                         <div class="eqbar"><div class="eqbar-eq" style="width:${Math.min(100, Math.max(0, h.equityPct))}%"></div></div>
                         <div class="muted small">חשיפה מנייתית ${pct(h.equityPct)} · ${h.override ? overrideLabel(h.override) : matchLabel(h.match)}</div>
@@ -2098,13 +2107,13 @@ function renderPortfolio() {
                             const geo = equityGeoOf(offName);
                             const geoTxt = geo.cls === 'unclassified' ? 'אפיק המניות: לא מסווג גיאוגרפית (אין שדה רשמי לחלוקת מניות ארץ/חו"ל; המנדט בשם המסלול אינו מציין כיוון)' : `אפיק המניות לפי מנדט בשם המסלול בלבד: ${GEO_LABEL[geo.cls]}* (${geo.basis})`;
                             return `${foV !== null && foV !== undefined ? `<div class="muted small">נכסי חו"ל (כל הנכסים, לא רק מניות): ${pct(foV)} · לפי ${REF_DATE}, אינו ערובה להרכב עתידי. חלוקת המניות ארץ/חו"ל אינה שדה במאגר הרשמי - לא מוצג נתון מקומי מחושב כמשלים, ולא גבולות מחושבים משדות החשיפה (חשיפת דלתא/look-through אינה מתחלקת כך).</div>` : ''}<div class="muted small">${geoTxt}</div>`; })()}
-                        ${(h.match.officialId || h.override) && !state.excluded[key]
+                        ${legacy ? ((h.match.officialId || h.override) && !state.excluded[key]
                             ? `<div class="small"><span class="tag-ok">נכלל בממוצע הסיכון (${h.override ? overrideSourceTag(h.override) : 'זוהה לפי קוד רשמי'})</span> <button type="button" class="mini" data-exclude="${esc(key)}">הסרה מהממוצע</button></div>`
                             : (h.match.officialId || h.override) && state.excluded[key]
                                 ? `<div class="small"><span class="tag-miss">הוצא ידנית מממוצע הסיכון</span> <button type="button" class="mini" data-include="${esc(key)}">החזרה לממוצע</button></div>`
                                 : h.match.userSelected
                                     ? `<div class="small"><span class="tag-ok">זהות נבחרה ידנית - נכללת בממוצע הסיכון</span> <button type="button" class="mini" data-select-clear="${esc(key)}">ביטול הבחירה הידנית</button></div>`
-                                    : ``}`
+                                    : ``) : ''}`
                     : h && h.estimate
                         ? `<div class="muted small">${matchLabel(h.match)} חשיפה מנייתית <b>${pct(h.estimate.eq)}</b>* <span class="tag-miss">אומדן מבוסס נתוני מחלקה רשמיים - לא נתון שנצפה בהחזקה זו</span> · ${esc(h.estimate.basis)} · טווח המחלקה ${pct(h.estimate.lo)}-${pct(h.estimate.hi)} (טווח בפועל, אינו גבול מובטח למסלול זה) · נכסי חו"ל (כל הנכסים, לא רק מניות) ${h.estimate.fo !== null ? pct(h.estimate.fo) + '*' : '—'} · ${(() => { const g = equityGeoOf((h.match && h.match.row && h.match.row.name) || t.name); return g.cls === 'unclassified' ? 'אפיק המניות: לא מסווג גיאוגרפית (אין שדה רשמי)' : `אפיק המניות לפי מנדט בשם בלבד: ${GEO_LABEL[g.cls]}* (${g.basis})`; })()} · <span class="tag-miss">לא נכלל בממוצע המדויק</span></div>${renderManualSelector(a, t, key)}`
                         : `<div class="muted small">${h ? matchLabel(h.match) : ''} <span class="tag-miss">לא נכלל בממוצע הסיכון - אין נתון חשיפה ולא בסיס להערכה, והחשיפה אינה ידועה</span></div>${renderManualSelector(a, t, key)}`}
@@ -3142,6 +3151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (t.dataset.unknownAssump !== undefined) { const v = t.value.trim(); state.unknownAssumption = v === '' ? null : Math.min(100, Math.max(0, Number(v) || 0)); render(); return; }
         if (t.dataset.geoPref !== undefined) { state.geoPref = t.value; render(); return; }
+        if (t.dataset.riskinc !== undefined) { const k = t.dataset.riskinc; if (t.checked) state.excluded[k] = false; else { state.excluded[k] = true; state.confirmed[k] = false; state.eligible[k] = false; } render(); return; }
         if (t.dataset.mixsel !== undefined) { state.mixSel = { ...state.mixSel, [t.dataset.mixsel]: t.checked }; render(); return; }
         if (t.dataset.geoSplit !== undefined) { state.geoSplit = parseInt(t.value); render(); return; }
         if (t.dataset.selectId !== undefined) {

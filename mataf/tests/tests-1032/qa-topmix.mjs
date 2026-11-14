@@ -42,6 +42,17 @@ const tbl = await page.evaluate(() => [...document.querySelectorAll('#acc-portfo
 ok(tbl.length >= 4 && /כל התיק/.test(tbl[tbl.length - 1]), 'recommendation-table-under-slider', tbl.join(' || ').slice(0, 300));
 ok(tbl.some(r => /[↓↑●→]/.test(r)), 'direction-per-product');
 ok((await cards()).some(t => /הורדת סיכון|העלאת סיכון|נשאר - המסלול הנוכחי מוביל|ברמת סיכון דומה/.test(t) && /להעביר ל|נשאר במסלול/.test(t)), 'card-says-where-to-move');
+// "נכלל בממוצע הסיכון" - תיבת סימון בראש כל מוצר, מסומנת כברירת מחדל (בקשת הבעלים 14.11 13:27)
+const inc = await page.evaluate(() => [...document.querySelectorAll('#acc-portfolio .track')].map(tr => { const cb = tr.querySelector('.riskinc input[type=checkbox]'); return { has: !!cb, on: cb && cb.checked, first: cb ? tr.querySelector('.riskinc') === tr.children[1] : null }; }));
+ok(inc.some(x => x.has) && inc.filter(x => x.has).every(x => x.on && x.first), 'risk-include-checkbox-top-default-checked', JSON.stringify(inc));
+ok(await page.evaluate(() => !document.querySelector('#acc-portfolio [data-exclude]')), 'no-remove-button-in-v8');
+// מסלול עם קוד רשמי (קישור ישיר לגרסה עם קוד בתיק ההדגמה אין) - בדיקת המנגנון דרך הסרת הבחירה הידנית לא נדרשת; בודקים שתיבה ניתנת לשינוי כשקיימת
+if (await page.evaluate(() => !!document.querySelector('input[data-riskinc]'))) {
+    await page.evaluate(() => document.querySelector('input[data-riskinc]').click()); await wait(400);
+    ok(await page.evaluate(() => !document.querySelector('input[data-riskinc]').checked), 'untick-excludes-from-risk-average');
+    await page.evaluate(() => document.querySelector('input[data-riskinc]').click()); await wait(400);
+    ok(await page.evaluate(() => document.querySelector('input[data-riskinc]').checked), 'tick-restores');
+}
 // ביטול סימון של מוצר - נשאר במקום
 await page.evaluate(() => { const c = [...document.querySelectorAll('[data-mixsel]')].find(x => x.checked); c.click(); }); await wait(400);
 ok((await cards()).filter(t => /לא נכלל בתמהיל/.test(t)).length >= 2, 'unticked-holding-stays');
