@@ -1,4 +1,5 @@
-// בדיקת רגרסיה מלאה לשטר המטען הדיגיטלי (20 בדיקות).
+// בדיקת רגרסיה מלאה לשטר המטען הדיגיטלי: כללי SPEC (שעות, חתימה, תצוגה) בגרסה 2,
+// בנק התשובות והמילוי האוטומטי, ובדיקה שגרסה 1 עדיין נפתחת בקישור ?layout=v1 (כלל 0.6).
 // הרצה: npm run build && npx vite preview --port 4517 & ואז npm test
 // מצריך playwright (devDependency). צילומי מסך נשמרים ב-/tmp.
 import { chromium } from 'playwright';
@@ -18,12 +19,12 @@ async function drawOn(locator) {
     await locator.page().mouse.up();
 }
 
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PW_CHROME ? { executablePath: process.env.PW_CHROME } : {});
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 
 // 1. Fresh load: arrival + end EMPTY, summary COLLAPSED
 await page.goto(url, { waitUntil: 'networkidle' });
-await page.waitForSelector('main.file-card');
+await page.waitForSelector('main.wb2');
 const inputs = page.locator('.file-control');
 const arrival = page.getByLabel(/שעת הגעה לאתר/);
 const end = page.getByLabel(/שעת סיום העבודה/);
@@ -42,7 +43,7 @@ check('arrival stamps on button', /^\d{2}:\d{2}$/.test(arrivalVal), arrivalVal);
 const canvas = page.locator('canvas.sig-canvas').nth(1);
 await drawOn(canvas);
 await page.waitForTimeout(300);
-await page.locator('main.file-card').scrollIntoViewIfNeeded();
+await page.locator('main.wb2').scrollIntoViewIfNeeded();
 const endVal = await end.inputValue();
 check('customer signature stamps end', /^\d{2}:\d{2}$/.test(endVal), endVal);
 
@@ -74,7 +75,7 @@ check('summary collapses again', (await page.locator('text=כך השטר הדי�
 
 // 5. Reload: both times empty again (never hydrated), summary still collapsed, site field persisted
 await page.reload({ waitUntil: 'networkidle' });
-await page.waitForSelector('main.file-card');
+await page.waitForSelector('main.wb2');
 await page.waitForTimeout(500);
 check('reload: arrival empty', (await page.getByLabel(/שעת הגעה לאתר/).inputValue()) === '');
 check('reload: end empty', (await page.getByLabel(/שעת סיום העבודה/).inputValue()) === '');
@@ -88,6 +89,42 @@ check('bg images applied', await page.evaluate(() => {
     const bgs = [...document.querySelectorAll('.bg-crane')].map(e => getComputedStyle(e).backgroundImage);
     return bgs.length === 3 && bgs.every(b => b.includes('url('));
 }));
+await page.locator('button.client-option').first().click();
+
+// 7. מילוי אוטומטי: תאריך של היום, רכב, סוג מנוף ונהג מוכנים בלי הקלדה
+const today = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jerusalem', day: 'numeric', month: 'numeric', year: 'numeric' }).format(new Date()).replace(/\//g, '.');
+check('auto: date is today', (await page.getByLabel('תאריך').inputValue()) === today, await page.getByLabel('תאריך').inputValue());
+check('auto: truck preselected', (await page.locator('.client-toggle').nth(1).innerText()).includes('307-64-001'));
+check('auto: crane type', (await page.getByLabel(/סוג מנוף/).inputValue()) === '115 טון פאסי');
+check('auto: driver', (await page.getByLabel('שם הנהג').inputValue()) === 'אופיר אברג׳יל');
+
+// 8. בנק תשובות: 7 תשובות, כולל יום עבודת מנוף והובלה; הובלה פותחת את פרטי ההובלה; לחיצה שנייה מסירה
+const chips = page.locator('.wb-chip');
+check('note bank has 7 answers', (await chips.count()) === 7, String(await chips.count()));
+const chipText = (await chips.allInnerTexts()).join('|');
+check('note bank: crane day + haul', chipText.includes('יום עבודת מנוף') && chipText.includes('הובלה'));
+const desc = page.getByLabel('תיאור העבודה והערות');
+await page.locator('.wb-chip', { hasText: 'יום עבודת מנוף' }).click();
+check('chip adds to description', (await desc.inputValue()).includes('יום עבודת מנוף'));
+check('haul closed before chip', (await page.getByLabel('מקום טעינה').count()) === 0);
+await page.locator('.wb-chip', { hasText: /^. הובלה$/ }).click();
+check('haul chip opens haul section', (await page.getByLabel('מקום טעינה').count()) === 1);
+await page.locator('.wb-chip', { hasText: 'יום עבודת מנוף' }).click();
+check('second tap removes', !(await desc.inputValue()).includes('יום עבודת מנוף') && (await desc.inputValue()).includes('הובלה'));
+
+// 9. שעות עבודת מנוף מחושבות; אין גלילה לרוחב בטלפון
+await page.getByLabel(/שעת הגעה לאתר/).fill('07:00');
+await page.getByLabel(/שעת סיום העבודה/).fill('09:30');
+check('crane hours computed', (await page.locator('.wb-hours').innerText()).includes('2 שעות ו-30 דקות'), await page.locator('.wb-hours').innerText());
+check('manual arrival flagged', (await page.locator('.wb-flag').count()) === 1);
+check('no horizontal scroll at 390px', await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+await page.screenshot({ path: '/tmp/tamam-shot-v2.png', fullPage: true });
+
+// 10. גרסה 1 עדיין נפתחת בקישור ישיר
+await page.goto(url + '?layout=v1', { waitUntil: 'networkidle' });
+await page.waitForSelector('main.file-card');
+check('v1 opens by link', (await page.locator('text=מילוי שטר מטען מהשטח').count()) === 1);
+check('v1: arrival empty', (await page.getByLabel(/שעת הגעה לאתר/).inputValue()) === '');
 
 await browser.close();
 let fail = 0;

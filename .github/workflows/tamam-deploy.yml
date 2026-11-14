@@ -1,7 +1,7 @@
 # תמ״מ - שטר מטען דיגיטלי: בנייה, בדיקות ופריסה (Cloudflare Pages)
 #
 # בבקשת עדכון (pull request, כולל Dependabot): בנייה ובדיקות בלבד, בלי פריסה.
-# בכל שמירה שנוגעת בתמ״מ: בנייה מלאה (TypeScript + Vite) ו-20 בדיקות הרגרסיה
+# בכל שמירה שנוגעת בתמ״מ: בנייה מלאה (TypeScript + Vite) ובדיקות הרגרסיה (35)
 # בדפדפן מול הבנייה. אם הכול עבר - פריסה אוטומטית של הגרסה הפתוחה לפרויקט
 # tamam-waybill (נוצר בהרצה הראשונה). הגרסה הפתוחה מיועדת לשיתוף עם מי שאין
 # לו כלי AI (10.11, 12:44 ו-13:02); מה נכלל בה - docs/APPROVALS.md.
@@ -46,7 +46,7 @@ jobs:
         run: npm run build
       - name: דפדפן לבדיקות
         run: npx playwright install --with-deps chromium
-      - name: 20 בדיקות רגרסיה
+      - name: בדיקות רגרסיה
         run: |
           npx vite preview --port 4517 --strictPort >/dev/null 2>&1 &
           sleep 3

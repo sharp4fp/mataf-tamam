@@ -39,10 +39,16 @@ export function Group({ label, heading, children }: Children & { label?: string;
     </section>;
 }
 
-export function TextField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-    return <label className="file-control">
+type InputMode = 'text' | 'tel' | 'numeric' | 'decimal';
+
+export function TextField({ label, value, onChange, inputMode, list, onBlur, placeholder, className }: {
+    label: string; value: string; onChange: (v: string) => void;
+    inputMode?: InputMode; list?: string; onBlur?: () => void; placeholder?: string; className?: string;
+}) {
+    return <label className={`file-control${className ? ` ${className}` : ''}`}>
         <span className="file-control-label">{label}</span>
-        <input className="file-input" type="text" value={value} onChange={(e) => onChange(e.target.value)} />
+        <input className="file-input" type="text" value={value} inputMode={inputMode} list={list}
+            placeholder={placeholder} onBlur={onBlur} onChange={(e) => onChange(e.target.value)} />
     </label>;
 }
 
