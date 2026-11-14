@@ -99,7 +99,7 @@ const state = {
     excluded: {},
     pensionStartSel: null,
     intake: {},
-    open: {},
+    open: { targetctl: true }, // פירוט בקר היעד פתוח כברירת מחדל (14.11)
     peers: null,
     peerBusy: false,
     mekManual: '',
@@ -1996,9 +1996,9 @@ function refreshTargetLive() {
     });
 }
 
-function renderAlternatives(a, h) {
+function renderAlternatives(a, h, noTarget = false) {
     const key = h ? trackKeyOf(a.account, h.track) : a.account + '|';
-    const targetBlock = h ? `<div data-tblock="${esc(key)}">${renderHoldingTarget(a, h)}</div>` : '';
+    const targetBlock = h && !noTarget ? `<div data-tblock="${esc(key)}">${renderHoldingTarget(a, h)}</div>` : '';
     // כשיש הצעה למעבר מלא למסלול אחר - מוצגות קודם החלופות המקבילות למסלול המוצע (רצועת החשיפה של היעד),
     // וההשוואה מול המסלול הנוכחי מקופלת מתחתיה
     let targetAlts = '';
@@ -2074,7 +2074,7 @@ function renderPortfolio() {
     const legacy = isV11();
     const p = state.portfolio;
     return `
-        ${legacy ? `<div class="group-label">תיק הנכסים</div>${renderTargetBar()}` : (() => { const cr = confirmedRisk(); return `<div class="note small">${cr ? `חשיפה למניות בחלק המזוהה: <b>${pct(cr.equity)}</b> · ` : ''}יעד החשיפה נקבע בחלק "רמת סיכון וחשיפה", והחלופות לכל מסלול מופיעות בחלק "השוואה לשוק וחלופות".</div>`; })()}
+        ${legacy ? `<div class="group-label">תיק הנכסים</div>${renderTargetBar()}` : renderTargetPanel()}
         <h2>${esc(p.clientName || 'הלקוח')} - ${fmt(view.totalValue)} ₪${view.rejectedImports && view.rejectedImports.length ? ` <span class="tag-miss">⚠ יבוא חלקי - יש חשבונות שנדחו; הסכום המוצג אינו מלוא התיק</span>` : ''}</h2>
         ${visibleAccounts(p).map((a, i) => `<div class="card acct">
             <div class="card-head">
@@ -2105,7 +2105,7 @@ function renderPortfolio() {
                     : h && h.estimate
                         ? `<div class="muted small">${matchLabel(h.match)} חשיפה מנייתית <b>${pct(h.estimate.eq)}</b>* <span class="tag-miss">אומדן מבוסס נתוני מחלקה רשמיים - לא נתון שנצפה בהחזקה זו</span> · ${esc(h.estimate.basis)} · טווח המחלקה ${pct(h.estimate.lo)}-${pct(h.estimate.hi)} (טווח בפועל, אינו גבול מובטח למסלול זה) · נכסי חו"ל (כל הנכסים, לא רק מניות) ${h.estimate.fo !== null ? pct(h.estimate.fo) + '*' : '—'} · ${(() => { const g = equityGeoOf((h.match && h.match.row && h.match.row.name) || t.name); return g.cls === 'unclassified' ? 'אפיק המניות: לא מסווג גיאוגרפית (אין שדה רשמי)' : `אפיק המניות לפי מנדט בשם בלבד: ${GEO_LABEL[g.cls]}* (${g.basis})`; })()} · <span class="tag-miss">לא נכלל בממוצע המדויק</span></div>${renderManualSelector(a, t, key)}`
                         : `<div class="muted small">${h ? matchLabel(h.match) : ''} <span class="tag-miss">לא נכלל בממוצע הסיכון - אין נתון חשיפה ולא בסיס להערכה, והחשיפה אינה ידועה</span></div>${renderManualSelector(a, t, key)}`}
-                    ${legacy ? renderAlternatives(a, h) : ''}
+                    ${legacy ? renderAlternatives(a, h) : h ? `<div data-tblock="${esc(trackKeyOf(a.account, t))}">${renderHoldingTarget(a, h)}</div>` : ''}
                 </div>`;
             }).join('')}
             ${a.tracks.length === 0 ? `<div class="muted small">בדיווח האחרון אין בחשבון יתרה פעילה במסלולים (0 ₪), ולכן החשבון אינו משוקלל בממוצע החשיפה.${a.prevYearEnd ? ` יתרת סוף השנה הקודמת בחשבון זה (ערך היסטורי בלבד, ייתכן שהכסף הועבר למוצר אחר): ${fmt(a.prevYearEnd)} ₪.` : ''} נתוני החשיפה של המסלולים עצמם קיימים במאגרים הרשמיים, אך אין משקל נוכחי לייחס להם.</div>` : ''}
@@ -2136,16 +2136,30 @@ function renderPortfolio() {
     `;
 }
 
+// בקר יעד החשיפה בחלק "תמונת מצב התיק והמלצות" (בקשת הבעלים 14.11 11:45): כאן קובעים את היעד, את המוצרים ואת הכיוון הגיאוגרפי;
+// בחלק "רמת סיכון וחשיפה" הבקר מוצג לתצוגה בלבד
+function renderTargetPanel() {
+    const cr = confirmedRisk();
+    if (!cr) return `<div class="callout note-c target-bar"><b>יעד חשיפה מנייתית:</b> כדי לקבל המלצות לפי יעד, זהו לפחות מסלול אחד (בחירה מתוך הרשימה בהחזקה). ההחזקות המזוהות משתתפות אוטומטית.</div>`;
+    const T = state.targetEq ?? Math.round(cr.equity);
+    return `<div class="card target-bar">
+        <div class="track-line"><span><b>יעד חשיפה מנייתית לכל התיק</b> <span class="muted small">(מצב נוכחי בחלק המזוהה: ${pct(cr.equity)})</span></span><b class="eq-target-out">${pct(T)}</b></div>
+        <input type="range" min="0" max="100" value="${T}" data-eq-slider aria-label="יעד חשיפה מנייתית">
+        <div class="small" data-target-summary>${state.targetEq === null || state.targetEq === undefined ? 'הזיזו את הבקר - ההמלצה לכל מסלול תופיע מתחתיו.' : targetSummaryText()}</div>
+        ${fold('targetctl', 'מוצרים ליישום היעד, כיוון גיאוגרפי ופירוט התכנית', renderTargetController())}
+    </div>`;
+}
+
 // חלק "השוואה לשוק וחלופות" (איחוד 14.11): ההמלצה ליעד וטבלת החלופות לכל מסלול, השוואת עמיתים ורשימת ההתייעלות
 function renderAltsSection() {
     if (!view) return '';
     const T = state.targetEq;
-    const head = `<div class="callout note-c">${T === null || T === undefined ? 'טרם נקבע יעד חשיפה למניות - מוצגות החלופות מול המסלול הנוכחי.' : `ההמלצות מכוונות ליעד <b>${pct(T)}</b> מניות לכל התיק.`} <button type="button" class="linkbtn small" data-goto-acc="risk">קביעת היעד בחלק "רמת סיכון וחשיפה" ◂</button></div>`;
+    const head = `<div class="callout note-c">${T === null || T === undefined ? 'טרם נקבע יעד חשיפה למניות - מוצגות החלופות מול המסלול הנוכחי.' : `יעד החשיפה: <b>${pct(T)}</b> מניות לכל התיק. ההמלצה לכל מסלול מופיעה בחלק "תמונת מצב התיק והמלצות", וכאן טבלאות ההשוואה המלאות.`} <button type="button" class="linkbtn small" data-goto-acc="portfolio">לבקר היעד ולהמלצות ◂</button></div>`;
     const items = visibleAccounts(state.portfolio).map(a => a.tracks.filter(t => (t.balance || 0) >= 1).map(t => {
         const h = view.holdings.find(x => x.track === t);
-        return `<div class="card acct"><div class="track-line"><span><b>${esc(t.name)}</b> <span class="muted small">(${esc(a.plan || '')} · ${esc(a.yatzran)})</span></span><b>${fmt(t.balance)} ₪</b></div>${renderAlternatives(a, h)}</div>`;
+        return `<div class="card acct"><div class="track-line"><span><b>${esc(t.name)}</b> <span class="muted small">(${esc(a.plan || '')} · ${esc(a.yatzran)})</span></span><b>${fmt(t.balance)} ₪</b></div>${renderAlternatives(a, h, true)}</div>`;
     }).join('')).join('');
-    return `${head}<div class="subhead">חלופות והמלצה לכל מסלול</div>${items}
+    return `${head}<div class="subhead">טבלאות חלופות לכל מסלול</div>${items}
         ${fold('peers', 'השוואת עמיתים רשמית (גמל-נט / פנסיה-נט)', renderPeers(), state.peers ? `תקופת דיווח ${periodLabel(state.peers.period)}` : 'טרם הופעלה')}
         ${fold('efficiency', 'רשימת עיון לפי שארפ (התייעלות מול נתוני ייחוס)', renderEfficiency())}`;
 }
@@ -2286,7 +2300,7 @@ function renderTargetController() {
     if (plan && plan.per && state.geoPref === 'split' && planHtml) planHtml += geoSplitSummaryHtml(plan);
     return `
         <div class="sliderwrap">
-            <div class="small"><b>דרך אילו מוצרים ליישם את היעד?</b> כל ההחזקות המזוהות משתתפות. הסירו סימון כדי להשאיר החזקה ללא שינוי; היעד מתחלק בין המסומנות בלבד. ההמלצה לכל החזקה מוצגת גם בחלק "תיק הנכסים".</div>
+            <div class="small"><b>דרך אילו מוצרים ליישם את היעד?</b> כל ההחזקות המזוהות משתתפות. הסירו סימון כדי להשאיר החזקה ללא שינוי; היעד מתחלק בין המסומנות בלבד. ההמלצה לכל החזקה מוצגת מתחת לכל מסלול.</div>
             <div class="small" style="margin-top:6px"><b>כיוון גיאוגרפי מועדף לאפיק המניות:</b> <select data-geo-pref>
                 <option value="any" ${(state.geoPref || 'any') === 'any' ? 'selected' : ''}>ללא העדפה</option>
                 <option value="local" ${state.geoPref === 'local' ? 'selected' : ''}>שוק מקומי (ישראל)</option>
@@ -2331,14 +2345,16 @@ function renderRisk() {
                 ${view.totalValue > cr.value ? ` ${(() => { const unident = view.holdings.filter(h => h.equityPct === null); const estH2 = unident.filter(h => h.estimate); const estVal2 = estH2.reduce((sum, h) => sum + h.track.balance, 0); const noBasis2 = unident.filter(h => !h.estimate).reduce((sum, h) => sum + h.track.balance, 0); const loAll2 = (curEq * cr.value + estH2.reduce((sum, h) => sum + h.track.balance * h.estimate.lo, 0)) / view.totalValue; const hiAll2 = (curEq * cr.value + estH2.reduce((sum, h) => sum + h.track.balance * h.estimate.hi, 0) + 100 * noBasis2) / view.totalValue; return `מיתר התיק: ${estVal2 > 0 ? `${pct(estVal2 / view.totalValue * 100)} (${fmt(estVal2)} ₪) מגובה באומדן מחלקה מסומן בכוכבית (משולב בבקר היעד שלהלן)` : ''}${estVal2 > 0 && noBasis2 > 0 ? ' ו-' : ''}${noBasis2 > 0 ? `${pct(noBasis2 / view.totalValue * 100)} (${fmt(noBasis2)} ₪) ללא כל בסיס לחשיפה` : ''}${estVal2 === 0 && noBasis2 === 0 ? 'אין חלק בלתי מזוהה' : ''}. בתרחיש שבו האומדנים בקצוות טווח המחלקה שלהם${noBasis2 > 0 ? ' והללא-ידוע 0%-100% מניות' : ''} (תרחיש היפותטי חסום להמחשה בלבד - אינו גבול מתמטי; חשיפה ממונפת עלולה לחרוג מ-100%), החשיפה בכל התיק נעה בין ${pct(loAll2)} ל-${pct(hiAll2)}.`; })()}` : ''} החשיפה לפי תמונת ${REF_DATE}.
                 <br>מקורות החלק הנכלל: ${[cr.byClass.official ? `${pct(cr.byClass.official / cr.value * 100)} נתון רשמי לזהות מאומתת-קוד (מאגר האוצר ${REF_DATE} או מסמך רשמי של הגוף)` : '', cr.byClass.confirmed ? `${pct(cr.byClass.confirmed / cr.value * 100)} שורה רשמית לזהות שהמשתמש אישר ידנית (התאמה לפי שם בלבד)` : '', cr.byClass.web ? `${pct(cr.byClass.web / cr.value * 100)} נמצא במקור שאינו רשמי, מסומן ככזה במסלול` : '', cr.byClass.estimate ? `${pct(cr.byClass.estimate / cr.value * 100)} הערכת המערכת, לא נתון רשמי - הבסיס מצוין במסלול` : ''].filter(Boolean).join(' · ')}. נתוני החשיפה הם תמונת מצב למועד הפרסום הרשמי (${REF_DATE}) והיתרות נכונות ליום הדיווח במסלקה; אינם ערובה לחשיפה הנוכחית או העתידית בפועל, וההרכב במועד היתרה עשוי להיות שונה.
             </div>
-            <div class="sliderwrap target-bar">
-                <label>יעד חשיפה מנייתית לכל התיק: <b id="eq-target-label" class="eq-target-out">${pct(effTarget)}</b></label>
-                <input type="range" min="0" max="100" value="${effTarget}" id="eq-slider" data-eq-slider aria-label="יעד חשיפה מנייתית">
-                <div class="small" data-target-summary>${state.targetEq === null || state.targetEq === undefined ? 'הזיזו את הבקר - ההמלצה לכל מסלול תופיע בחלק "השוואה לשוק וחלופות".' : targetSummaryText()}</div>
+            ${isV11() ? `<div class="sliderwrap">
+                <label>יעד חשיפה מנייתית: <b id="eq-target-label">${pct(effTarget)}</b></label>
+                <input type="range" min="0" max="100" value="${effTarget}" id="eq-slider">` : `<div class="sliderwrap">
+                <label>יעד חשיפה מנייתית לכל התיק: <b id="eq-target-label">${pct(effTarget)}</b> <span class="muted small">(לתצוגה בלבד - קובעים את היעד בחלק "תמונת מצב התיק והמלצות")</span></label>
+                <input type="range" min="0" max="100" value="${effTarget}" id="eq-slider" disabled aria-label="יעד חשיפה מנייתית - לתצוגה בלבד">
+                <button type="button" class="linkbtn small" data-goto-acc="portfolio">לשינוי היעד ◂</button>`}
                 <div class="small" id="shift-text">${shiftText}${Math.abs(shift) >= 1000 ? shiftSuffix : ''}</div>
             </div>
-            ${renderTargetController()}`
-        : `<div class="callout note-c target-bar"><b>אין מספיק נתונים.</b> אין עדיין מסלולים הנכללים בממוצע. מסלול שזוהה לפי קוד מסלול רשמי נכלל אוטומטית מגמל-נט, פנסיה-נט או ביטוח-נט (מאגרי הרשות, ${REF_DATE}); התאמה לפי דמיון שם בלבד נכללת רק אחרי אישור ידני; מסלול ללא נתון וללא בסיס להערכה מסומן "לא ידוע" ואינו נספר כאפס.</div>`}
+            ${isV11() ? renderTargetController() : ''}`
+        : `<div class="callout note-c${isV11() ? '' : ' target-bar'}"><b>אין מספיק נתונים.</b> אין עדיין מסלולים הנכללים בממוצע. מסלול שזוהה לפי קוד מסלול רשמי נכלל אוטומטית מגמל-נט, פנסיה-נט או ביטוח-נט (מאגרי הרשות, ${REF_DATE}); התאמה לפי דמיון שם בלבד נכללת רק אחרי אישור ידני; מסלול ללא נתון וללא בסיס להערכה מסומן "לא ידוע" ואינו נספר כאפס.</div>`}
     `;
 }
 
@@ -2694,8 +2710,8 @@ function render() {
         ${isRet ? acc('pension', `${numPension} הקצבה הצפויה`, badgePensionStep(), renderPensionStep()) : ''}
         ${isRet ? acc('alloc', `${numAlloc} ההמלצה: אופן המשיכה ותכנון המס`, badgeAlloc(), renderRecommendationStep()) : ''}
         ${isRet ? acc('summary', `${numSummary} סיכום ופעולות`, missBadge(RS_IDS.summary), renderSummaryStep()) : ''}
-        ${(isPort && !v11) && hasP ? acc('portfolio', pt(numPortfolio, 'תמונת מצב התיק', 'מה יש ללקוח היום: כל המוצרים, הצבירות, המסלולים ודמי הניהול.'), `${fmt(view.totalValue)} ₪ · ${visibleAccounts(state.portfolio).length} חשבונות${view.rejectedImports && view.rejectedImports.length ? ' · ⚠ יבוא חלקי' : ''}`, renderPortfolio(), true) : ''}
-        ${(isPort && !v11) && hasP ? acc('risk', pt(numRisk, 'רמת סיכון וחשיפה', 'כמה מהכסף חשוף למניות ולחו"ל, ומה היעד הרצוי.'), confirmedRisk() ? `${pct(confirmedRisk().equity)} מניות` : '', renderRisk()) : ''}
+        ${(isPort && !v11) && hasP ? acc('portfolio', pt(numPortfolio, 'תמונת מצב התיק והמלצות', 'מה יש ללקוח היום, ולאן להזיז: קובעים יעד חשיפה למניות ורואים המלצה לכל מסלול.'), `${fmt(view.totalValue)} ₪ · ${visibleAccounts(state.portfolio).length} חשבונות${view.rejectedImports && view.rejectedImports.length ? ' · ⚠ יבוא חלקי' : ''}`, renderPortfolio(), true) : ''}
+        ${(isPort && !v11) && hasP ? acc('risk', pt(numRisk, 'רמת סיכון וחשיפה', 'כמה מהכסף חשוף למניות ולחו"ל, ומה היעד שנקבע בחלק 2.'), confirmedRisk() ? `${pct(confirmedRisk().equity)} מניות` : '', renderRisk()) : ''}
         ${(isPort && !v11) && hasP ? acc('alts', pt(numAlts, 'השוואה לשוק וחלופות', 'האם הלקוח משלם יותר מדי, ואיך המסלולים שלו עומדים מול מסלולים דומים.'), state.targetEq === null || state.targetEq === undefined ? '' : `יעד ${pct(state.targetEq)}`, renderAltsSection()) : ''}
         ${(isPort && !v11) ? acc('step3', pt(numStep3, 'מטרות הלקוח', 'מה הלקוח רוצה להשיג ומתי.'), '', renderStep3()) : ''}
         ${(isPort && !v11) ? acc('riskgoals', pt(numRiskGoals, 'התאמת הסיכון למטרות (פנימי)', 'בדיקה לסוכן בלבד: האם רמת הסיכון מתאימה למה שהלקוח אמר. לא נכנס לדוח.'), badgeRg(), renderRiskGoals()) : ''}

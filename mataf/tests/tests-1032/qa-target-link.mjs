@@ -1,4 +1,4 @@
-// qa-target-link.mjs - יעד החשיפה (חלק רמת הסיכון) מניע את ההמלצות בתיק הנכסים (בקשת הבעלים 11.11.2026)
+// qa-target-link.mjs - יעד החשיפה (בקר בחלק 2 "תמונת מצב התיק והמלצות") מניע את ההמלצות לכל מסלול (בקשת הבעלים 11.11.2026)
 // ברירת מחדל: כל ההחזקות המזוהות משתתפות; בקר אחד בחלק רמת סיכון וחשיפה, ההמלצות בחלק השוואה לשוק וחלופות (14.11); עדכון חי בזמן גרירה.
 import puppeteer from 'puppeteer-core';
 const browser = await puppeteer.launch({ executablePath: '/usr/bin/google-chrome', headless: 'new', args: ['--no-sandbox', '--disable-dev-shm-usage'] });
@@ -24,7 +24,7 @@ ok(await page.evaluate(() => !!document.querySelector('[data-eq-slider]')), 'top
 ok(await page.evaluate(() => [...document.querySelectorAll('[data-eligible]')].every(c => c.checked)), 'all-identified-eligible-by-default');
 
 const setTop = async (v) => { await page.evaluate((v) => { const s = document.querySelector('[data-eq-slider]'); s.value = v; s.dispatchEvent(new Event('change', { bubbles: true })); }, v); await wait(400); };
-const cards = () => page.evaluate(() => [...document.querySelectorAll('#acc-alts [data-tblock] .target-card')].map(c => c.innerText.replace(/\s+/g, ' ').trim()));
+const cards = () => page.evaluate(() => [...document.querySelectorAll('#acc-portfolio [data-tblock] .target-card')].map(c => c.innerText.replace(/\s+/g, ' ').trim()));
 await setTop(85);
 const c85 = await cards();
 ok(c85.length >= 3, 'every-holding-has-target-card', String(c85.length));
@@ -53,7 +53,7 @@ ok(geoOpts === 'any,local,foreign,split', 'geo-select-has-split-option', geoOpts
 await page.evaluate(() => { const s = document.querySelector('select[data-geo-pref]'); s.value = 'split'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await wait(400);
 ok(await page.evaluate(() => !!document.querySelector('select[data-geo-split]')), 'split-share-select-appears');
 await page.evaluate(() => { const s = document.querySelector('select[data-geo-split]'); s.value = '70'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await wait(400);
-const splitTxt = await page.evaluate(() => document.querySelector('#acc-risk').textContent.replace(/\s+/g, ' '));
+const splitTxt = await page.evaluate(() => document.querySelector('#acc-portfolio').textContent.replace(/\s+/g, ' '));
 console.log('  ', splitTxt.match(/חלוקת אפיק המניות בהצעה.{0,420}/)?.[0]);
 ok(/חלוקת אפיק המניות בהצעה/.test(splitTxt) && /מבוקש: 70% חו"ל · 30% מקומי/.test(splitTxt), 'split-summary-shown', splitTxt.match(/חלוקת אפיק המניות[^\n]*/)?.[0] || '');
 await page.evaluate(() => { const s = document.querySelector('select[data-geo-pref]'); s.value = 'any'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await wait(400);
@@ -62,9 +62,13 @@ await page.evaluate(() => { const c = document.querySelector('[data-eligible]');
 await wait(400);
 ok(await page.evaluate(() => [...document.querySelectorAll('[data-tblock] .target-card')].some(c => c.innerText.includes('ללא שינוי'))), 'unticked-holding-says-no-change');
 // מעבר לחלק רמת הסיכון מהקישור
-await page.evaluate(() => document.querySelector('[data-goto-acc="risk"]').click());
+// בחלק רמת סיכון וחשיפה הבקר לתצוגה בלבד, עם קישור לבקר בחלק 2 (בקשת הבעלים 14.11 11:45)
+ok(await page.evaluate(() => { const r = document.querySelector('#acc-risk #eq-slider'); return !!r && r.disabled && !r.hasAttribute('data-eq-slider') && !!document.querySelector('#acc-portfolio [data-eq-slider]'); }), 'risk-slider-read-only-controller-in-part-2');
+await page.evaluate(() => { const h = document.querySelector('[data-acc="portfolio"]'); if (h.getAttribute('aria-expanded') === 'true') h.click(); });
+await wait(300);
+await page.evaluate(() => document.querySelector('#acc-risk [data-goto-acc="portfolio"]').click());
 await wait(400);
-ok(await page.evaluate(() => document.querySelector('[data-acc="risk"]').getAttribute('aria-expanded') === 'true'), 'link-opens-risk-section');
+ok(await page.evaluate(() => document.querySelector('[data-acc="portfolio"]').getAttribute('aria-expanded') === 'true'), 'link-opens-portfolio-part');
 ok(errs.length === 0, 'no-page-errors', errs[0] || '');
 console.log(`target-link: PASS=${pass} FAIL=${fail}`);
 await browser.close();
