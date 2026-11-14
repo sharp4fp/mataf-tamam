@@ -1384,3 +1384,16 @@ export function solveTopMix(holdings, T, opts = {}) {
         scoreAfter: scoreValAfter > 0 ? scoreAfter / scoreValAfter : null, moves, movableCount: movable.length, unknownCurVal: unknownCur, scoredVal,
     };
 }
+// ציון המסלול הנוכחי באותה נוסחה ובאותה קבוצת השוואה (הקטגוריה שלו בשוק, כולל המסלול עצמו גם אם סגור להצטרפות).
+// null כשחסר מדד מהציון או שהמסלול אינו במאגר הרשמי של סוג המוצר.
+export function mixCurrentScore(kind, group, clientAge, fundId) {
+    if (fundId == null) return null;
+    const row = (kind === 'pensia' ? OFFICIAL_PENSION : OFFICIAL_GEMEL)[fundId];
+    if (!row || row.eq == null) return null;
+    const pool = marketPoolOf(kind, group, clientAge);
+    if (pool.disabled) return null;
+    const cat = mixCategoryOf(row.name, row.eq);
+    const rows = pool.rows.filter(r => r.fundId !== row.fundId && !/מקבלי קצבה|קצבה לזכאים|הלכה|שריעה|בניהול אישי/.test(r.name || '') && mixCategoryOf(r.name, r.eq) === cat);
+    const sc = mixScoreRows([...rows, row], !!pool.gemel).scored.find(r => r.fundId === row.fundId);
+    return sc ? sc.score : null;
+}

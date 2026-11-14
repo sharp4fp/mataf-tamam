@@ -41,6 +41,11 @@ ok(await page.evaluate(() => !document.querySelector('select[data-mixpick]')), '
 const tbl = await page.evaluate(() => [...document.querySelectorAll('#acc-portfolio [data-mixtable] tbody tr')].map(r => r.innerText.replace(/\s+/g, ' ')));
 ok(tbl.length >= 4 && /כל התיק/.test(tbl[tbl.length - 1]), 'recommendation-table-under-slider', tbl.join(' || ').slice(0, 300));
 ok(tbl.some(r => /[↓↑●→]/.test(r)), 'direction-per-product');
+ok(await page.evaluate(() => [...document.querySelectorAll('#acc-portfolio [data-mixtable] thead th')].map(t => t.innerText.replace(/\s+/g, ' ').trim()).join('|') === 'מוצר|מניות היום|ציון היום|המלצה|מניות אחרי|כיוון|ציון אחרי'), 'columns-incl-current-score');
+ok(await page.evaluate(() => { const t = document.querySelector('#acc-portfolio [data-mixtable] table'); return t.scrollWidth <= t.parentElement.clientWidth + 1; }), 'table-fits-without-horizontal-scroll');
+await page.setViewport({ width: 800, height: 1200 }); await wait(300);
+ok(await page.evaluate(() => { const t = document.querySelector('#acc-portfolio [data-mixtable] table'); return t.scrollWidth <= t.parentElement.clientWidth + 1; }), 'table-fits-at-800px');
+await page.setViewport({ width: 1100, height: 1200 }); await wait(300);
 ok((await cards()).some(t => /הורדת סיכון|העלאת סיכון|נשאר - המסלול הנוכחי מוביל|ברמת סיכון דומה/.test(t) && /להעביר ל|נשאר במסלול/.test(t)), 'card-says-where-to-move');
 // "נכלל בממוצע הסיכון" - תיבת סימון בראש כל מוצר, מסומנת כברירת מחדל (בקשת הבעלים 14.11 13:27)
 const inc = await page.evaluate(() => [...document.querySelectorAll('#acc-portfolio .track')].map(tr => { const cb = tr.querySelector('.riskinc input[type=checkbox]'); return { has: !!cb, on: cb && cb.checked, first: cb ? tr.querySelector('.riskinc') === tr.children[1] : null }; }));
@@ -52,6 +57,20 @@ if (await page.evaluate(() => !!document.querySelector('input[data-riskinc]'))) 
     ok(await page.evaluate(() => !document.querySelector('input[data-riskinc]').checked), 'untick-excludes-from-risk-average');
     await page.evaluate(() => document.querySelector('input[data-riskinc]').click()); await wait(400);
     ok(await page.evaluate(() => document.querySelector('input[data-riskinc]').checked), 'tick-restores');
+}
+// מוצר שהוצא מממוצע הסיכון יוצא "מהמשחק": לא בטבלה, לא בתמהיל ולא בחשיפת התיק (בקשת הבעלים 14.11 13:42).
+// בתיק ההדגמה הזיהוי ידני (תיבה קבועה), ולכן מפעילים את אותו מטפל אירועים דרך תיבה זמנית עם data-riskinc למפתח ההשתלמות.
+{
+    await setT(50);
+    const key = await page.evaluate(() => [...document.querySelectorAll('[data-tblock][data-mix]')].find(e => /השתלמות/.test(e.closest('.track').textContent)).dataset.tblock);
+    const rowsBefore = await page.evaluate(() => document.querySelectorAll('[data-mixtable] tbody tr').length);
+    await page.evaluate((k) => { const c = document.createElement('input'); c.type = 'checkbox'; c.dataset.riskinc = k; c.checked = false; document.querySelector('main').appendChild(c); c.dispatchEvent(new Event('change', { bubbles: true })); }, key);
+    await wait(500);
+    const ex = await page.evaluate((k) => ({ rows: [...document.querySelectorAll('[data-mixtable] tbody tr')].map(r => r.innerText), card: document.querySelector(`[data-tblock="${k}"]`).innerText, sel: !!document.querySelector(`[data-mixsel="${k}"]`) }), key);
+    ok(ex.rows.length === rowsBefore - 1 && !ex.rows.some(r => /השתלמות/.test(r)) && !ex.sel && /מחוץ לחישוב/.test(ex.card), 'excluded-product-out-of-the-game', JSON.stringify(ex).slice(0, 300));
+    await page.evaluate((k) => { const c = document.createElement('input'); c.type = 'checkbox'; c.dataset.riskinc = k; c.checked = true; document.querySelector('main').appendChild(c); c.dispatchEvent(new Event('change', { bubbles: true })); }, key);
+    await wait(500);
+    ok(await page.evaluate(() => document.querySelectorAll('[data-mixtable] tbody tr').length) === rowsBefore, 'restored-back-into-table');
 }
 // ביטול סימון של מוצר - נשאר במקום
 await page.evaluate(() => { const c = [...document.querySelectorAll('[data-mixsel]')].find(x => x.checked); c.click(); }); await wait(400);

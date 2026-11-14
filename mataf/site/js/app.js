@@ -4,7 +4,7 @@ import { parseMaslakaXml, KIND_LABEL, normalizeIdNumber } from './maslaka.js';
 import { extract161, EMPTY_161, FIELD_LABELS, contradictions161 } from './pdf161.js';
 import { COMPANIES, SCENARIO_LABELS, GUAR_LABELS, loadCompany, scenariosOf, guaranteesOf, hasSpouse, inferCompany, mekademEstimate, SURV_RATES, SURV_RATE_LABELS, scenarioForRate } from './mekadem.js';
 import { extractDoc } from './pdfdocs.js';
-import { marketCandidates, parentIdOfMatch, pensionFundIdOfMatch, analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, geoEquityShare, solveTopMix, MIX_CATS, MIX_TOLERANCE, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
+import { marketCandidates, parentIdOfMatch, pensionFundIdOfMatch, analyzePortfolio, dedupeAccounts, topCandidates, insights161, toNum, GROUP_LABEL, GROUPS, REF_DATE, REF_NOTE, RULES_SRC, alternativesFor, pensionNetMonthly2026, survivorNetMonthly2026, CREDIT_POINT_MONTHLY_2026, solveTargetPlan, geoEquityShare, solveTopMix, mixCurrentScore, MIX_CATS, MIX_TOLERANCE, classEstimate, plannerSnapshotOf, plannerRestoreOf, plannerSelectionsOf, selectorOptionsFor, parseWorkYears, grantRatio32, SEVERANCE_CAVEAT, MIX_TAKANON, includedHoldingsOf, matchIdentityOf, trackKeyOf, equityGeoOf, GEO_LABEL } from './analysis.js';
 import { loadPeerData, periodLabel, findOwnRow, compareTrack, TRANSFER_GATES, EXISTING_VS_FUTURE_NOTE, BASELINE_NOTE, PEERS_SOURCE_NOTE } from './peers.js';
 import { renderReport, renderBeforeAfter, eligibleKeysOf } from './report.js';
 import { renderTransferRules } from './transfer-rules.js';
@@ -2159,6 +2159,7 @@ function mixHoldings() {
         const h = view.holdings.find(x => x.track === t);
         if (!h) continue;
         const key = trackKeyOf(a.account, t);
+        if (state.excluded[key]) continue; // הוצא מממוצע הסיכון = מחוץ למשחק: לא בטבלה, לא בתמהיל ולא בחשיפת התיק (בקשת הבעלים 14.11 13:42)
         const eq = h.equityPct !== null ? h.equityPct : (h.estimate ? h.estimate.eq : null);
         const isFundKind = a.kind === 'pensia' || a.kind === 'hishtalmut' || a.kind === 'tagmulim' || a.kind === 'hashkaa';
         const curFundId = isFundKind ? pensionFundIdOfMatch(h.match, a.kind) : null;
@@ -2190,14 +2191,21 @@ function mixDirection(p) {
 function renderMixTable() {
     const m = currentMix();
     if (!m) return '';
+    const age = clientAge();
+    let curW = 0, curS = 0;
+    const sc = (v) => v == null ? '-' : v.toFixed(0);
     const rows = m.per.map(p => {
         const c = p.choice;
+        const cur = mixCurrentScore(p.kind, p.group, age, p.curFundId);
+        if (cur != null) { curW += p.bal; curS += p.bal * cur; }
         const to = !p.selected ? '<span class="muted">לא מסומן - נשאר</span>' : !c ? '<span class="muted">אין מסלולים מדורגים - נשאר</span>' : c.fundId === p.curFundId ? 'נשאר (מוביל)' : `<b>${esc(c.name)}</b>`;
         const dir = !c ? '' : c.fundId === p.curFundId ? '●' : p.eq == null ? '→' : Math.abs(c.eq - p.eq) < 3 ? '→' : c.eq < p.eq ? '↓' : '↑';
-        return `<tr><td>${esc(p.name)}<div class="muted small">${esc(KIND_LABEL[p.kind] || p.kind)} · ${fmt(p.bal)} ₪</div></td><td>${p.eq != null ? pct(p.eq) : '-'}</td><td>${to}</td><td>${c ? pct(c.eq) : (p.eq != null ? pct(p.eq) : '-')}</td><td>${dir}</td><td>${c ? c.score.toFixed(0) : '-'}</td></tr>`;
+        const after = c ? c.score : cur;
+        return `<tr><td>${esc(p.name)}<div class="muted small">${esc(KIND_LABEL[p.kind] || p.kind)} · ${fmt(p.bal)} ₪</div></td><td class="num">${p.eq != null ? pct(p.eq) : '-'}</td><td class="num">${sc(cur)}</td><td>${to}</td><td class="num">${c ? pct(c.eq) : (p.eq != null ? pct(p.eq) : '-')}</td><td class="num">${dir}</td><td class="num">${sc(after)}</td></tr>`;
     }).join('');
-    return `<div class="alts-scroll"><table class="altstbl mixtbl"><thead><tr><th>מוצר</th><th>מניות היום</th><th>המלצה</th><th>מניות אחרי</th><th>כיוון</th><th>ציון</th></tr></thead><tbody>${rows}
-        <tr class="top"><td><b>כל התיק</b></td><td><b>${m.eqBefore != null ? pct(m.eqBefore) : '-'}</b></td><td>${m.moves} מעברים</td><td><b>${m.eqAfter != null ? pct(m.eqAfter) : '-'}</b></td><td></td><td><b>${m.scoreAfter != null ? m.scoreAfter.toFixed(0) : '-'}</b></td></tr></tbody></table></div>`;
+    return `<table class="altstbl mixtbl"><thead><tr><th>מוצר</th><th class="num">מניות<br>היום</th><th class="num">ציון<br>היום</th><th>המלצה</th><th class="num">מניות<br>אחרי</th><th class="num">כיוון</th><th class="num">ציון<br>אחרי</th></tr></thead><tbody>${rows}
+        <tr class="top"><td><b>כל התיק</b></td><td class="num"><b>${m.eqBefore != null ? pct(m.eqBefore) : '-'}</b></td><td class="num"><b>${curW > 0 ? (curS / curW).toFixed(0) : '-'}</b></td><td>${m.moves} מעברים</td><td class="num"><b>${m.eqAfter != null ? pct(m.eqAfter) : '-'}</b></td><td></td><td class="num"><b>${m.scoreAfter != null ? m.scoreAfter.toFixed(0) : '-'}</b></td></tr></tbody></table>
+        <div class="muted small">ציון היום: המסלול הנוכחי באותה נוסחה ובאותה קטגוריה בשוק ("-" כשחסר מדד או שהמסלול אינו במאגר). ציון כל התיק - ממוצע משוקלל לפי יתרות של המוצרים שיש להם ציון.</div>`;
 }
 const mixCatLabel = (c) => (MIX_CATS.find(x => x[0] === c) || [null, c])[1];
 function mixSummaryText() {
@@ -2211,8 +2219,8 @@ function renderMixCard(key) {
     const m = currentMix();
     if (!m) return '';
     const p = m.per.find(x => x.key === key);
-    if (!p) return '';
     const head = `<div class="group-label">ההמלצה ליעד ${pct(state.targetEq)} - תמהיל מובילי השוק</div>`;
+    if (!p) return state.excluded[key] ? `<div class="card target-card muted-card">${head}<div class="muted small">הוצא מממוצע הסיכון - מחוץ לחישוב: לא נכלל בתמהיל ולא בחשיפת כל התיק.</div></div>` : '';
     if (p.note === 'not_selected') return `<div class="card target-card muted-card">${head}<div class="muted small">לא נכלל בתמהיל (לא סומן "מתחשבים במוצר") - נשאר ללא שינוי${p.eq != null ? `, וחשיפתו (${pct(p.eq)}) נספרת בחשיפת כל התיק` : ''}.</div></div>`;
     if (p.note) return `<div class="card target-card muted-card">${head}<div class="muted small">${p.note === 'no_market_policy' ? 'לפוליסות אין כיום מאגר השוואה מאומת עם ציון מלא - הפוליסה נשארת במקומה.' : 'לסוג המוצר הזה אין מסלולים מדורגים מאומתים בשוק - נשאר במקומו.'}${p.eq != null ? ` חשיפתו (${pct(p.eq)}) נספרת בחשיפת כל התיק.` : ''}</div></div>`;
     const c = p.choice;

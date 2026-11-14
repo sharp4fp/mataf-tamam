@@ -720,3 +720,10 @@ details.alts.market .altstbl td:nth-child(2) { min-width: 180px; }
 .rep-tabs .subtab { color: #1f4d3f; border-color: #b9cfc6; }
 .rep-tabs .subtab:hover { background: #eef5f1; }
 .rep-tabs .subtab.on { background: #2e7d4f; color: #fff; border-color: #2e7d4f; }
+
+/* טבלת תמהיל מובילי השוק בחלק 2 - נכנסת ברוחב בלי גלילה (14.11) */
+.mixtbl { table-layout: auto; font-size: 0.8rem; }
+.mixtbl th, .mixtbl td { padding: 5px 6px; }
+.mixtbl th.num, .mixtbl td.num { width: 1%; white-space: nowrap; text-align: center; }
+.mixtbl th { white-space: normal; line-height: 1.2; }
+.mixtbl td:first-child { min-width: 120px; }
