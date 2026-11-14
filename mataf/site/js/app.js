@@ -121,13 +121,8 @@ function numSel(attr, from, to, step, cur, ph, fmtv = (v) => String(v)) {
     if (c && !opts.includes(c)) opts.push(c);
     return `<select ${attr}><option value="">${esc(ph)}</option>${opts.map(v => `<option value="${esc(v)}"${v === c ? ' selected' : ''}>${esc(fmtv(v))}</option>`).join('')}</select>`;
 }
-// גרסאות תצוגה של ניתוח תיק פנסיוני: גרסה קודמת נשארת נגישה ולא נמחקת (הנחיית הבעלים 14.11 10:53)
-const PORT_LAYOUTS = [['v8', '8 חלקים (חדשה)'], ['v11', '11 חלקים (קודמת, עד 14.11)']];
+// גרסת 11 החלקים של ניתוח תיק פנסיוני נשמרת, ונפתחת רק בקישור ישיר ?layout=11 - בלי כפתור במסך (הנחיות הבעלים 14.11 10:53, 11:08)
 const isV11 = () => state.portLayout === 'v11';
-function renderLayoutSwitch() {
-    const cur = isV11() ? 'v11' : 'v8';
-    return `<div class="subtabs" role="group" aria-label="גרסת תצוגה"><span class="small" style="color:#fff;opacity:.85;align-self:center">גרסת תצוגה:</span>${PORT_LAYOUTS.map(([k, l]) => `<button type="button" class="subtab${k === cur ? ' on' : ''}" data-action="layout|${k}" aria-pressed="${k === cur}">${l}</button>`).join('')}</div>`;
-}
 function acc(id, titleHtml, badge, body, forceOpen = false, aside = '') {
     const isOpen = forceOpen || state.open[id] === undefined ? (forceOpen || false) : state.open[id];
     return `<section class="card acc${aside ? ' acc-has-aside' : ''}" id="acc-${id}">${aside ? `<div class="acc-aside">${aside}</div>` : ''}
@@ -2660,7 +2655,6 @@ function render() {
                 </div>
             </div>
             ${state.mode === 'calc' ? renderCalcSubtabs(state) : ''}
-            ${state.mode === 'portfolio' ? renderLayoutSwitch() : ''}
         </div>
     </header>
     <main class="wrap">

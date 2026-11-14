@@ -60,13 +60,16 @@ await page.evaluate(() => document.querySelector('[data-reptab="diff"]').click()
 await page.evaluate(() => document.querySelector('#acc-reports [data-diff-open]').click()); await new Promise(r => setTimeout(r, 300));
 ok(await page.evaluate(() => !document.querySelector('#acc-masdiff') && document.querySelector('#acc-reports [data-reptab="diff"]').classList.contains('on')), 'reports-tab-diff-inside-reports');
 await page.evaluate(() => document.querySelector('[data-reptab="short"]').click()); await new Promise(r => setTimeout(r, 300));
-// הגרסה הקודמת (11 חלקים) נשארת נגישה מכפתור גרסה (הנחיית הבעלים 14.11 10:53)
-await page.evaluate(() => document.querySelector('[data-action="layout|v11"]').click()); await new Promise(r => setTimeout(r, 400));
-const port11 = await topIds();
-ok(port11.join(',') === 'step1,portfolio,report,masdiff,beforeafter,peers,risk,efficiency,step3,riskgoals,openq,review', 'legacy-11-parts-still-available', port11.join(','));
-ok(await page.evaluate(() => !!document.querySelector('#acc-riskgoals select[data-rg="g0desc"]') && !!document.querySelector('#acc-portfolio .target-bar')), 'legacy-goals-in-sheet-and-bar-in-portfolio');
-await page.evaluate(() => document.querySelector('[data-action="layout|v8"]').click()); await new Promise(r => setTimeout(r, 400));
-ok((await topIds()).length === 8, 'switch-back-to-8-parts');
+// הגרסה הקודמת (11 חלקים) נשמרת ונפתחת רק בקישור ישיר ?layout=11, בלי כפתור במסך (הנחיות הבעלים 14.11 10:53, 11:08)
+ok(await page.evaluate(() => !document.querySelector('[data-action^="layout|"]')), 'no-version-switch-on-screen');
+const p11 = await browser.newPage(); await p11.setViewport({ width: 1100, height: 1200 });
+p11.on('pageerror', e => errs.push(String(e)));
+await p11.goto('http://127.0.0.1:8099/?tab=portfolio&layout=11', { waitUntil: 'networkidle2', timeout: 30000 });
+await p11.click('[data-action="demo"]'); await new Promise(r => setTimeout(r, 800));
+const port11 = await p11.evaluate(() => [...document.querySelectorAll('main > section.acc:not(.sub) > .acc-head')].map(h => h.dataset.acc));
+ok(port11.join(',') === 'step1,portfolio,report,beforeafter,peers,risk,efficiency,step3,riskgoals,openq,review', 'legacy-11-parts-by-direct-link-only', port11.join(','));
+ok(await p11.evaluate(() => !!document.querySelector('#acc-riskgoals select[data-rg="g0desc"]') && !!document.querySelector('#acc-portfolio .target-bar')), 'legacy-goals-in-sheet-and-bar-in-portfolio');
+await p11.close();
 for (const id of ['step2', 'kibua', 'alloc', 'questions', 'pension', 'summary']) ok(!port.includes(id), 'portfolio-no-retirement-step-' + id);
 ok(errs.length === 0, 'no-page-errors' + (errs.length ? ': ' + errs[0] : ''));
 console.log(`retirement-steps: PASS=${pass} FAIL=${fail}`);
