@@ -703,7 +703,10 @@ export function insights161(f) {
     const mustFillPartB = direct > 0 || ktseva > contCap;
     // M-003: מענק בגין יותר מ-32 שנים - רק החלק היחסי (× 32/שנים), מדריך 161ד 2026 עמ' 6-7
     const ratio32 = grantRatio32(years);
-    const kibuah = formExempt !== null ? formExempt * ratio32 * 1.35 / 180 : null;
+    // M-076: הפטור שמודפס בטופס הוא תקרה; מה שנמשך בפטור לא יעלה על המענק הכולל - לכן הנמוך מבין השניים
+    const totalGrant = toNum(f.totalGrant);
+    const exemptBase = formExempt !== null ? (totalGrant !== null ? Math.min(formExempt, totalGrant) : formExempt) : null;
+    const kibuah = exemptBase !== null ? Math.min(exemptBase * ratio32 * 1.35, 594090) / 180 : null;
     let spread = null;
     if (years && years >= 6) {
         const raw = years / 4;
@@ -722,7 +725,7 @@ export function insights161(f) {
     }
     const eligYearM = f.retireDate && f.retireDate.match(/(19|20)\d{2}/);
     const eligYear = eligYearM ? +eligYearM[0] : null;
-    if (kibuah !== null) notes.push(`ניצול הפטור ההוני מקטין את יתרת הפטור על הקצבה בקיבוע זכויות - הערכה גסה להמחשה בקבועי 2026 בלבד: כ-${Math.round(kibuah).toLocaleString('he-IL')} ₪ לחודש (הסכום הפטור כמודפס בטופס${ratio32 < 1 ? ` × 32/${years}` : ''} × 1.35 / 180). הסכום בטופס נומינלי: הנוסחה הרשמית דורשת מידוד לתחילת שנת הזכאות, וחריגות (כגון מענקים ששולמו למעלה מ-15 שנה לפני הקצבה הראשונה ולא יובאו בקיזוז) לא נבדקו כאן - לכן זו אינה הפחתת הזכויות בפועל; הקביעה מול פקיד השומה בלבד.${eligYear && eligYear !== 2026 ? ` שנת הזכאות לפי הטופס: ${eligYear} - שיעור הפטור לשנה זו שונה לפי החוק (2027: 62.5%, 2028 ואילך: 67%; סעיף 9א(ז) ו-9א(ב)) והתקרה מתמדדת מדי שנה.` : ''} מקור: מדריך רשות המסים לקיבוע זכויות טופס 161ד 2026 (gov.il).`);
+    if (kibuah !== null) notes.push(`ניצול הפטור ההוני מקטין את יתרת הפטור על הקצבה בקיבוע זכויות - הערכה גסה להמחשה בקבועי 2026 בלבד: כ-${Math.round(kibuah).toLocaleString('he-IL')} ₪ לחודש (${totalGrant !== null && totalGrant < formExempt ? 'המענק הכולל, שנמוך מתקרת הפטור בטופס' : 'תקרת הפטור כמודפסת בטופס - בהנחה שכולה נמשכת בפטור'}${ratio32 < 1 ? ` × 32/${years}` : ''} × 1.35 / 180; הפגיעה מהמענקים עד 594,090). הסכום בטופס נומינלי: הנוסחה הרשמית דורשת מידוד לתחילת שנת הזכאות, וחריגות (כגון מענקים ששולמו למעלה מ-15 שנה לפני הקצבה הראשונה ולא יובאו בקיזוז) לא נבדקו כאן - לכן זו אינה הפחתת הזכויות בפועל; הקביעה מול פקיד השומה בלבד.${eligYear && eligYear !== 2026 ? ` שנת הזכאות לפי הטופס: ${eligYear} - שיעור הפטור לשנה זו שונה לפי החוק (2027: 62.5%, 2028 ואילך: 67%; סעיף 9א(ז) ו-9א(ב)) והתקרה מתמדדת מדי שנה.` : ''} מקור: מדריך רשות המסים לקיבוע זכויות טופס 161ד 2026 (gov.il).`);
     if (spread !== null) notes.push(`פריסת מס קדימה: כ-${spread} שנות פריסה אפשריות לפי ${years} שנות עבודה (שנה על 4 שנות עבודה, עיגון מ-0.5 כלפי מעלה; מקור החוזר בעתק מראה בלבד - לאמת).`);
     notes.push(`פטור קצבה מזכה 2026: ${Math.round(KITZBA_MAZKE_2026 * EXEMPT_PCT_2026).toLocaleString('he-IL')} ₪ לחודש (57.5% מתקרת ${KITZBA_MAZKE_2026.toLocaleString('he-IL')} ₪), בכפוף לקיבוע זכויות.${eligYear && eligYear > 2026 ? ` שנת הפרישה לפי הטופס: ${eligYear} - שיעור הפטור לפי החוק לשנה זו: ${(exemptPctForYear(eligYear) * 100).toLocaleString('he-IL')}%; תקרת הקצבה המזכה לשנה זו טרם פורסמה (מתואמת מדי שנה), ולכן הסכום בש"ח כאן הוא של 2026 בלבד - לא אומת לשנה זו.` : (eligYear && eligYear < 2026 ? ` שנת הפרישה לפי הטופס: ${eligYear} - קבועי 2026 כאן להמחשה בלבד.` : '')} שיעורי הפטור קבועים בחוק: 2025 57%, 2026 57.5%, 2027 62.5%, 2028 ואילך 67% - סעיף 9א(ב) ו-9א(ז) לפקודת מס הכנסה, כנוסחו בתיקון 275 (ס"ח 3336). הסכומים: מדריך רשות המסים לקיבוע זכויות 161ד 2026 (gov.il).`);
     return { computedExemptCap: cap, exemptMatchesForm: exemptMatches, ktsevaEligible: ktseva, directEmployer: direct, contCap, contCapAlt, contCapBasis, mustFillPartB, kibuahMonthlyCost: kibuah, spreadYears: spread, notes };

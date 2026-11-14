@@ -78,6 +78,9 @@ export function renderCalcTab(state, extra = {}) {
     const sevKind = c.s_kind === 'death' ? 'death' : 'retire';
     if (num(state, 's_grant') > 0 && num(state, 's_years') > 0) {
         const g = grantExemption({ grant: num(state, 's_grant'), workYears: num(state, 's_years'), lastSalary: num(state, 's_salary'), death: sevKind === 'death' });
+        // M-074: בלי משכורת אחרונה אין חישוב פטור (לא תקרה מלאה בשקט)
+        if (g.missingSalary) sevRes = '<div class="note small">חסרה משכורת חודשית אחרונה - הפטור תלוי בה (1.5 משכורות לשנת עבודה, ובמוות 2, עד התקרה). הזינו משכורת כדי לראות חישוב.</div>';
+        else {
         const lines = [
             ['החלק הפטור', `${fmtC(g.exempt)} ₪`],
             ['החלק החייב במס', `${fmtC(g.taxable)} ₪`],
@@ -96,6 +99,7 @@ export function renderCalcTab(state, extra = {}) {
         sevRes = lines.map(([k, v]) => `<div class="track-line"><span>${k}</span><b>${v}</b></div>`).join('')
             + `<div class="muted small">${extraNote}</div>`
             + `<div class="muted small"><b>לבדוק מול טופס 161 לפני שמסתמכים על התוצאה:</b> יחסי העבודה הסתיימו בפועל · שנות העבודה כוללות חלקי שנה יחסית · מענקים פטורים קודמים בגין אותן שנים מקטינים את הפטור · שאר תנאי הסף בהערות הטופס (הערה 28).</div>`;
+        }
     }
     // קצבה מוכרת - מודול חינוכי: פטור מלא ב-9א(ב1) רק עם סיווג קופה + עובדת זכאות; אחרת מצב לא-ידוע
     let recRes = '';

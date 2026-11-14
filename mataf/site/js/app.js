@@ -11,7 +11,7 @@ import { renderTransferRules } from './transfer-rules.js';
 import { renderDiffBody, diffPortfolios, renderNifraimBody, parseNifraimText, matchNifraim } from './diffnifraim.js';
 import { renderLifeTab, renderHealthTab, insInit, insApply, emptyInsState } from './insurance.js';
 import { renderCalcTab, renderCalcSubtabs, calcApply } from './calc.js';
-import { evaluateRetirement } from './retire-engine.js';
+import { evaluateRetirement, pensionExemption, GRANT_IMPACT_CAP } from './retire-engine.js';
 import { staleBannerHtml } from './constants-year.js';
 import { AMOUNT_RANGES, EQUITY_RANGES, FEE_RANGES, RENT_RANGES, SECTIONS, parseBalanceItems, computeTotal } from './assets.js';
 
@@ -1094,13 +1094,15 @@ function kibuaCalc(k) {
     const grantYears = gy !== null && gy > 0 ? gy : (f161Years || null);
     const grantYearsFrom = gy !== null && gy > 0 ? 'field' : (f161Years ? 'f161' : null);
     const ratio32 = grantRatio32(grantYears);
-    const uGrant = grant * ratio32 * 1.35;
-    const used = uGrant + hivP + hivF;
+    // M-073: נוסחה אחת עם מנוע הפרישה (retire-engine.js pensionExemption): 32 שנים על כל המענקים, ורצפה - הפגיעה מהמענקים עד 594,090
+    const ex = pensionExemption({ exemptGrants: grant > 0 ? [{ amount: grant, workYears: grantYears || 0 }] : [], year: lawYear ? eligYear : 2026, hivun: hivP + hivF });
+    const uGrant = ex.grantImpact, grantCapped = ex.grantCapped;
+    const used = ex.basketUsed;
     const usedPct = Math.min(100, used / BASKET * 100);
-    const remain = Math.max(0, BASKET - used);
+    const remain = ex.basketLeft;
     const monthly = remain / 180;
     const rate = monthly / MAZKE * 100;
-    return { ok: true, eligYear, pct, basket: BASKET, ceilingAssumed, grant, uGrant, ratio32, grantYears, grantYearsFrom, hivP, hivF, used, usedPct, pctRaw: used / BASKET * 100, remain, monthly, rate };
+    return { ok: true, eligYear, pct, basket: BASKET, ceilingAssumed, grant, uGrant, grantCapped, ratio32, grantYears, grantYearsFrom, hivP, hivF, used, usedPct, pctRaw: used / BASKET * 100, remain, monthly, rate };
 }
 function kibuaResultHtml() {
     const k = state.kibua;
@@ -1125,7 +1127,7 @@ function kibuaResultHtml() {
         ? '<div class="note small"><b>שנת זכאות ' + eligYear + ':</b> שיעור הפטור לפי החוק - ' + pctTxt + '% (סעיף 9א(ז) ו-9א(ב) לפקודת מס הכנסה, כנוסחם בתיקון 275). <b>תקרת הקצבה המזכה לשנה זו טרם פורסמה</b> (מתואמת מדי שנה), ולכן החישוב משתמש בתקרת 2026 - 9,430 ₪ - <b>לא אומת לשנה זו</b>. סל הפטור בחישוב: ₪' + basket.toLocaleString('he-IL') + ' (9,430 × ' + pctTxt + '% × 180). מחשבון הנטו בכרטיס הפרישה מחשב עדיין בשיעור 2026.</div>'
         : ((eligYear && eligYear !== 2026) ? '<div class="note small">הדמיית 2026 מפורשת: החישוב להלן משתמש בקבועי 2026 בלבד ואינו תקף לשנת הזכאות ' + eligYear + '.</div>' : '');
     return simNote + `<div class="kibres">
-        <div class="track-line"><span>פגיעה בגין מענקים פטורים ממודדים${ratioLabel}</span><b>₪${Math.round(uGrant).toLocaleString('he-IL')}</b></div>
+        <div class="track-line"><span>פגיעה בגין מענקים פטורים ממודדים${ratioLabel}${c.grantCapped ? ' - הוגבל ל-₪' + GRANT_IMPACT_CAP.toLocaleString('he-IL') + ': המענקים מקטינים רק את 35% הבסיסיים, לא את הפטור הנוסף (מדריך 161ד עמ\' 6)' : ''}</span><b>₪${Math.round(uGrant).toLocaleString('he-IL')}</b></div>
         <div class="track-line"><span>פגיעה בגין היוון קצבה פטור שבוצע בעבר</span><b>₪${Math.round(hivP).toLocaleString('he-IL')}</b></div>
         <div class="track-line"><span>פגיעה בגין היוון מתוכנן (בחירה עתידית של הלקוח בטופס הרשמי - ההדמיה אינה המלצה)</span><b>₪${Math.round(hivF).toLocaleString('he-IL')}</b></div>
         <div class="track-line"><span>פגיעה משוערת בסל הפטור - סה"כ</span><b>₪${Math.round(used).toLocaleString('he-IL')} (${usedPct.toFixed(1)}%)</b></div>
@@ -1293,10 +1295,12 @@ function allocScenariosHtml() {
         key: 'A', name: 'ללא משיכה הונית - הכסף נשאר לקצבה', cash: 0, cap: capFull,
         explain: 'לא מושכים את המענק הפטור. סל הפטור נשמר במלואו והפטור החודשי על הקצבה נשאר הגבוה ביותר. הכסף נשאר בקופה ומגדיל את הקצבה העתידית (הגידול עצמו אינו ממודל כאן). נזילות: הנמוכה ביותר - אין כסף פנוי עכשיו.'
     }];
-    const slackGrant = Math.min(c.grant, Math.max(0, capFull - Math.min(pension, capFull)) * BASKET_DIVISOR / FACTOR);
+    // M-075: פגיעה לשקל = 1.35 × יחס 32 השנים (כמו בנוסחת הקיבוע); מרווח מעל תקרת הפגיעה (594,090) - כל המענק "חינמי"
+    const slackRoom = Math.max(0, capFull - Math.min(pension, capFull)) * BASKET_DIVISOR;
+    const slackGrant = slackRoom >= GRANT_IMPACT_CAP ? c.grant : Math.min(c.grant, slackRoom / (FACTOR * (c.ratio32 || 1)));
     if (slackGrant > 100 && c.grant - slackGrant > 100) {
         scenarios.push({
-            key: 'C', name: 'משיכה הונית פטורה חלקית - רק מה שהקצבה אינה מנצלת', cash: slackGrant, cap: capFull - slackGrant * FACTOR / BASKET_DIVISOR,
+            key: 'C', name: 'משיכה הונית פטורה חלקית - רק מה שהקצבה אינה מנצלת', cash: slackGrant, cap: kibuaCalc({ ...k, grantExempt: String(slackGrant) }).monthly,
             explain: 'הקצבה הצפויה נמוכה מהפטור החודשי המלא, ולכן חלק מסל הפטור לא היה מתממש בכלל. מושכים רק את החלק העודף הזה, כך שהפטור שנותר עדיין מכסה את כל הקצבה והמס עליה אינו עולה במודל. נזילות: בינונית - כסף פנוי עכשיו בלי עלות מס.'
         });
     }
@@ -1643,8 +1647,11 @@ function retEngAuto() {
     const n = (v) => { const x = parseFloat(String(v ?? '').replace(/[^\d.]/g, '')); return isFinite(x) ? x : null; };
     const rd = String(f.retireDate || '').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
     const salary = n(f.salarySeverance) ?? n(f.salaryFull);
-    const by = n(state.mekIn && state.mekIn.birthYear);
+    const bd = String(f.birthDate || '').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    const by = bd ? +bd[3] : n(state.mekIn && state.mekIn.birthYear);
+    const bySrc = bd ? 'טופס 161' : 'שנת לידה (שלב הקצבה)';
     const retireYear = rd ? +rd[3] : 2026;
+    const ed = String(k.eligDate || '').match(/^(\d{4})-(\d{2})/);
     const guaranteed = ((state.portfolio && state.portfolio.accounts) || []).map(a => a.annuityFactor).filter(x => x && x.pensionFromGuaranteed);
     const pension = (state.mekLast && state.mekLast.pension ? state.mekLast.pension : 0) + guaranteed.reduce((t, x) => t + x.pensionFromGuaranteed, 0);
     return {
@@ -1658,11 +1665,20 @@ function retEngAuto() {
         age: { v: by ? retireYear - by : 66, src: by ? 'שנת לידה' : 'הנחת עבודה (66)' },
         pensionMonthly: { v: pension ? Math.round(pension) : null, src: 'אומדן הקצבה (שלב 5)' },
         annuityFactor: { v: state.mekLast && state.mekLast.k ? state.mekLast.k : null, src: 'מקדם מטבלת התקנון (שלב 5)' },
-        pensionStartYear: { v: k.eligDate ? +String(k.eligDate).slice(0, 4) : retireYear + 1, src: k.eligDate ? 'חודש הזכאות (שלב 3)' : 'שנה אחרי הפרישה' },
+        pensionStartYear: { v: retireYear + 1, src: 'שנה אחרי הפרישה' },
+        // M-070: מועד הזכאות לפטור - מחושב במנוע מגיל הפרישה ומתחילת הקצבה; חודש הזכאות משלב הקיבוע גובר
+        birthYear: { v: by || null, src: by ? bySrc : 'חסר' },
+        birthMonth: { v: bd ? +bd[2] : null, src: bd ? 'טופס 161' : 'לא ידוע' },
+        eligibilityYear: { v: ed ? +ed[1] : null, src: ed ? 'חודש הזכאות (שלב 3)' : 'מחושב: גיל הפרישה או תחילת הקצבה, המאוחר' },
+        eligibilityMonth: { v: ed ? +ed[2] : null, src: ed ? 'חודש הזכאות (שלב 3)' : 'מחושב' },
         retireYearIncome: { v: salary && rd ? Math.round(salary * Math.min(12, +rd[2])) : null, src: 'משכורת × חודשי עבודה (הערכה)' },
+        // M-072: הכנסת השנים הקודמות כשאין טופס 106 - שנה מלאה
+        pastIncomeEstimate: { v: salary ? Math.round(salary * 12) : null, src: 'הערכה: משכורת אחרונה × 12 (חסרים טופסי 106)' },
         futureIncome: { v: n(ni.otherMain) ? n(ni.otherMain) * 12 : 0, src: 'הכנסה אחרת (שלב 5)' },
         creditPoints: { v: n(ni.pointsMain) ?? 2.25, src: 'נקודות זיכוי (שלב 5)' },
-        priorExempt: { v: n(k.grantExempt) || 0, src: 'מענקים פטורים קודמים (שלב 3)' },
+        // M-071: רק מעסיקים קודמים (המענק הנוכחי - מטופס 161). "מקום עבודה יחיד" בשלב הקיבוע = 0; אחרת חובה להזין
+        priorExempt: { v: k.empHistory === 'only' ? 0 : null, src: k.empHistory === 'only' ? 'מקום עבודה יחיד (שלב 3)' : 'חסר - יש להזין (0 אם לא היו)' },
+        priorExemptYears: { v: null, src: 'לא הוזן' },
     };
 }
 function retEngInput() {
@@ -1674,7 +1690,10 @@ function retEngInput() {
         grant: num('grant'), workYears: num('workYears'), lastSalary: num('lastSalary') || 0, pensionMonthly: num('pensionMonthly') || 0,
         annuityFactor: num('annuityFactor'), pensionStartYear: num('pensionStartYear'), retireYearIncome: num('retireYearIncome') || 0,
         futureIncome: num('futureIncome') || 0, creditPoints: num('creditPoints') ?? 2.25,
-        priorExemptGrants: num('priorExempt') ? [{ amount: num('priorExempt'), workYears: num('workYears') || 0 }] : [],
+        birthYear: num('birthYear'), birthMonth: num('birthMonth'), eligibilityYear: num('eligibilityYear'), eligibilityMonth: num('eligibilityMonth'),
+        pastIncomeEstimate: num('pastIncomeEstimate'),
+        // M-071: null = לא ידוע - המנוע נעצר; 0 = לא היו מענקים קודמים
+        priorExemptGrants: (() => { const v = num('priorExempt'); return v === null ? null : v > 0 ? [{ amount: v, workYears: num('priorExemptYears') || 0 }] : []; })(),
         newEmployerWithinYear: u.newEmployer === '1', discountRate: (parseFloat(u.discount) || 3) / 100,
     };
     const past = {};
@@ -1687,8 +1706,9 @@ function taxAltsResultHtml() {
     if (!(inp.grant > 0) || !(inp.workYears > 0)) return '<div class="note small">חסרים סכום המענק ושנות העבודה. הם נלקחים אוטומטית מטופס 161 (שלב 2), או אפשר להזין אותם כאן.</div>';
     let r;
     try { r = evaluateRetirement(inp); } catch (e) { return `<div class="note small">החישוב נכשל: ${esc(String(e && e.message || e))}</div>`; }
+    if (r.missing) return `<div class="note small"><b>אין דירוג - חסרים נתונים:</b><ul>${r.missing.map(m => `<li>${esc(m)}</li>`).join('')}</ul>אפשר להשלים בשדות למעלה. המערכת לא מנחשת נתונים שמשנים את התוצאה.</div>`;
     const money = (x) => x === null || x === undefined ? '—' : '₪' + fmt(Math.round(x));
-    const rows = r.ranked.map(a => `<tr${a.rank === 1 ? ' class="lead"' : ''}><td><b>${a.rank}</b></td><td>${esc(a.id)}. ${esc(a.name)}<div class="muted small">${esc(a.explain || '')}</div></td>
+    const rows = r.ranked.map(a => `<tr${a.rank === 1 ? ' class="lead"' : ''}><td><b>${a.rank}</b></td><td>${esc(a.id)}. ${esc(a.name)}${a.estimatedIncome ? ' <span class="badge-soon">מבוסס הערכה</span>' : ''}<div class="muted small">${esc(a.explain || '')}</div></td>
         <td>${money(a.cashNow)}</td><td>${money(a.pensionMonthly)}<div class="muted small">פטור ${money(a.exemption.monthlyExempt)}</div></td><td>${money(a.taxNow)}</td><td>${money(a.taxNominal)}</td><td><b>${money(a.taxPV)}</b></td><td>${money(a.netPV)}${r.bestNet && r.bestNet.id === a.id ? '<div class="muted small">הנטו הגבוה ביותר</div>' : ''}</td></tr>`).join('');
     const off = r.alternatives.filter(a => !a.available || a.conditional).map(a => `<li><b>${esc(a.id)}. ${esc(a.name)}</b>: ${esc(a.reason || a.explain || '')}</li>`).join('');
     const best = r.recommended;
@@ -1703,7 +1723,7 @@ function taxAltsResultHtml() {
         <div class="muted small">המקורות: ${esc(Object.values(r.refs).join(' · '))}. החישוב בערכי 2026; המס לכל שנה מחושב מעל ההכנסה האחרת של אותה שנה. אינו כולל ביטוח לאומי ומס בריאות. הבחירה עצמה נעשית בטופסי 161א, 116ג ו-161ד.</div>`;
 }
 const HEB_MONTHS = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
-const RENG_LABEL = { grant: 'מענק', workYears: 'שנות עבודה', lastSalary: 'משכורת אחרונה', retireYear: 'שנת פרישה', retireMonth: 'חודש פרישה', retireDay: 'יום', sex: 'מין', age: 'גיל בפרישה', pensionMonthly: 'קצבה חודשית', annuityFactor: 'מקדם', pensionStartYear: 'שנת תחילת קצבה', retireYearIncome: 'הכנסה בשנת הפרישה', futureIncome: 'הכנסה שנתית אחרת', creditPoints: 'נקודות זיכוי', priorExempt: 'מענקים פטורים קודמים' };
+const RENG_LABEL = { grant: 'מענק', workYears: 'שנות עבודה', lastSalary: 'משכורת אחרונה', retireYear: 'שנת פרישה', retireMonth: 'חודש פרישה', retireDay: 'יום', sex: 'מין', age: 'גיל בפרישה', pensionMonthly: 'קצבה חודשית', annuityFactor: 'מקדם', pensionStartYear: 'שנת תחילת קצבה', retireYearIncome: 'הכנסה בשנת הפרישה', futureIncome: 'הכנסה שנתית אחרת', creditPoints: 'נקודות זיכוי', priorExempt: 'מענקים פטורים ממעסיקים קודמים', priorExemptYears: 'שנות העבודה של המענקים הקודמים', birthYear: 'שנת לידה', birthMonth: 'חודש לידה', eligibilityYear: 'שנת הזכאות לפטור', eligibilityMonth: 'חודש הזכאות', pastIncomeEstimate: 'הכנסה שנתית בשנים הקודמות' };
 function renderTaxAlternatives() {
     const auto = retEngAuto();
     const u = state.retEng || {};
@@ -1722,8 +1742,13 @@ function renderTaxAlternatives() {
             ${fs('pensionStartYear', 'שנת תחילת הקצבה', 2020, 2055)}
             ${f('retireYearIncome', 'הכנסה חייבת בשנת הפרישה בלי המענק (₪)', 'min="0"')}
             ${f('futureIncome', 'הכנסה חייבת שנתית אחרת בשנים הבאות (₪)', 'min="0"')}
-            ${f('priorExempt', 'מענקים פטורים קודמים ב-32 השנים (₪)', 'min="0"')}
-            ${[1, 2, 3, 4, 5].map(i => `<label>הכנסה חייבת לפני ${i} ${i === 1 ? 'שנה' : 'שנים'} (טופס 106, לפריסה אחורה)<input type="number" min="0" data-reng="past${i}" value="${esc(u['past' + i] ?? '')}" placeholder="ריק = הערכה לפי שנת הפרישה"></label>`).join('')}
+            ${f('priorExempt', 'מענקים פטורים ממעסיקים קודמים ב-32 השנים, בלי המענק בטופס 161 (₪; 0 אם לא היו)', 'min="0"')}
+            ${f('priorExemptYears', 'שנות העבודה של המענקים הקודמים', 'min="0" max="60" step="0.01"')}
+            ${fs('birthYear', 'שנת לידה', 1940, 2000)}
+            <label>חודש לידה<select data-reng="birthMonth"><option value="">${auto.birthMonth && auto.birthMonth.v ? 'אוטומטי: ' + HEB_MONTHS[auto.birthMonth.v - 1] + ' (' + esc(auto.birthMonth.src) + ')' : 'לא ידוע (יונח דצמבר)'}</option>${HEB_MONTHS.map((m, j) => `<option value="${j + 1}"${String(u.birthMonth || '') === String(j + 1) ? ' selected' : ''}>${m}</option>`).join('')}</select></label>
+            ${fs('eligibilityYear', 'שנת הזכאות לפטור על הקצבה (ריק = מחושב)', 2020, 2060)}
+            ${f('pastIncomeEstimate', 'הכנסה שנתית בשנים הקודמות כשאין טופס 106 (₪)', 'min="0"')}
+            ${[1, 2, 3, 4, 5].map(i => `<label>הכנסה חייבת לפני ${i} ${i === 1 ? 'שנה' : 'שנים'} (טופס 106, לפריסה אחורה)<input type="number" min="0" data-reng="past${i}" value="${esc(u['past' + i] ?? '')}" placeholder="ריק = הערכה (משכורת אחרונה × 12)"></label>`).join('')}
             <label>ריבית היוון (%)<input type="number" min="0" max="10" step="0.1" data-reng="discount" value="${esc(u.discount ?? '')}" placeholder="3"></label>
             <label class="chk"><input type="checkbox" data-reng="newEmployer"${u.newEmployer === '1' ? ' checked' : ''}> יתחיל לעבוד אצל מעסיק חדש תוך שנה (רצף פיצויים)</label>
         </div>

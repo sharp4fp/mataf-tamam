@@ -55,7 +55,7 @@ ok(bk.includes('2016,2017,2018,2019,2020,2021') && !bk.some(s => s.split(',').le
 
 // 6. חישוב ידני - חלופה ד': מענק 300,000, 10 שנים, משכורת 30,000, בלי הכנסה אחרת
 // פטור 137,500; חייב 162,500 בשנת 2026: 8,412 + 5,124 + 41,780×20% − 6,534 = 15,358
-const base = { retireYear: 2026, retireMonth: 6, sex: 'male', age: 66, grant: 300000, workYears: 10, lastSalary: 30000, pensionMonthly: 0, annuityFactor: 200, retireYearIncome: 0, futureIncome: 0, horizonYears: 3 };
+const base = { retireYear: 2026, retireMonth: 6, sex: 'male', age: 66, birthYear: 1960, birthMonth: 1, grant: 300000, workYears: 10, lastSalary: 30000, pensionMonthly: 0, annuityFactor: 200, retireYearIncome: 0, futureIncome: 0, horizonYears: 3 };
 const r1 = E.evaluateRetirement(base);
 const D1 = r1.alternatives.find(a => a.id === 'D');
 ok(D1 && near(D1.taxNow, 15358) && D1.cashNow === 300000, 'alt-D-hand-calc-tax-now-15358', D1 && String(D1.taxNow));
@@ -63,7 +63,7 @@ const C1 = r1.alternatives.find(a => a.id === 'C1');
 ok(C1 && C1.available && C1.taxNominal < D1.taxNominal, 'forward-spread-cheaper-than-no-spread', C1 && `${C1.taxNominal} vs ${D1.taxNominal}`);
 ok(r1.ranked.every((a, i, arr) => i === 0 || arr[i - 1].taxPV <= a.taxPV + 1), 'ranking-ascending-by-tax-pv');
 // מס זהה (למשל 0 כשנקודות הזיכוי מכסות): מי שמקבל יותר נטו קודם
-const tie = E.evaluateRetirement({ retireYear: 2026, sex: 'male', age: 66, grant: 550000, workYears: 27, lastSalary: 18500, pensionMonthly: 6000, annuityFactor: 200, retireYearIncome: 0 });
+const tie = E.evaluateRetirement({ retireYear: 2026, sex: 'male', age: 66, birthYear: 1960, birthMonth: 1, grant: 550000, workYears: 27, lastSalary: 18500, pensionMonthly: 6000, annuityFactor: 200, retireYearIncome: 0 });
 const zero = tie.ranked.filter(a => a.taxPV < 1);
 ok(zero.length >= 2 && zero.every((a, i) => i === 0 || zero[i - 1].netPV >= a.netPV), 'tax-tie-broken-by-higher-net', zero.map(a => a.id + ':' + a.netPV).join(','));
 ok(r1.alternatives.find(a => a.id === 'E').available === false, 'rezef-pitzuyim-unavailable-without-new-employer');
@@ -121,5 +121,61 @@ const A27 = big27.alternatives.find(a => a.id === 'A');
 const row = (y) => A27.rows.find(r => r.year === y);
 ok(near(A27.exemption.monthlyExempt, 5893.75) && near(row(2027).exemptAnnual, 5893.75 * 12, 0.05) && near(row(2028).exemptAnnual, 6318.1 * 12, 0.05), 'm067-yearly-rate-in-rows-2027-2028', JSON.stringify([row(2027), row(2028)]));
 ok(big27.warnings.some(w => w.includes('62.5%') && w.includes('9א(ז)') && w.includes('לא אומת')), 'm067-warning-states-law-and-unverified-ceiling');
+
+// 11. M-070: גיל הפרישה ומועד הזכאות (פקודה 9א(א); מדריך 161ד עמ' 5; חוזר בל"ל 1544 עמ' 2-3)
+const RA = (sex, y, m) => { const a = E.retirementAge(sex, y, m); return a ? `${a.years}/${a.months}` : null; };
+ok(RA('male', 1960, 1) === '67/0' && RA('male', 1941, 12) === null, 'm070-male-67-from-5-1942');
+ok(RA('female', 1947, 5) === '62/0' && RA('female', 1959, 12) === '62/0' && RA('female', 1960, 6) === '62/4' && RA('female', 1962, 5) === '63/0' && RA('female', 1963, 1) === '63/3' && RA('female', 1969, 12) === '64/9' && RA('female', 1975, 3) === '65/0', 'm070-female-table-samples');
+{
+    // טבלת הנשים זהה לטקסט החוזר (מלידה 5/1947 ואילך - הרלוונטי לפורשים היום)
+    const libRoot = path.resolve(here, '../../knowledge/sources/mataf-library-20261109');
+    const cat = JSON.parse(fs.readFileSync(path.join(libRoot, 'catalog/sources.json'), 'utf8')).find(x => x.id === 'btl-circular-1544-women-retirement-age');
+    const txt = fs.readFileSync(path.join(libRoot, cat.text_path), 'utf8').replace(/[\u202a-\u202e\u200e\u200f]/g, '');
+    const MON = { 'ינואר': 1, 'פברואר': 2, 'מרץ': 3, 'אפריל': 4, 'מאי': 5, 'יוני': 6, 'יולי': 7, 'אוגוסט': 8, 'ספטמבר': 9, 'אוקטובר': 10, 'נובמבר': 11, 'דצמבר': 12 };
+    let n = 0, bad = [];
+    for (const line of txt.split('\n')) {
+        const m = line.trim().match(/^(\d\d)(?:ו\s*(\d)\s*-?\s*חודשים)?\s+(\S+)\s+(\d{4})/);
+        if (!m || !MON[m[3]] || +m[4] < 1947 || (+m[4] === 1947 && MON[m[3]] < 5)) continue;
+        n++; const got = RA('female', +m[4], MON[m[3]]), want = `${+m[1]}/${+(m[2] || 0)}`;
+        if (got !== want) bad.push(`${m[3]} ${m[4]}: ${got} ≠ ${want}`);
+    }
+    ok(n >= 12 && !bad.length, 'm070-female-table-matches-circular-1544', `${n} שורות; ${bad.join('; ')}`);
+}
+const d63 = E.retirementAgeDate('female', 1963, 3);
+ok(d63 && d63.year === 2026 && d63.month === 6, 'm070-age-date-female-1963-03-is-6-2026', JSON.stringify(d63));
+// גבר בן 60 (יליד 1/1966), פורש 2026, קצבה מ-2027: הזכאות רק בגיל 67 - 1/2033; לפני כן הקצבה חייבת
+const m60 = E.evaluateRetirement({ retireYear: 2026, sex: 'male', age: 60, birthYear: 1966, birthMonth: 1, grant: 400000, workYears: 30, lastSalary: 25000, pensionMonthly: 9000, annuityFactor: 200, retireYearIncome: 300000 });
+const m60A = m60.alternatives.find(a => a.id === 'A');
+ok(m60.input.eligibilityYear === 2033 && m60.input.eligibilityMonth === 1, 'm070-man-60-eligibility-2033', `${m60.input.eligibilityMonth}/${m60.input.eligibilityYear}`);
+ok(m60A.rows.find(r => r.year === 2028).exemptAnnual === 0 && m60A.rows.find(r => r.year === 2033).exemptAnnual > 0 && m60A.taxPV > 1000, 'm070-no-exemption-before-retirement-age', String(m60A.taxPV));
+// חודשים חלקיים: יליד 7/1959 מגיע ל-67 ב-7/2026; קצבה מ-1/2026 - בשנת 2026 פטור ל-6 חודשים בלבד
+const part = E.evaluateRetirement({ retireYear: 2025, sex: 'male', age: 66, birthYear: 1959, birthMonth: 7, grant: 100000, workYears: 10, lastSalary: 20000, pensionMonthly: 4000, annuityFactor: 200, pensionStartYear: 2026, pensionStartMonth: 1, retireYearIncome: 0, horizonYears: 3 });
+const pA = part.alternatives.find(a => a.id === 'A'), row26 = pA.rows.find(r => r.year === 2026);
+ok(part.input.eligibilityYear === 2026 && part.input.eligibilityMonth === 7 && near(row26.exemptAnnual, Math.min(pA.pensionMonthly, pA.exemption.monthlyExempt) * 6, 0.05) && near(row26.pensionGross, pA.pensionMonthly * 12, 0.05), 'm070-partial-first-year-6-months', JSON.stringify(row26));
+// נתונים חסרים - המנוע נעצר ומפרט
+const noBirth = E.evaluateRetirement({ retireYear: 2026, grant: 100000, workYears: 10, lastSalary: 20000 });
+ok(noBirth.missing && noBirth.missing.some(m => m.includes('תאריך לידה')) && !noBirth.alternatives, 'm070-missing-birth-stops');
+const noSal = E.evaluateRetirement({ retireYear: 2026, birthYear: 1960, birthMonth: 1, grant: 100000, workYears: 10 });
+ok(noSal.missing && noSal.missing.some(m => m.includes('משכורת')), 'm074-missing-salary-stops');
+ok(E.grantExemption({ grant: 500000, workYears: 20, lastSalary: 0 }).missingSalary === true && E.grantExemption({ grant: 500000, workYears: 20, lastSalary: 0 }).exempt === 0, 'm074-grant-exemption-no-silent-full-cap');
+const noPrior = E.evaluateRetirement({ retireYear: 2026, birthYear: 1960, birthMonth: 1, grant: 100000, workYears: 10, lastSalary: 20000, priorExemptGrants: null });
+ok(noPrior.missing && noPrior.missing.some(m => m.includes('מעסיקים קודמים')), 'm071-unknown-prior-grants-stops');
+
+// 12. M-073: 32 השנים על כל המענקים יחד, ורצפת הפטור הנוסף
+const two = E.pensionExemption({ exemptGrants: [{ amount: 275000, workYears: 20 }, { amount: 275000, workYears: 20 }] });
+// 275,000 × 1.35 + 275,000 × 12/20 × 1.35 = 371,250 + 222,750 = 594,000 → 382,005 / 180 = 2,122.25
+ok(near(two.grantImpact, 594000) && near(two.monthlyExempt, 2122.25), 'm073-two-grants-32-years-total-2122', JSON.stringify(two.parts));
+const capd = E.pensionExemption({ exemptGrants: [{ amount: 800000, workYears: 30 }] });
+ok(capd.grantCapped && near(capd.grantImpact, 594090) && near(capd.monthlyExempt, (976005 - 594090) / 180), 'm073-grant-impact-capped-35pct', JSON.stringify(capd));
+const capd28 = E.pensionExemption({ exemptGrants: [{ amount: 800000, workYears: 30 }], year: 2028 });
+ok(near(capd28.monthlyExempt, 0.32 * 9430, 0.05), 'm073-additional-exemption-untouched-2028 (32% × 9,430)', String(capd28.monthlyExempt));
+const hv = E.pensionExemption({ exemptGrants: [{ amount: 800000, workYears: 30 }], hivun: 200000 });
+ok(near(hv.basketLeft, 976005 - 594090 - 200000), 'm073-hivun-reduces-beyond-cap');
+
+// 13. M-072: פריסה אחורה בלי טופס 106 - הכנסה שנתית מלאה, והחלופה מסומנת "מבוסס הערכה"
+const bk72 = E.evaluateRetirement({ retireYear: 2026, retireMonth: 3, retireDay: 31, sex: 'male', age: 66, birthYear: 1960, birthMonth: 1, grant: 600000, workYears: 30, lastSalary: 20000, pensionMonthly: 0, annuityFactor: 200, retireYearIncome: 60000 });
+const c2 = bk72.alternatives.find(a => a.id === 'C2');
+const past72 = c2 ? c2.rows.filter(r => r.year < 2026) : [];
+ok(c2 && c2.estimatedIncome === true && past72.length > 0 && past72.every(r => r.base === 240000), 'm072-back-spread-uses-annual-salary-and-flagged', c2 && JSON.stringify(c2.plan.taxable) + JSON.stringify(past72));
 console.log(`retire-engine: PASS=${pass} FAIL=${fail}`);
 process.exit(fail ? 1 : 0);

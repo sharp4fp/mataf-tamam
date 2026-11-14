@@ -1,7 +1,7 @@
 // retire-engine.js - M-045 שלב 1: מנוע חלופות המס במענק הפרישה ובקצבה (פונקציות טהורות, בלי DOM)
 // כל כלל מפנה למקור בספרייה (mataf/knowledge/sources). כל הסכומים בש"ח של 2026 (ריאלי): מדרגות שנים
 // עתידיות = מדרגות 2026, והיוון בריבית ריאלית (ברירת מחדל 3%, החלטת הבעלים 11.11).
-import { TAX_TABLES, LIFE_EXPECTANCY } from './retire-data.js';
+import { TAX_TABLES, LIFE_EXPECTANCY, RETIREMENT_AGE } from './retire-data.js';
 
 // --- קבועי 2026 ---
 // מדריך 161ד 2026 (tax-161d-2026), עמ' 3 ו-6-7: תקרת קצבה מזכה 9,430, שיעור פטור 57.5%, מכפיל 180, מקדם 1.35
@@ -69,25 +69,56 @@ export function annualTax(income, year, creditPoints = 2.25) {
 export const DEATH_CAP_PER_YEAR = 27520;
 export function grantExemption({ grant = 0, workYears = 0, lastSalary = 0, death = false }) {
     const mult = death ? 2 : 1.5, capY = death ? DEATH_CAP_PER_YEAR : K.GRANT_CAP_PER_YEAR;
-    const perYear = lastSalary > 0 ? Math.min(lastSalary * mult, capY) : capY;
+    // M-074: בלי משכורת אחרונה אין חישוב (לא תקרה מלאה בשקט)
+    if (!(lastSalary > 0)) return { perYear: null, cap: null, exempt: 0, taxable: r2(grant), missingSalary: true };
+    const perYear = Math.min(lastSalary * mult, capY);
     const cap = perYear * workYears;
     const exempt = Math.min(grant, cap);
     return { perYear, cap: r2(cap), exempt: r2(exempt), taxable: r2(Math.max(0, grant - exempt)) };
 }
 
-// --- קיבוע: הפטור החודשי על הקצבה אחרי נוסחת הקיזוז (מדריך 161ד 2026 עמ' 6-7) ---
-// מענק פטור בגין יותר מ-32 שנה נלקח ביחס 32/שנים, כפול 1.35; יתרת הסל חלקי 180, עד שיעור הפטור של השנה מהתקרה
+// --- קיבוע: הפטור החודשי על הקצבה אחרי נוסחת הקיזוז (מדריך 161ד 2026 עמ' 6-7; פקודה 9א(ג)(1)) ---
+// M-073: "מענקים פטורים" נספרים רק בעד 32 שנות העבודה שקדמו לגיל הזכאות - על כל המענקים יחד:
+// exemptGrants מסודרים מהמאוחר למוקדם (הנוכחי קודם); מענק שחוצה את 32 השנים נלקח ביחס (דוגמה 1 במדריך: 550,000 × 32/40).
+// כל שקל מענק × 1.35 (המקדם: 35% × תקרה × 180 / (13,750 × 32)); המענקים מקטינים רק את 35% הבסיסיים - לא את הפטור הנוסף
+// (מדריך עמ' 6), ולכן הפגיעה מהם לכל היותר 35% × 9,430 × 180 = 594,090. היוון (hivun) מקטין מעבר לכך.
 // year: שנת המס (ברירת מחדל - 2026). השיעור לפי exemptPctForYear; ההגדלה בשנה מאוחרת מיוחסת לקצבה (חלק ה בטופס 161ד, אפשרות 3).
-export function pensionExemption({ exemptGrants = [], year = null }) {
+export const GRANT_IMPACT_CAP = Math.round(0.35 * K.MAZKE * K.DIVISOR); // 594,090
+export function pensionExemption({ exemptGrants = [], year = null, hivun = 0 }) {
     const P = exemptParams(year);
-    let used = 0;
+    let raw = 0, yearsLeft = K.YEARS_LOOKBACK;
+    const parts = [];
     for (const g of exemptGrants) {
-        const ratio = g.workYears > K.YEARS_LOOKBACK ? K.YEARS_LOOKBACK / g.workYears : 1;
-        used += (g.amount || 0) * ratio * K.GRANT_FACTOR;
+        const wy = g.workYears > 0 ? g.workYears : 0;
+        const counted = wy > 0 ? Math.min(wy, yearsLeft) : 0;
+        const ratio = wy > 0 ? counted / wy : (yearsLeft > 0 ? 1 : 0);
+        yearsLeft = Math.max(0, yearsLeft - counted);
+        const impact = (g.amount || 0) * ratio * K.GRANT_FACTOR;
+        parts.push({ amount: g.amount || 0, workYears: wy, ratio: r2(ratio), impact: r2(impact) });
+        raw += impact;
     }
+    const grantImpact = Math.min(raw, GRANT_IMPACT_CAP);
+    const used = grantImpact + (hivun || 0);
     const basketLeft = Math.max(0, P.basket - used);
     const monthly = Math.min(P.max, basketLeft / K.DIVISOR);
-    return { basketUsed: r2(used), basketLeft: r2(basketLeft), monthlyExempt: r2(monthly), rate: r2(monthly / K.MAZKE * 100), exemptPct: P.pct, basket: P.basket };
+    return { basketUsed: r2(used), grantImpact: r2(grantImpact), grantImpactRaw: r2(raw), grantCapped: raw > GRANT_IMPACT_CAP, parts,
+        basketLeft: r2(basketLeft), monthlyExempt: r2(monthly), rate: r2(monthly / K.MAZKE * 100), exemptPct: P.pct, basket: P.basket };
+}
+
+// --- M-070: גיל הפרישה ומועד הזכאות ---
+// מחזיר { years, months } לפי מין וחודש לידה, או null כשאין נתון/מחוץ לטבלה (retire-data.js, RETIREMENT_AGE)
+export function retirementAge(sex, birthYear, birthMonth) {
+    if (!(birthYear > 1900) || !(birthMonth >= 1 && birthMonth <= 12)) return null;
+    const key = birthYear * 100 + birthMonth;
+    const row = (RETIREMENT_AGE[sex === 'female' ? 'female' : 'male'] || []).find(([a, b]) => key >= a && key <= b);
+    return row ? { years: row[2], months: row[3] } : null;
+}
+// חודש הגעה לגיל הפרישה: { year, month }
+export function retirementAgeDate(sex, birthYear, birthMonth) {
+    const a = retirementAge(sex, birthYear, birthMonth);
+    if (!a) return null;
+    const idx = birthYear * 12 + (birthMonth - 1) + a.years * 12 + a.months;
+    return { year: Math.floor(idx / 12), month: (idx % 12) + 1, age: a };
 }
 
 // --- פריסה (חוזר 2/2022) ---
@@ -131,7 +162,8 @@ function evaluatePlan(inp, plan, ctx) {
     if (toPension > 0.005 && !(k > 0)) return { available: false, reason: 'חסר מקדם המרה לקצבה - אי אפשר לחשב את הקצבה מהכסף שנשאר בקופה' };
     const extraPension = toPension > 0 ? toPension / k : 0;
     const pensionMonthly = (inp.pensionMonthly || 0) + extraPension;
-    const grants = (inp.priorExemptGrants || []).concat(plan.exemptWithdraw > 0 ? [{ amount: plan.exemptWithdraw, workYears: inp.workYears }] : []);
+    // הנוכחי קודם (הקרוב לגיל הזכאות), אחריו המענקים הקודמים - לספירת 32 השנים (M-073)
+    const grants = (plan.exemptWithdraw > 0 ? [{ amount: plan.exemptWithdraw, workYears: inp.workYears }] : []).concat(inp.priorExemptGrants || []);
     const ex = pensionExemption({ exemptGrants: grants, year: inp.eligibilityYear });
     const exOf = (y) => pensionExemption({ exemptGrants: grants, year: Math.max(y, inp.eligibilityYear) }).monthlyExempt;
     // שיבוץ החלק החייב לשנים
@@ -146,8 +178,11 @@ function evaluatePlan(inp, plan, ctx) {
     const r = inp.discountRate ?? 0.03;
     for (let y = firstYear; y <= ctx.endYear; y++) {
         const base = ctx.incomeOf(y);
-        const pensionGross = y >= inp.pensionStartYear ? pensionMonthly * 12 : 0;
-        const exemptAnnual = y >= inp.pensionStartYear && y >= inp.eligibilityYear ? Math.min(pensionMonthly, exOf(y)) * 12 : 0;
+        // M-070: חודשי קצבה ופטור בשנה - הקצבה מחודש תחילתה, הפטור רק מחודש הזכאות (גיל פרישה או קצבה ראשונה, המאוחר)
+        const mP = y < inp.pensionStartYear ? 0 : y === inp.pensionStartYear ? 13 - inp.pensionStartMonth : 12;
+        const mE = y < inp.eligibilityYear ? 0 : y === inp.eligibilityYear ? 13 - inp.eligibilityMonth : 12;
+        const pensionGross = pensionMonthly * mP;
+        const exemptAnnual = Math.min(pensionMonthly, exOf(y)) * Math.min(mP, mE);
         const grantPart = grantByYear[y] || 0;
         const taxable = base + grantPart + pensionGross - exemptAnnual;
         const incr = annualTax(taxable, y, inp.creditPoints) - annualTax(base, y, inp.creditPoints);
@@ -169,14 +204,17 @@ function evaluatePlan(inp, plan, ctx) {
 // הסל שהקצבה לא מנצלת: BASKET - min(קצבה, 5,422.25) × 180; חלקי 1.35 (ובהתאמת 32 שנה) = המענק הפטור "החינמי"
 function freeExemptWithdraw(inp, ctx, taxableToPension) {
     const ratio = inp.workYears > K.YEARS_LOOKBACK ? K.YEARS_LOOKBACK / inp.workYears : 1;
-    const prior = pensionExemption({ exemptGrants: inp.priorExemptGrants || [] }).basketUsed;
+    // השפעת המענקים הקודמים אחרי שהנוכחי תופס את השנים הקרובות לגיל הזכאות (M-073): יחס ההשפעה לשקל של המענק הנוכחי
+    const prior = pensionExemption({ exemptGrants: [{ amount: 0, workYears: inp.workYears }].concat(inp.priorExemptGrants || []) }).grantImpact;
     const P = exemptParams(inp.eligibilityYear); // בשנת הזכאות - שמרני: ההגדלות המאוחרות רק מגדילות את המרווח
     let w = 0;
     for (let i = 0; i < 30; i++) { // הקצבה תלויה במה שנשאר בקופה - איטרציה קצרה עד התכנסות
         const toPension = (ctx.E - w) + taxableToPension;
         const pension = (inp.pensionMonthly || 0) + (ctx.k > 0 ? toPension / ctx.k : 0);
         const need = Math.min(pension, P.max) * K.DIVISOR;
-        const free = Math.max(0, (P.basket - prior - need) / (K.GRANT_FACTOR * ratio));
+        const room = P.basket - need; // כמה השפעה של מענקים הסל יכול לספוג בלי לפגוע בפטור על הקצבה
+        // הפגיעה מהמענקים מוגבלת ל-594,090 (M-073): אם המרווח גדול מזה - כל המענק "חינמי"
+        const free = room >= GRANT_IMPACT_CAP ? ctx.E : Math.max(0, (room - prior) / (K.GRANT_FACTOR * ratio));
         const nw = Math.min(ctx.E, free);
         if (Math.abs(nw - w) < 0.5) { w = nw; break; }
         w = nw;
@@ -186,7 +224,8 @@ function freeExemptWithdraw(inp, ctx, taxableToPension) {
 
 // --- הכניסה הראשית ---
 // inp: { retireYear, retireMonth, retireDay, sex, age, grant, workYears, lastSalary, priorExemptGrants:[{amount, workYears}],
-//        pensionMonthly, annuityFactor, pensionStartYear, eligibilityYear, creditPoints,
+//        pensionMonthly, annuityFactor, pensionStartYear, pensionStartMonth, birthYear, birthMonth,
+//        eligibilityYear, eligibilityMonth (עקיפה ידנית; אחרת - מחושב), creditPoints,
 //        incomeByYear: {שנה: הכנסה חייבת}, retireYearIncome, pastIncomeEstimate, futureIncome,
 //        newEmployerWithinYear, discountRate, horizonYears }
 export function evaluateRetirement(input) {
@@ -196,14 +235,40 @@ export function evaluateRetirement(input) {
         newEmployerWithinYear: false,
     }, input);
     inp.pensionStartYear = inp.pensionStartYear ?? inp.retireYear + 1;
-    inp.eligibilityYear = inp.eligibilityYear ?? inp.pensionStartYear;
+    inp.pensionStartMonth = inp.pensionStartMonth >= 1 && inp.pensionStartMonth <= 12 ? inp.pensionStartMonth : 1;
+    // M-070/071/074: נתונים חסרים - המנוע נעצר ומפרט, לא מנחש
+    const missing = [];
+    let ageDate = null, birthMonthAssumed = false;
+    if (!inp.eligibilityYear) {
+        if (!(inp.birthYear > 1900)) missing.push('תאריך לידה (לחישוב גיל הפרישה ומועד הזכאות לפטור על הקצבה)');
+        else {
+            birthMonthAssumed = !(inp.birthMonth >= 1 && inp.birthMonth <= 12);
+            // חודש לידה לא ידוע: דצמבר - ההנחה השמרנית (זכאות מאוחרת ככל האפשר באותה שנה); מסומן באזהרה
+            ageDate = retirementAgeDate(inp.sex, inp.birthYear, birthMonthAssumed ? 12 : inp.birthMonth);
+            if (!ageDate) missing.push('גיל פרישה - תאריך הלידה מחוץ לטבלה הנתמכת (גבר מ-5/1942, אישה - כל טבלת חוזר 1544)');
+        }
+    }
+    if (inp.grant > 0 && !(inp.lastSalary > 0)) missing.push('משכורת חודשית אחרונה (לחישוב הפטור על המענק)');
+    if (inp.priorExemptGrants === null) missing.push('מענקים פטורים ממעסיקים קודמים ב-32 השנים שלפני גיל הזכאות (0 אם לא היו; בלי המענק בטופס 161)');
+    if (missing.length) return { missing, input: inp };
+    if (!inp.eligibilityYear) {
+        // גיל הזכאות = גיל הפרישה או תחילת הקצבה המזכה, המאוחר (פקודה 9א(א); מדריך 161ד עמ' 5)
+        const ps = inp.pensionStartYear * 12 + inp.pensionStartMonth, ad = ageDate.year * 12 + ageDate.month;
+        const e = Math.max(ps, ad);
+        inp.eligibilityYear = Math.floor((e - 1) / 12); inp.eligibilityMonth = ((e - 1) % 12) + 1;
+        inp.eligibilitySource = ad >= ps ? `גיל הפרישה (${ageDate.age.years}${ageDate.age.months ? ' ו-' + ageDate.age.months + ' חודשים' : ''}) - ${ageDate.month}/${ageDate.year}` : 'תחילת הקצבה';
+    } else {
+        inp.eligibilityMonth = inp.eligibilityMonth >= 1 && inp.eligibilityMonth <= 12 ? inp.eligibilityMonth : 1;
+        inp.eligibilitySource = 'הוזן';
+    }
     const ge = grantExemption(inp);
     const E = ge.exempt, T = ge.taxable, k = inp.annuityFactor;
     const le = lifeExpectancy(inp.sex, inp.age);
     const endYear = inp.retireYear + (inp.horizonYears ?? Math.round(le));
     const has = (y) => Object.prototype.hasOwnProperty.call(inp.incomeByYear, y);
     const incomeOf = (y) => has(y) ? +inp.incomeByYear[y] || 0
-        : y < inp.retireYear ? (inp.pastIncomeEstimate ?? inp.retireYearIncome ?? 0)
+        // M-072: בלי טופס 106 - הערכה לפי שנה מלאה (משכורת אחרונה × 12), לא לפי שנת הפרישה החלקית
+        : y < inp.retireYear ? (inp.pastIncomeEstimate ?? (inp.lastSalary > 0 ? inp.lastSalary * 12 : (inp.retireYearIncome ?? 0)))
         : y === inp.retireYear ? (inp.retireYearIncome ?? 0) : (inp.futureIncome || 0);
     const ctx = { E, T, k, endYear, incomeOf, hasIncome: has };
 
@@ -215,7 +280,9 @@ export function evaluateRetirement(input) {
     const alts = [];
     const add = (id, name, explain, plan, extra = {}) => {
         const res = evaluatePlan(inp, plan, ctx);
-        alts.push(Object.assign({ id, name, explain, plan: { exemptWithdraw: r2(plan.exemptWithdraw), taxable: plan.taxable } }, res, extra));
+        // M-072: פריסה אחורה לשנים שאין להן הכנסה ידועה (טופס 106) - מבוססת הערכה
+        const estimatedIncome = !!(plan.taxable && plan.taxable.kind === 'back' && plan.taxable.years.some(y => y < inp.retireYear && !has(y)));
+        alts.push(Object.assign({ id, name, explain, estimatedIncome, plan: { exemptWithdraw: r2(plan.exemptWithdraw), taxable: plan.taxable } }, res, extra));
     };
     // בוחר את וריאנט הפריסה עם חבות המס הנמוכה ביותר (בערך נוכחי)
     const bestSpread = (exW, opts) => {
@@ -256,7 +323,9 @@ export function evaluateRetirement(input) {
     const bestNet = ranked.slice().sort((a, b) => b.netPV - a.netPV)[0];
     const warnings = [];
     if (!(k > 0)) warnings.push('חסר מקדם המרה לקצבה: חלופות שמשאירות כסף בקופה לא חושבו.');
-    for (let y = inp.retireYear - 5; y < inp.retireYear; y++) if (!has(y) && back.some(o => o.years.includes(y))) { warnings.push('בפריסה אחורה ההכנסה בשנים הקודמות היא הערכה - חסרים טופסי 106.'); break; }
+    for (let y = inp.retireYear - 5; y < inp.retireYear; y++) if (!has(y) && back.some(o => o.years.includes(y))) { warnings.push(`בפריסה אחורה ההכנסה בשנים הקודמות היא הערכה (${inp.pastIncomeEstimate != null ? 'כפי שהוזנה' : 'משכורת אחרונה × 12'}) - חסרים טופסי 106. חלופה כזו מסומנת "מבוסס הערכה".`); break; }
+    if (birthMonthAssumed) warnings.push('חודש הלידה לא ידוע - הונח דצמבר (מועד הזכאות המאוחר ביותר באותה שנה). כדאי להזין תאריך לידה מלא.');
+    warnings.push(`מועד הזכאות לפטור על הקצבה: ${inp.eligibilityMonth}/${inp.eligibilityYear} (${inp.eligibilitySource}). לפני מועד זה הקצבה חייבת במס במלואה.`);
     if (!taxTable(endYear).exact) warnings.push('לשנים אחרי 2026 נלקחו מדרגות 2026 (חישוב ריאלי בערכי 2026).');
     {
         const pE = exemptPctForYear(inp.eligibilityYear) ?? K.EXEMPT_PCT;

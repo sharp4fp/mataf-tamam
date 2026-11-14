@@ -32,7 +32,8 @@ ok(txt.includes((594000 / 180).toLocaleString('he-IL', { maximumFractionDigits: 
 
 // M-004: תרחיש C - המרת המשיכה הפטורה לפטור חודשי במחלק הסל (180), לא בתקופת ההשוואה
 const app = readFileSync(B + '/app.js', 'utf8');
-ok(/cap:\s*capFull\s*-\s*slackGrant\s*\*\s*FACTOR\s*\/\s*BASKET_DIVISOR/.test(app), 'm004-scenario-c-uses-basket-divisor');
+// עודכן ב-M-075: הפטור בתרחיש C מחושב בנוסחת הקיבוע עצמה (kibuaCalc - מחלק 180), והמרווח במחלק הסל
+ok(/slackRoom\s*=.*\*\s*BASKET_DIVISOR/.test(app) && /cap:\s*kibuaCalc\(\{\s*\.\.\.k,\s*grantExempt:\s*String\(slackGrant\)\s*\}\)\.monthly/.test(app), 'm004-scenario-c-uses-basket-divisor');
 ok(!/slackGrant\s*\*\s*FACTOR\s*\/\s*HORIZON/.test(app), 'm004-no-horizon-divisor');
 // M-003 גם בקיבוע: השדה החדש וחישוב היחס
 ok(/grantRatio32\(grantYears\)/.test(app) && /data-kib="grantYears"/.test(app), 'm003-kibua-uses-ratio-and-field');
@@ -103,5 +104,17 @@ ok(e100.k > e60.k, 'surv-higher-rate-higher-factor-lower-pension', `${e60.k} vs 
     const r5 = A.insights161({ workYears: '30', salaryInsured: '20,000', grants: [{ code: '1', amount: '1,000' }, { code: '5', amount: '100,000' }] });
     ok(r5.mustFillPartB === true, 'm066-direct-employer-grant-still-part-b');
 }
+
+// M-076: הערכת הפגיעה ב-161 - מהמענק בפועל (הנמוך מבין המענק הכולל לתקרת הפטור), לא מהתקרה
+{
+    const r = insights161({ workYears: '27', maxExempt: '371,250', totalGrant: '100,000', salarySeverance: '18,500', grants: [] });
+    ok(Math.round(r.kibuahMonthlyCost) === 750, 'm076-kibuah-from-actual-grant-750', String(r.kibuahMonthlyCost));
+    const r2 = insights161({ workYears: '27', maxExempt: '371,250', salarySeverance: '18,500', grants: [] });
+    ok(Math.round(r2.kibuahMonthlyCost) === Math.round(371250 * 1.35 / 180), 'm076-no-total-uses-cap-labeled');
+}
+// M-071: מענקים קודמים - רק ממעסיקים קודמים; "מקום עבודה יחיד" = 0, אחרת חובה להזין
+ok(app.includes("priorExempt: { v: k.empHistory === 'only' ? 0 : null") && !/priorExempt:\s*\{\s*v:\s*n\(k\.grantExempt\)/.test(app), 'm071-prior-not-from-kibua-total');
+// M-075: תרחיש C מחיל את יחס 32 השנים
+ok(/slackRoom\s*\/\s*\(FACTOR\s*\*\s*\(c\.ratio32/.test(app), 'm075-scenario-c-applies-ratio32');
 console.log(`critical-fixes: PASS=${pass} FAIL=${fail}`);
 process.exit(fail ? 1 : 0);
